@@ -1,0 +1,54 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TaskBoardController;
+use App\Http\Controllers\WorkTypeController;
+use Illuminate\Support\Facades\Route;
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::middleware(['guest'])->group(function () {
+    Route::get('login', [AuthController::class, 'login'])->name('login');
+    Route::post('login', [AuthController::class, 'store'])->name('login.store');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Route::group(['middleware' => ['role_or_permission:superadmin|sales']], function () {
+    //     Route::get('sales', [SalesController::class, 'index'])->name('sales');
+    // });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|project']], function () {
+        Route::resource('project', ProjectController::class)->names('project');
+        Route::put('project-get-work_type', [ProjectController::class, 'get_work_type'])->name('project.get.work_type');
+        Route::put('project-update-status/{project}', [ProjectController::class, 'update_status'])->name('project.update.status');
+        Route::put('project-cancel/{project}', [ProjectController::class, 'cancel'])->name('project.cancel');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|setting']], function () {
+        Route::get('setting', [SettingController::class, 'index'])->name('setting');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|work_type']], function () {
+        Route::resource('work_type', WorkTypeController::class)->names('work_type');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|task_board']], function () {
+        Route::get('task_board', [TaskBoardController::class, 'index'])->name('task_board.index');
+        Route::get('task_board/{project}', [TaskBoardController::class, 'show'])->name('task_board.show');
+        Route::put('task_board/take-survey/{project_survey}', [TaskBoardController::class, 'take_survey'])->name('task_board.take_survey');
+        Route::put('task_board/hold-survey/{project_survey}', [TaskBoardController::class, 'hold_survey'])->name('task_board.hold_survey');
+        Route::put('task_board/finish-survey/{project_survey}', [TaskBoardController::class, 'finish_survey'])->name('task_board.finish_survey');
+        Route::get('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey'])->name('task_board.document_survey');
+        Route::put('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey_update'])->name('task_board.document_survey.update');
+    });
+});
