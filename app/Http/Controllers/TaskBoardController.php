@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\File_upload;
 use App\Models\Project;
 use App\Models\Project_offer;
+use App\Models\Project_sales_order;
 use App\Models\Project_survey;
 use App\Models\Work_type;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TaskBoardController extends Controller
 {
@@ -23,27 +25,25 @@ class TaskBoardController extends Controller
         if ($request->has('assignee')) {
             $assignee = $request->assignee;
         }
-        $project_survey = Project_survey::whereIn('projsur_status', [
-            'Open',
-            'Started',
-            'Hold'
-        ])->get();
-        $project_offer = Project_offer::whereIn('projoff_status', [
-            'Open',
-            'Started',
-            'Hold',
-            'Revisi Mesin',
-            'Approval'
-        ])->get();
-        $view = 'task_board.pre_sales';
+        $project_survey = Project_survey::all();
+        $project_offer = Project_offer::all();
+        $project_sales_order = Project_sales_order::all();
+        if ($assignee == 'pre-sales') {
+            $view = 'task_board.pre_sales';
+            if (Auth::user()->hasPermissionTo('task_board.pre_sales')) {
+                return view('error', [
+                    'message' => "You’re not authorized to view this page."
+                ]);
+            }
+        }
         if ($assignee == 'sales-admin') {
             $view = 'task_board.sales_admin';
         }
         if ($assignee == 'operation') {
-            $view = 'task_board.sales_admin';
+            $view = 'task_board.operation';
         }
         if ($assignee == 'finance-accounting') {
-            $view = 'task_board.sales_admin';
+            $view = 'task_board.finance_accounting';
         }
         return view($view, compact('project_survey', 'project_offer', 'assignee'));
     }
@@ -97,13 +97,32 @@ class TaskBoardController extends Controller
         }
     }
 
+    public function continue_survey(Request $request, Project_survey $project_survey)
+    {
+        DB::beginTransaction();
+        try {
+            $project_survey->update([
+                'projsur_status' => "Started",
+                'projsur_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'pre-sales'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
     public function finish_survey(Request $request, Project_survey $project_survey)
     {
         DB::beginTransaction();
         try {
             $project_survey->update([
-                'projsur_status' => "Finished",
-                'projsur_hold_message' => $request->message
+                'projsur_status' => "Done",
+                'projsur_finished_at' => Carbon::now(),
             ]);
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'pre-sales'])->with([
@@ -125,25 +144,24 @@ class TaskBoardController extends Controller
     {
         DB::beginTransaction();
         try {
+            $file_upload = new File_upload();
+            $file_upload->file_doc_type = $request->file_doc_type;
+            $file_upload->file_table = 'project_survey';
+            $file_upload->file_table_id = $project_survey->id;
             if ($request->has('file_upload')) {
                 $file = $request->file('file_upload');
                 $file_real_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();
                 $file_directory = "presales";
                 $file_name = Str::random(24) . "." . $file_ext;
-                $file->storeAs($file_directory, $file_name);
-                // Storage::disk('local')->put($file_name, file_get_contents($request->file('file_upload')->getRealPath()));
-
-                File_upload::create([
-                    'file_doc_type' => $request->file_doc_type,
-                    'file_table' => 'project_survey',
-                    'file_table_id' => $project_survey->id,
-                    'file_directory' => $file_directory,
-                    'file_name' => $file_name,
-                    'file_real_name' => $file_real_name,
-                    'file_ext' => $file_ext
-                ]);
+                Storage::disk('local')->put($file_directory . '/' . $file_name, file_get_contents($request->file('file_upload')->getRealPath()));
+                $file_upload->file_directory = $file_directory;
+                $file_upload->file_name = $file_name;
+                $file_upload->file_real_name = $file_real_name;
+                $file_upload->file_ext = $file_ext;
             }
+            $file_upload->file_link = $request->file_link;
+            $file_upload->save();
             if ($request->file_doc_type == 'Denah') {
                 $project_survey->projsur_denah = 1;
             }
@@ -190,4 +208,107 @@ class TaskBoardController extends Controller
     /**
      * Finance & Accounting
      */
+
+    /**
+     * Download file
+     */
+    public function document_download(Request $request, File_upload $file_upload)
+    {
+        $filePath = $file_upload->file_directory . '/' . $file_upload->file_name;
+
+        if (!Storage::disk('local')->exists($filePath)) {
+            return view('error', compact('File not found'));
+        }
+        return Storage::download($file_upload->file_directory . '/' . $file_upload->file_name, $file_upload->file_real_name);
+    }
+
+    /**
+     * Remove file
+     */
+    public function document_remove(Request $request, File_upload $file_upload)
+    {
+        DB::beginTransaction();
+        try {
+            $file_table = $file_upload->file_table;
+            $file_table_id = $file_upload->file_table_id;
+            $file_doc_type = $file_upload->file_doc_type;
+            $filePath = $file_upload->file_directory . '/' . $file_upload->file_name;
+            if (!Storage::disk('local')->exists($filePath)) {
+                return view('error', compact('File not found'));
+            }
+            Storage::delete($file_upload->file_directory . '/' . $file_upload->file_name);
+            $file_upload->file_directory = null;
+            $file_upload->file_name = null;
+            $file_upload->file_real_name = null;
+            $file_upload->file_ext = null;
+            $file_upload->save();
+            if ($file_upload->file_directory == null && $file_upload->file_link == null) {
+                $file_upload->delete();
+                $this->set_document_to_null($file_doc_type, $file_table, $file_table_id);
+            }
+            DB::commit();
+            return redirect()->route('task_board.show', $file_table_id)->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function link_remove(Request $request, File_upload $file_upload)
+    {
+        DB::beginTransaction();
+        try {
+            $file_table = $file_upload->file_table;
+            $file_table_id = $file_upload->file_table_id;
+            $file_doc_type = $file_upload->file_doc_type;
+            $file_upload->file_link = null;
+            $file_upload->save();
+            if ($file_upload->file_directory == null && $file_upload->file_link == null) {
+                $file_upload->delete();
+                $this->set_document_to_null($file_doc_type, $file_table, $file_table_id);
+            }
+            DB::commit();
+            return redirect()->route('task_board.show', $file_table_id)->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function set_document_to_null(String $file_doc_type, String $file_table, String $file_table_id)
+    {
+        if ($file_table == 'project_survey') {
+            $file_total = File_upload::where('file_table', 'project_survey')
+                ->where('file_table_id', $file_table_id)
+                ->count();
+            if ($file_total == 0) {
+                $project_survey = Project_survey::find($file_table_id);
+                if ($file_doc_type == 'Denah') {
+                    $project_survey->projsur_denah = null;
+                }
+                if ($file_doc_type == 'Shop Drawing') {
+                    $project_survey->projsur_shop = null;
+                }
+                if ($file_doc_type == 'SLD/Topology') {
+                    $project_survey->projsur_sld = null;
+                }
+                if ($file_doc_type == 'RAB/BOQ/Budget') {
+                    $project_survey->projsur_rab = null;
+                }
+                if ($file_doc_type == 'Personil') {
+                    $project_survey->projsur_personil = null;
+                }
+                if ($file_doc_type == 'Schedule') {
+                    $project_survey->projsur_schedule = null;
+                }
+                $project_survey->save();
+            }
+        }
+    }
 }

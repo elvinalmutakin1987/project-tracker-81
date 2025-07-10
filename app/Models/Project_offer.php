@@ -46,4 +46,9 @@ class Project_offer extends Model implements Auditable
     {
         return $this->belongsTo(Project::class)->withDefault(['proj_number' => null]);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class)->withDefault(['username' => null]);
+    }
 }

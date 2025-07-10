@@ -69,271 +69,203 @@
                                         <td style="padding:0">
                                             <table class="table table-bordered" style="margin:0;">
                                                 <tr>
-                                                    <th class="table-light" style="width:25%">Type</th>
-                                                    <th class="table-light" style="width:12%">Status</th>
-                                                    <th class="table-light">Link</th>
+                                                    <th class="table-light" style="width: 15%">Type</th>
+                                                    <th class="table-light" style="width: 10%">Status</th>
+                                                    <th class="table-light" style="width: 25%">File</th>
+                                                    <th class="table-light" style="width: 50%">Link</th>
                                                 </tr>
-                                                <tr>
-                                                    <td>Denah</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_denah == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-check"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where('file_doc_type', 'Denah')
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Shop Drawing</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_shop == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-check"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where(
-                                                                'file_doc_type',
-                                                                'Shop Drawing',
-                                                            )
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>SLD/Topology</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_sld == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-check"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where(
-                                                                'file_doc_type',
-                                                                'SLD/Topology',
-                                                            )
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>RAB/BOQ/Budget</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_rab == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-check"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where(
-                                                                'file_doc_type',
-                                                                'RAB/BOQ/Budger',
-                                                            )
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Personil</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_personil == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor"
-                                                                    class="bi bi-check" viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where(
-                                                                'file_doc_type',
-                                                                'Peronil',
-                                                            )
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Schedule</td>
-                                                    <td>
-                                                        @if ($project->project_survey->projsur_schedule == '1')
-                                                            <span class="badge text-bg-success rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor"
-                                                                    class="bi bi-check" viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
-                                                                </svg>
-                                                            </span>
-                                                        @else
-                                                            <span class="badge text-bg-danger rounded-pill">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                    height="16" fill="currentColor" class="bi bi-x"
-                                                                    viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            $file_upload = File_upload::where(
-                                                                'file_doc_type',
-                                                                'Schedule',
-                                                            )
-                                                                ->where('file_table', 'project_survey')
-                                                                ->where('file_table_id', $project->project_survey->id)
-                                                                ->get();
-                                                        @endphp
-                                                        <table class="w-100">
-                                                            @foreach ($file_upload as $d)
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="">{{ $d->file_real_name }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </table>
-                                                    </td>
-                                                </tr>
+                                                @php
+                                                    $doc_type = [
+                                                        'Denah',
+                                                        'Shop Drawing',
+                                                        'SLD/Topology',
+                                                        'RAB/BOQ/Budget',
+                                                        'Personil',
+                                                        'Schedule',
+                                                    ];
+                                                @endphp
+                                                @foreach ($doc_type as $type)
+                                                    <tr>
+                                                        <td>{{ $type }}</td>
+                                                        <td>
+                                                            @php
+                                                                $doc_status = 0;
+                                                                if (
+                                                                    $type == 'Denah' &&
+                                                                    $project->project_survey->projsur_denah == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                } elseif (
+                                                                    $type == 'Shop Drawing' &&
+                                                                    $project->project_survey->projsur_shop == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                } elseif (
+                                                                    $type == 'SLD/Topology' &&
+                                                                    $project->project_survey->projsur_sld == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                } elseif (
+                                                                    $type == 'RAB/BOQ/Budget' &&
+                                                                    $project->project_survey->projsur_rab == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                } elseif (
+                                                                    $type == 'Personil' &&
+                                                                    $project->project_survey->projsur_personil == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                } elseif (
+                                                                    $type == 'Schedule' &&
+                                                                    $project->project_survey->projsur_schedule == '1'
+                                                                ) {
+                                                                    $doc_status = 1;
+                                                                }
+                                                            @endphp
+                                                            @if ($doc_status == 1)
+                                                                <span class="badge text-bg-success rounded-pill">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-check" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                    </svg>
+                                                                </span>
+                                                            @else
+                                                                <span class="badge text-bg-danger rounded-pill">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor" class="bi bi-x"
+                                                                        viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                    </svg>
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @php
+                                                                $file_upload = File_upload::where(
+                                                                    'file_doc_type',
+                                                                    $type,
+                                                                )
+                                                                    ->where('file_table', 'project_survey')
+                                                                    ->where(
+                                                                        'file_table_id',
+                                                                        $project->project_survey->id,
+                                                                    )
+                                                                    ->get();
+                                                            @endphp
+                                                            <table class="w-100">
+                                                                @foreach ($file_upload as $d)
+                                                                    @if ($d->file_real_name)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <table class="w-100">
+                                                                                    <tr>
+                                                                                        <td class="align-top"
+                                                                                            style="width: 25px">
+                                                                                            @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
+                                                                                                <form class="d-inline"
+                                                                                                    action="{{ route('task_board.document_remove', $d->id) }}"
+                                                                                                    method="POST"
+                                                                                                    id="form-delete{{ $d->id }}">
+                                                                                                    @csrf
+                                                                                                    @method('DELETE')
+                                                                                                    <input type="hidden"
+                                                                                                        name="assignee"
+                                                                                                        value="pre-sales">
+                                                                                                    <a href=""
+                                                                                                        onclick="document_remove({{ $d->id }}); return false;">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                            width="16"
+                                                                                                            height="16"
+                                                                                                            fill="currentColor"
+                                                                                                            class="bi bi-trash"
+                                                                                                            viewBox="0 0 16 16">
+                                                                                                            <path
+                                                                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                            <path
+                                                                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                        </svg>
+                                                                                                    </a>
+                                                                                                </form>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td class="align-top">
+                                                                                            <a href="{{ route('task_board.document_download', $d->id) }}"
+                                                                                                target="_blank">{{ $d->file_real_name }}</a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </table>
+                                                        </td>
+                                                        <td>
+                                                            @php
+                                                                $file_upload = File_upload::where(
+                                                                    'file_doc_type',
+                                                                    $type,
+                                                                )
+                                                                    ->where('file_table', 'project_survey')
+                                                                    ->where(
+                                                                        'file_table_id',
+                                                                        $project->project_survey->id,
+                                                                    )
+                                                                    ->get();
+                                                            @endphp
+                                                            <table class="w-100">
+                                                                @foreach ($file_upload as $d)
+                                                                    @if ($d->file_link)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <table class="w-100">
+                                                                                    <tr>
+                                                                                        <td class="align-top"
+                                                                                            style="width:25px">
+                                                                                            @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
+                                                                                                <form class="d-inline"
+                                                                                                    action="{{ route('task_board.link_remove', $d->id) }}"
+                                                                                                    method="POST"
+                                                                                                    id="form-delete{{ $d->id }}link">
+                                                                                                    @csrf
+                                                                                                    @method('DELETE')
+                                                                                                    <input type="hidden"
+                                                                                                        name="assignee"
+                                                                                                        value="pre-sales">
+                                                                                                    <a href=""
+                                                                                                        onclick="link_remove({{ $d->id }}); return false;">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                            width="16"
+                                                                                                            height="16"
+                                                                                                            fill="currentColor"
+                                                                                                            class="bi bi-trash"
+                                                                                                            viewBox="0 0 16 16">
+                                                                                                            <path
+                                                                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                            <path
+                                                                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                        </svg>
+                                                                                                    </a>
+                                                                                                </form>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <a href="{{ $d->file_link }}"
+                                                                                                target="_blank">{{ $d->file_link }}</a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             </table>
                                         </td>
                                     </tr>
@@ -341,8 +273,8 @@
                             </table>
                         </div>
                         <div class="card-footer">
-                            <a class="btn btn-secondary"
-                                href="{{ route('task_board.index', ['assignee' => $assignee]) }}" role="button">Back</a>
+                            <a class="btn btn-secondary" href="{{ route('task_board.index', ['assignee' => $assignee]) }}"
+                                role="button">Back</a>
                         </div>
                     </div>
                 </main>
@@ -354,6 +286,16 @@
 
 @push('javascript')
     <script>
+        @if (session('message'))
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "{{ session('message') }}",
+                    icon: "success"
+                });
+            });
+        @endif
+
         $(document).ready(function() {
             $('#proj_work_type').select2({
                 theme: "bootstrap-5",
@@ -361,5 +303,37 @@
                     'style',
             });
         });
+
+        function document_remove(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once deleted, you won't be able to recover this record!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete' + id).submit();
+                }
+            });
+        }
+
+        function link_remove(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once deleted, you won't be able to recover this record!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete' + id + 'link').submit();
+                }
+            });
+        }
     </script>
 @endpush

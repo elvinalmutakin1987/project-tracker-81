@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_offers', function (Blueprint $table) {
+        Schema::create('project_sales_orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->timestamp('projoff_started_at')->nullable();
-            $table->timestamp('projoff_finished_at')->nullable();
-            $table->string('projoff_grand_total', 16)->nullable();
-            $table->string('projoff_so_number', 20)->nullable();
-            $table->string('projoff_po_customer', 20)->nullable();
-            $table->string('projoff_contract_number', 20)->nullable();
-            $table->enum('projoff_status', [
+            $table->timestamp('projso_started_at')->nullable();
+            $table->timestamp('projso_finished_at')->nullable();
+            $table->enum('projsur_status', [
                 'Open',
                 'Started',
                 'Hold',
@@ -30,14 +26,14 @@ return new class extends Migration
                 'Cancelled',
                 'Done',
             ])->nullable();
-            $table->enum('projoff_sent_by', [
+            $table->enum('projso_sent_by', [
                 'Whatsapp',
                 'Email',
                 'Whatsapp & Email',
             ])->nullable();
-            $table->longText('projoff_hold_message')->nullable();
-            $table->longText('projoff_revisi_message')->nullable();
-            $table->longText('projoff_cancel_message')->nullable();
+            $table->longText('projso_hold_message')->nullable();
+            $table->longText('projso_revisi_message')->nullable();
+            $table->longText('projso_cancel_message')->nullable();
             $table->timestamps();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -49,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_offers');
+        Schema::dropIfExists('project_sales_orders');
     }
 };

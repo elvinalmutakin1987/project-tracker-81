@@ -24,13 +24,14 @@ return new class extends Migration
                 'BAP',
                 'BAT',
                 'BATC'
-            ]);
+            ])->nullable();
             $table->string('file_table', 50)->nullable();
             $table->string('file_table_id', 20)->nullable();
             $table->longText('file_directory')->nullable();
             $table->longText('file_name')->nullable();
             $table->longText('file_real_name')->nullable();
             $table->string('file_ext', 10)->nullable();
+            $table->longText('file_link')->nullable();
             $table->timestamps();
         });
     }

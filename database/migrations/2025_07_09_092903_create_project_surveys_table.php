@@ -29,7 +29,7 @@ return new class extends Migration
                 'Hold',
                 'Cancelled',
                 'Done',
-            ]);
+            ])->nullable();
             $table->longText('projsur_hold_message')->nullable();
             $table->longText('projsur_cancel_message')->nullable();
             $table->timestamps();

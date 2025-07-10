@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Project_offer;
+use App\Models\Project_sales_order;
 use App\Models\Project_survey;
 use App\Models\Work_type;
 use Illuminate\Http\Request;
@@ -163,7 +164,12 @@ class ProjectController extends Controller
                 $project->proj_status = 'Pra-tender';
                 $this->create_task($request->proj_status, $project->id);
             }
-            if ($request->proj_status == 'Request Penawaran') {
+            if ($request->proj_status == 'Request Offer Letter') {
+                $project->proj_status = 'Quotation';
+                $this->create_task($request->proj_status, $project->id);
+            }
+            if ($request->proj_status == 'Request Sales Order') {
+                $project->proj_status = 'Sales Order';
                 $this->create_task($request->proj_status, $project->id);
             }
             $project->save();
@@ -183,32 +189,27 @@ class ProjectController extends Controller
      */
     public function create_task(String $task, String $project_id)
     {
-        DB::beginTransaction();
-        try {
-            $project = Project::find($project_id);
-            if ($task == 'Request Survey') {
-                $project_survey = new Project_survey();
-                $project_survey->project_id = $project_id;
-                $project_survey->projsur_status = "Open";
-                $project_survey->save();
-                $project->proj_status = "Pra-tender";
-            } else if ($task == 'Request Penawaran') {
-                $project_offer = new Project_offer();
-                $project_offer->project_id = $project_id;
-                $project_offer->projoff_status = "Open";
-                $project_offer->save();
-                $project->proj_status = "Pra-tender";
-            }
-            $project->save();
-            DB::commit();
-            return redirect()->route('project.index')->with([
-                'status' => 'success',
-                'message' => 'Data has been updated! '
+        $project = Project::find($project_id);
+        if ($task == 'Request Survey') {
+            Project_survey::create([
+                'project_id' => $project_id,
+                'projsur_status' => 'Open',
             ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return view('error', compact('th'));
+            $project->proj_status = "Pra-tender";
+        } else if ($task == 'Request Offer Letter') {
+            Project_offer::create([
+                'project_id' => $project_id,
+                'projoff_status' => 'Open',
+            ]);
+            $project->proj_status = "Quotation";
+        } else if ($task == 'Request Sales Order') {
+            Project_sales_order::create([
+                'project_id' => $project_id,
+                'projso_status' => 'Open',
+            ]);
+            $project->proj_status = "Sales Order";
         }
+        $project->save();
     }
 
     /**
@@ -222,14 +223,6 @@ class ProjectController extends Controller
                 'proj_status' => 'Cancelled',
                 'proj_cancel_message' =>  $request->message
             ]);
-            // $project->project_survey->update([
-            //     'projsur_status' => 'Cancel',
-            //     'projsur_cancel_message' => "Project cancelled"
-            // ]);
-            // $project->project_offer->update([
-            //     'projoff_status' => 'Cancel',
-            //     'projoff_cancel_message' => "Project cancelled"
-            // ]);
             Project_survey::where('project_id', $project->id)->update([
                 'projsur_status' => 'Cancelled',
                 'projsur_cancel_message' => "Project cancelled"
@@ -237,6 +230,10 @@ class ProjectController extends Controller
             Project_offer::where('project_id', $project->id)->update([
                 'projoff_status' => 'Cancelled',
                 'projoff_cancel_message' => "Project cancelled"
+            ]);
+            Project_sales_order::where('project_id', $project->id)->update([
+                'projso_status' => 'Cancelled',
+                'projso_cancel_message' => "Project cancelled"
             ]);
             DB::commit();
             return redirect()->route('project.index')->with([

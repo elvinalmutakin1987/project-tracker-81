@@ -27,12 +27,13 @@ return new class extends Migration
             $table->enum('proj_status', [
                 'Draft',
                 'Pra-tender',
-                'Submitted',
+                'Quotation',
                 'Under Review',
                 'Shortlisted',
                 'Negotiation',
                 'Awarded',
                 'Contract Signed',
+                'Sales Order',
                 'Planning',
                 'In Progress',
                 'On Hold',
@@ -40,7 +41,7 @@ return new class extends Migration
                 'Cancelled',
                 'Completed',
                 'Closed'
-            ]);
+            ])->nullable();
             $table->longText('proj_hold_message')->nullable();
             $table->longText('proj_delayed_message')->nullable();
             $table->longText('proj_cancel_message')->nullable();

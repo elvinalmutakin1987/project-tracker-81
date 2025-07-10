@@ -25,6 +25,8 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'task_board']);
         Permission::create(['name' => 'task_board.pre_sales']);
         Permission::create(['name' => 'task_board.sales_admin']);
+        Permission::create(['name' => 'task_board.operation']);
+        Permission::create(['name' => 'task_board.finance_accounting']);
 
         Permission::create(['name' => 'report']);
 

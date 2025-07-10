@@ -39,9 +39,9 @@
                                             <option value="SLD/Topology"
                                                 {{ old('file_doc_type') == 'SLD/Topology' ? 'selected' : '' }}>
                                                 SLD/Topology</option>
-                                            <option value="RAB/BOQ/BUDGET"
-                                                {{ old('file_doc_type') == 'RAB/BOQ/BUDGET' ? 'selected' : '' }}>
-                                                RAB/BOQ/BUDGET</option>
+                                            <option value="RAB/BOQ/Budget"
+                                                {{ old('file_doc_type') == 'RAB/BOQ/Budget' ? 'selected' : '' }}>
+                                                RAB/BOQ/Budget</option>
                                             <option value="Personil"
                                                 {{ old('file_doc_type') == 'Personil' ? 'selected' : '' }}>
                                                 Personil</option>
@@ -55,6 +55,12 @@
                                     <label for="file_upload" class="col-sm-3 col-form-label">File</label>
                                     <div class="col-sm-9">
                                         <input class="form-control" type="file" id="file_upload" name="file_upload">
+                                    </div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <label for="file_link" class="col-sm-3 col-form-label">Link</label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text" id="file_link" name="file_link">
                                     </div>
                                 </div>
                             </div>

@@ -45,10 +45,18 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['middleware' => ['role_or_permission:superadmin|task_board']], function () {
         Route::get('task_board', [TaskBoardController::class, 'index'])->name('task_board.index');
         Route::get('task_board/{project}', [TaskBoardController::class, 'show'])->name('task_board.show');
-        Route::put('task_board/take-survey/{project_survey}', [TaskBoardController::class, 'take_survey'])->name('task_board.take_survey');
-        Route::put('task_board/hold-survey/{project_survey}', [TaskBoardController::class, 'hold_survey'])->name('task_board.hold_survey');
-        Route::put('task_board/finish-survey/{project_survey}', [TaskBoardController::class, 'finish_survey'])->name('task_board.finish_survey');
-        Route::get('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey'])->name('task_board.document_survey');
-        Route::put('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey_update'])->name('task_board.document_survey.update');
+
+        Route::group(['middleware' => ['role_or_permission:task_board.pre_sales']], function () {
+            Route::put('task_board/take-survey/{project_survey}', [TaskBoardController::class, 'take_survey'])->name('task_board.take_survey');
+            Route::put('task_board/hold-survey/{project_survey}', [TaskBoardController::class, 'hold_survey'])->name('task_board.hold_survey');
+            Route::put('task_board/continue-survey/{project_survey}', [TaskBoardController::class, 'continue_survey'])->name('task_board.continue_survey');
+            Route::put('task_board/finish-survey/{project_survey}', [TaskBoardController::class, 'finish_survey'])->name('task_board.finish_survey');
+            Route::get('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey'])->name('task_board.document_survey');
+            Route::put('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey_update'])->name('task_board.document_survey.update');
+        });
+
+        Route::get('task_board/download-file/{file_upload}', [TaskBoardController::class, 'document_download'])->name('task_board.document_download');
+        Route::delete('task_board/document-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
+        Route::delete('task_board/link-remove/{file_upload}', [TaskBoardController::class, 'link_remove'])->name('task_board.link_remove');
     });
 });

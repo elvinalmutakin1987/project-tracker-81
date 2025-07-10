@@ -57,6 +57,11 @@ class Project extends Model implements Auditable
         return $this->hasOne(Project_offer::class);
     }
 
+    public function project_so(): HasOne
+    {
+        return $this->hasOne(Project_sales_order::class);
+    }
+
     public function work_type(): BelongsTo
     {
         return $this->belongsTo(Work_type::class)->withDefault(['work_name' => null]);

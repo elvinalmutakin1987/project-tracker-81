@@ -153,7 +153,9 @@
                                                 </td>
                                                 <td>{{ $d->proj_finished_date ? \Carbon\Carbon::parse($d->proj_finished_date)->format('d M Y') : '-' }}
                                                 </td>
-                                                <td>{{ $d->proj_status }}</td>
+                                                <td>{{ $d->proj_status }}
+                                                    {{ $d->proj_status == 'Pra-tender' && $d->project_survey->projsur_status == 'Done' ? ' - Done' : '' }}
+                                                </td>
                                                 <td class="text-end">
                                                     @if (!in_array($d->proj_status, ['Cancelled', 'Closed']))
                                                         <div class="btn-group" role="group"
@@ -165,6 +167,12 @@
                                                                     Action
                                                                 </button>
                                                                 <ul class="dropdown-menu">
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('project.edit', $d->id) }}">
+                                                                            Edit
+                                                                        </a>
+                                                                    </li>
                                                                     @if ($d->proj_status == 'Draft')
                                                                         <li>
                                                                             <form class="d-inline"
@@ -184,12 +192,6 @@
                                                                             </form>
                                                                         </li>
                                                                         <li>
-                                                                            <a class="dropdown-item"
-                                                                                href="{{ route('project.edit', $d->id) }}">
-                                                                                Edit
-                                                                            </a>
-                                                                        </li>
-                                                                        <li>
                                                                             <form class="d-inline"
                                                                                 action="{{ route('project.destroy', $d->id) }}"
                                                                                 method="POST"
@@ -204,7 +206,7 @@
                                                                             </form>
                                                                         </li>
                                                                     @elseif($d->proj_status == 'Pra-tender')
-                                                                        @if ($d->project_survey->projsur_status == 'Finished')
+                                                                        @if ($d->project_survey->projsur_status == 'Done')
                                                                             <li>
                                                                                 <form class="d-inline"
                                                                                     action="{{ route('project.update.status', $d->id) }}"
@@ -218,30 +220,30 @@
                                                                                     <a class="dropdown-item"
                                                                                         href="#"
                                                                                         data-id="{{ $d->id }}"
-                                                                                        onclick="update_status('Request SO', {{ $d->id }}); return false;">
-                                                                                        Request Penawaran
+                                                                                        onclick="update_status('Request Offer Letter', {{ $d->id }}); return false;">
+                                                                                        Request Offer Letter
                                                                                     </a>
                                                                                 </form>
                                                                             </li>
                                                                         @endif
-                                                                        <li>
-                                                                            <form class="d-inline"
-                                                                                action="{{ route('project.cancel', $d->id) }}"
-                                                                                method="POST"
-                                                                                id="form-cancel{{ $d->id }}">
-                                                                                @csrf
-                                                                                @method('PUT')
-                                                                                <input type="hidden"
-                                                                                    id="cancel-message{{ $d->id }}"
-                                                                                    name="message">
-                                                                                <a class="dropdown-item" href="#"
-                                                                                    data-id="{{ $d->id }}"
-                                                                                    onclick="cancel({{ $d->id }}); return false;">
-                                                                                    Cancel
-                                                                                </a>
-                                                                            </form>
-                                                                        </li>
                                                                     @endif
+                                                                    <li>
+                                                                        <form class="d-inline"
+                                                                            action="{{ route('project.cancel', $d->id) }}"
+                                                                            method="POST"
+                                                                            id="form-cancel{{ $d->id }}">
+                                                                            @csrf
+                                                                            @method('PUT')
+                                                                            <input type="hidden"
+                                                                                id="cancel-message{{ $d->id }}"
+                                                                                name="message">
+                                                                            <a class="dropdown-item" href="#"
+                                                                                data-id="{{ $d->id }}"
+                                                                                onclick="cancel({{ $d->id }}); return false;">
+                                                                                Cancel
+                                                                            </a>
+                                                                        </form>
+                                                                    </li>
                                                                 </ul>
                                                             </div>
                                                         </div>

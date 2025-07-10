@@ -29,7 +29,7 @@ class User extends Authenticatable implements Auditable
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
-     */ 
+     */
     protected $fillable = [
         'name',
         'username',
@@ -66,5 +66,10 @@ class User extends Authenticatable implements Auditable
     public function project_survey(): HasMany
     {
         return $this->hasMany(Project_survey::class);
+    }
+
+    public function project_sales_order(): HasMany
+    {
+        return $this->hasMany(Project_sales_order::class);
     }
 }
