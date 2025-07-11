@@ -164,7 +164,7 @@ class ProjectController extends Controller
                 $project->proj_status = 'Pra-tender';
                 $this->create_task($request->proj_status, $project->id);
             }
-            if ($request->proj_status == 'Request Offer Letter') {
+            if ($request->proj_status == 'Request Quotation') {
                 $project->proj_status = 'Quotation';
                 $this->create_task($request->proj_status, $project->id);
             }
@@ -196,7 +196,7 @@ class ProjectController extends Controller
                 'projsur_status' => 'Open',
             ]);
             $project->proj_status = "Pra-tender";
-        } else if ($task == 'Request Offer Letter') {
+        } else if ($task == 'Request Quotation') {
             Project_offer::create([
                 'project_id' => $project_id,
                 'projoff_status' => 'Open',

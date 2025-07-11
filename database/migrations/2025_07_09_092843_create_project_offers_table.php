@@ -18,9 +18,8 @@ return new class extends Migration
             $table->timestamp('projoff_started_at')->nullable();
             $table->timestamp('projoff_finished_at')->nullable();
             $table->string('projoff_grand_total', 16)->nullable();
-            $table->string('projoff_so_number', 20)->nullable();
-            $table->string('projoff_po_customer', 20)->nullable();
-            $table->string('projoff_contract_number', 20)->nullable();
+            $table->string('projoff_offer_number', 20)->nullable();
+            $table->string('projoff_quotation', 1)->nullable();
             $table->enum('projoff_status', [
                 'Open',
                 'Started',

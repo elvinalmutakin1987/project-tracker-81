@@ -44,7 +44,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Work Type</td>
-                                        <td>{{ $project->proj_work_type }}</td>
+                                        <td>{{ $project->work_type->work_name }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Project Leader</td>
@@ -65,11 +65,11 @@
                                         <td>{!! $project->proj_notes !!}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Document</td>
+                                        <td class="fw-bold table-light">Pre-tender</td>
                                         <td style="padding:0">
-                                            <table class="table table-bordered" style="margin:0;">
+                                            <table class="table table-borderless" style="margin:0;">
                                                 <tr>
-                                                    <th class="table-light" style="width: 15%">Type</th>
+                                                    <th class="table-light" style="width: 15%">Document</th>
                                                     <th class="table-light" style="width: 10%">Status</th>
                                                     <th class="table-light" style="width: 25%">File</th>
                                                     <th class="table-light" style="width: 50%">Link</th>
@@ -86,8 +86,8 @@
                                                 @endphp
                                                 @foreach ($doc_type as $type)
                                                     <tr>
-                                                        <td>{{ $type }}</td>
-                                                        <td>
+                                                        <td style="vertical-align: top">{{ $type }}</td>
+                                                        <td style="vertical-align: top">
                                                             @php
                                                                 $doc_status = 0;
                                                                 if (
@@ -142,139 +142,248 @@
                                                                 </span>
                                                             @endif
                                                         </td>
-                                                        <td>
-                                                            @php
-                                                                $file_upload = File_upload::where(
-                                                                    'file_doc_type',
-                                                                    $type,
-                                                                )
-                                                                    ->where('file_table', 'project_survey')
-                                                                    ->where(
-                                                                        'file_table_id',
-                                                                        $project->project_survey->id,
+                                                        <td style="vertical-align: top">
+                                                            @if ($project->project_survey)
+                                                                @php
+                                                                    $file_upload = File_upload::where(
+                                                                        'file_doc_type',
+                                                                        $type,
                                                                     )
-                                                                    ->get();
-                                                            @endphp
-                                                            <table class="w-100">
-                                                                @foreach ($file_upload as $d)
-                                                                    @if ($d->file_real_name)
-                                                                        <tr>
-                                                                            <td>
-                                                                                <table class="w-100">
-                                                                                    <tr>
-                                                                                        <td class="align-top"
-                                                                                            style="width: 25px">
-                                                                                            @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
-                                                                                                <form class="d-inline"
-                                                                                                    action="{{ route('task_board.document_remove', $d->id) }}"
-                                                                                                    method="POST"
-                                                                                                    id="form-delete{{ $d->id }}">
-                                                                                                    @csrf
-                                                                                                    @method('DELETE')
-                                                                                                    <input type="hidden"
-                                                                                                        name="assignee"
-                                                                                                        value="pre-sales">
-                                                                                                    <a href=""
-                                                                                                        onclick="document_remove({{ $d->id }}); return false;">
-                                                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                                            width="16"
-                                                                                                            height="16"
-                                                                                                            fill="currentColor"
-                                                                                                            class="bi bi-trash"
-                                                                                                            viewBox="0 0 16 16">
-                                                                                                            <path
-                                                                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                                                                                                            <path
-                                                                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                                                                                                        </svg>
-                                                                                                    </a>
-                                                                                                </form>
-                                                                                            @endif
-                                                                                        </td>
-                                                                                        <td class="align-top">
-                                                                                            <a href="{{ route('task_board.document_download', $d->id) }}"
-                                                                                                target="_blank">{{ $d->file_real_name }}</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
+                                                                        ->where('file_table', 'project_survey')
+                                                                        ->where(
+                                                                            'file_table_id',
+                                                                            $project->project_survey->id,
+                                                                        )
+                                                                        ->get();
+                                                                @endphp
+                                                                <table class="w-100">
+                                                                    @if ($file_upload)
+                                                                        @foreach ($file_upload as $d)
+                                                                            @if ($d->file_real_name)
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <table class="w-100">
+                                                                                            <tr>
+                                                                                                <td class="align-top"
+                                                                                                    style="width: 25px">
+                                                                                                    @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
+                                                                                                        <form
+                                                                                                            class="d-inline"
+                                                                                                            action="{{ route('task_board.document_remove', $d->id) }}"
+                                                                                                            method="POST"
+                                                                                                            id="form-delete{{ $d->id }}">
+                                                                                                            @csrf
+                                                                                                            @method('DELETE')
+                                                                                                            <input
+                                                                                                                type="hidden"
+                                                                                                                name="assignee"
+                                                                                                                value="pre-sales">
+                                                                                                            <a href=""
+                                                                                                                onclick="document_remove({{ $d->id }}); return false;">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                                    width="16"
+                                                                                                                    height="16"
+                                                                                                                    fill="currentColor"
+                                                                                                                    class="bi bi-trash"
+                                                                                                                    viewBox="0 0 16 16"
+                                                                                                                    style="color:red">
+                                                                                                                    <path
+                                                                                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                                    <path
+                                                                                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                                </svg>
+                                                                                                            </a>
+                                                                                                        </form>
+                                                                                                    @endif
+                                                                                                </td>
+                                                                                                <td class="align-top">
+                                                                                                    <a href="{{ route('task_board.document_download', $d->id) }}"
+                                                                                                        target="_blank">{{ $d->file_real_name }}</a>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endif
+                                                                        @endforeach
                                                                     @endif
-                                                                @endforeach
-                                                            </table>
+                                                                </table>
+                                                            @endif
                                                         </td>
-                                                        <td>
-                                                            @php
-                                                                $file_upload = File_upload::where(
-                                                                    'file_doc_type',
-                                                                    $type,
-                                                                )
-                                                                    ->where('file_table', 'project_survey')
-                                                                    ->where(
-                                                                        'file_table_id',
-                                                                        $project->project_survey->id,
+                                                        <td style="vertical-align: top">
+                                                            @if ($project->project_survey)
+                                                                @php
+                                                                    $file_upload = File_upload::where(
+                                                                        'file_doc_type',
+                                                                        $type,
                                                                     )
-                                                                    ->get();
-                                                            @endphp
-                                                            <table class="w-100">
-                                                                @foreach ($file_upload as $d)
-                                                                    @if ($d->file_link)
-                                                                        <tr>
-                                                                            <td>
-                                                                                <table class="w-100">
-                                                                                    <tr>
-                                                                                        <td class="align-top"
-                                                                                            style="width:25px">
-                                                                                            @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
-                                                                                                <form class="d-inline"
-                                                                                                    action="{{ route('task_board.link_remove', $d->id) }}"
-                                                                                                    method="POST"
-                                                                                                    id="form-delete{{ $d->id }}link">
-                                                                                                    @csrf
-                                                                                                    @method('DELETE')
-                                                                                                    <input type="hidden"
-                                                                                                        name="assignee"
-                                                                                                        value="pre-sales">
-                                                                                                    <a href=""
-                                                                                                        onclick="link_remove({{ $d->id }}); return false;">
-                                                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                                            width="16"
-                                                                                                            height="16"
-                                                                                                            fill="currentColor"
-                                                                                                            class="bi bi-trash"
-                                                                                                            viewBox="0 0 16 16">
-                                                                                                            <path
-                                                                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
-                                                                                                            <path
-                                                                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
-                                                                                                        </svg>
-                                                                                                    </a>
-                                                                                                </form>
-                                                                                            @endif
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            <a href="{{ $d->file_link }}"
-                                                                                                target="_blank">{{ $d->file_link }}</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endif
-                                                                @endforeach
-                                                            </table>
+                                                                        ->where('file_table', 'project_survey')
+                                                                        ->where(
+                                                                            'file_table_id',
+                                                                            $project->project_survey->id,
+                                                                        )
+                                                                        ->get();
+                                                                @endphp
+                                                                <table class="w-100">
+                                                                    @foreach ($file_upload as $d)
+                                                                        @if ($d->file_link)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <table class="w-100">
+                                                                                        <tr>
+                                                                                            <td class="align-top"
+                                                                                                style="width:25px">
+                                                                                                @if ($project->project_survey->projsur_status != 'Done' && $project->project_survey->user_id == auth()->user()->id)
+                                                                                                    <form class="d-inline"
+                                                                                                        action="{{ route('task_board.link_remove', $d->id) }}"
+                                                                                                        method="POST"
+                                                                                                        id="form-delete{{ $d->id }}link">
+                                                                                                        @csrf
+                                                                                                        @method('DELETE')
+                                                                                                        <input
+                                                                                                            type="hidden"
+                                                                                                            name="assignee"
+                                                                                                            value="pre-sales">
+                                                                                                        <a href=""
+                                                                                                            onclick="link_remove({{ $d->id }}); return false;">
+                                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                                width="16"
+                                                                                                                height="16"
+                                                                                                                fill="currentColor"
+                                                                                                                class="bi bi-trash"
+                                                                                                                viewBox="0 0 16 16"
+                                                                                                                style="color:red">
+                                                                                                                <path
+                                                                                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                                <path
+                                                                                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                            </svg>
+                                                                                                        </a>
+                                                                                                    </form>
+                                                                                                @endif
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <a href="{{ $d->file_link }}"
+                                                                                                    target="_blank">{{ $d->file_link }}</a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </table>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                             </table>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td class="fw-bold table-light">Quotation</td>
+                                        <td>
+                                            <table class="w-100" style="margin:0;">
+                                                <tr>
+                                                    <td style="width: 15%; vertical-align: top">
+                                                        @if (isset($project->project_offer->projoff_offer_number))
+                                                            {{ $project->project_offer->projoff_offer_number }}
+                                                        @else
+                                                            <span class="badge text-bg-danger rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-x"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                </svg>
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($project->project_offer)
+                                                            @php
+                                                                $file_upload = File_upload::where(
+                                                                    'file_doc_type',
+                                                                    'Sales Quotation',
+                                                                )
+                                                                    ->where('file_table', 'project_offer')
+                                                                    ->where(
+                                                                        'file_table_id',
+                                                                        $project->project_offer->id,
+                                                                    )
+                                                                    ->get();
+                                                            @endphp
+                                                            @if ($file_upload)
+                                                                @foreach ($file_upload as $d)
+                                                                    @if ($d->file_real_name)
+                                                                        <table class="w-100">
+                                                                            <tr>
+                                                                                <td class="align-top" style="width: 25px">
+                                                                                    @if ($project->project_offer->projoff_status != 'Done' && $project->project_offer->user_id == auth()->user()->id)
+                                                                                        <form class="d-inline"
+                                                                                            action="{{ route('task_board.document_remove', $d->id) }}"
+                                                                                            method="POST"
+                                                                                            id="form-delete{{ $d->id }}">
+                                                                                            @csrf
+                                                                                            @method('DELETE')
+                                                                                            <input type="hidden"
+                                                                                                name="assignee"
+                                                                                                value="pre-sales">
+                                                                                            <a href=""
+                                                                                                onclick="document_remove({{ $d->id }}); return false;">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                    width="16"
+                                                                                                    height="16"
+                                                                                                    fill="currentColor"
+                                                                                                    class="bi bi-trash"
+                                                                                                    viewBox="0 0 16 16"
+                                                                                                    style="color:red">
+                                                                                                    <path
+                                                                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                    <path
+                                                                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                </svg>
+                                                                                            </a>
+                                                                                        </form>
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td class="align-top">
+                                                                                    <a href="{{ route('task_board.document_download', $d->id) }}"
+                                                                                        target="_blank">{{ $d->file_real_name }}</a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    @endif
+                                                                @endforeach
+                                                            @endif
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold table-light">Sales Order</td>
+                                        <td>
+                                            @if (isset($project->project_sales_order->projoff_so_number))
+                                                {{ $project->project_sales_order->projoff_so_number }}
+                                            @else
+                                                <span class="badge text-bg-danger rounded-pill">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                    </svg>
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="card-footer">
-                            <a class="btn btn-secondary" href="{{ route('task_board.index', ['assignee' => $assignee]) }}"
-                                role="button">Back</a>
+                            <a class="btn btn-secondary"
+                                href="{{ route('task_board.index', ['assignee' => $assignee]) }}" role="button">Back</a>
                         </div>
                     </div>
                 </main>

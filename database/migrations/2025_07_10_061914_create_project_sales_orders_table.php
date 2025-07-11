@@ -17,7 +17,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamp('projso_started_at')->nullable();
             $table->timestamp('projso_finished_at')->nullable();
-            $table->enum('projsur_status', [
+            $table->string('projso_grand_total', 16)->nullable();
+            $table->string('projso_so_number', 20)->nullable();
+            $table->string('projso_po_number', 20)->nullable();
+            $table->enum('projso_status', [
                 'Open',
                 'Started',
                 'Hold',

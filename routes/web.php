@@ -55,6 +55,16 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey_update'])->name('task_board.document_survey.update');
         });
 
+        Route::group(['middleware' => ['role_or_permission:task_board.sales_admin']], function () {
+            Route::put('task_board/take-offer/{project_offer}', [TaskBoardController::class, 'take_offer'])->name('task_board.take_offer');
+            Route::put('task_board/hold-offer/{project_offer}', [TaskBoardController::class, 'hold_offer'])->name('task_board.hold_offer');
+            Route::put('task_board/continue-offer/{project_offer}', [TaskBoardController::class, 'continue_offer'])->name('task_board.continue_offer');
+            Route::put('task_board/approval-offer/{project_offer}', [TaskBoardController::class, 'approval_offer'])->name('task_board.approval_offer');
+            Route::put('task_board/finish-offer/{project_offer}', [TaskBoardController::class, 'finish_offer'])->name('task_board.finish_offer');
+            Route::get('task_board/document-offer/{project_offer}', [TaskBoardController::class, 'document_offer'])->name('task_board.document_offer');
+            Route::put('task_board/document-offer/{project_offer}', [TaskBoardController::class, 'document_offer_update'])->name('task_board.document_offer.update');
+        });
+
         Route::get('task_board/download-file/{file_upload}', [TaskBoardController::class, 'document_download'])->name('task_board.document_download');
         Route::delete('task_board/document-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
         Route::delete('task_board/link-remove/{file_upload}', [TaskBoardController::class, 'link_remove'])->name('task_board.link_remove');

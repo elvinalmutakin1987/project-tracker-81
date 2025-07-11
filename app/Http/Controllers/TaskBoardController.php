@@ -25,12 +25,55 @@ class TaskBoardController extends Controller
         if ($request->has('assignee')) {
             $assignee = $request->assignee;
         }
-        $project_survey = Project_survey::all();
-        $project_offer = Project_offer::all();
-        $project_sales_order = Project_sales_order::all();
+        $doc_type = "quotation";
+        if ($request->has('doc_type')) {
+            $doc_type = $request->doc_type;
+        }
+        $show = 10;
+        if ($request->show && $request->show != '5') {
+            $show = $request->show;
+        }
+        /**
+         * Survey
+         */
+        $project_survey = Project_survey::leftJoin('projects', 'projects.id', '=', 'project_surveys.project_id')
+            ->where('proj_number', 'like', '%' . $request->search . '%');
+        if ($request->status && $request->status != 'All') {
+            $project_survey = $project_survey->where('projsur_status', $request->status);
+        }
+        $project_survey = $project_survey->paginate($show, ['*'], 'page', $request->page ?? 1)
+            ->onEachSide(0)
+            ->appends(request()->except('page'));
+        /**
+         * Offer
+         */
+        $project_offer = Project_offer::leftJoin('projects', 'projects.id', '=', 'project_offers.project_id')
+            ->where('proj_number', 'like', '%' . $request->search . '%');
+        if ($request->status && $request->status != 'All') {
+            $project_offer = $project_offer->where('projoff_status', $request->status);
+        }
+        $project_offer = $project_offer->paginate($show, ['*'], 'page', $request->page ?? 1)
+            ->onEachSide(0)
+            ->appends(request()->except('page'));
+        /**
+         * Sales Order
+         */
+        $project_sales_order = Project_sales_order::leftJoin('projects', 'projects.id', '=', 'project_sales_orders.project_id')
+            ->where('proj_number', 'like', '%' . $request->search . '%');
+        if ($request->status && $request->status != 'All') {
+            $project_sales_order = $project_sales_order->where('projso_status', $request->status);
+        }
+        $project_sales_order = $project_sales_order->paginate($show, ['*'], 'page', $request->page ?? 1)
+            ->onEachSide(0)
+            ->appends(request()->except('page'));
+
         if ($assignee == 'pre-sales') {
             $view = 'task_board.pre_sales';
-            if (Auth::user()->hasPermissionTo('task_board.pre_sales')) {
+            $table = view('task_board.table_survey', compact('project_survey', 'assignee'));
+            /**
+             * cek hak akses
+             */
+            if (!Auth::user()->hasPermissionTo('task_board.pre_sales')) {
                 return view('error', [
                     'message' => "You’re not authorized to view this page."
                 ]);
@@ -38,14 +81,49 @@ class TaskBoardController extends Controller
         }
         if ($assignee == 'sales-admin') {
             $view = 'task_board.sales_admin';
+            if ($doc_type == 'quotation') {
+                $table = view('task_board.table_offer', compact('project_offer', 'assignee'));
+            }
+            if ($doc_type == 'sales-order') {
+                $table = view('task_board.table_so', compact('project_sales_order', 'assignee'));
+            }
+            if ($doc_type == 'work-order') {
+                $table = view('task_board.table_wo', compact('project_work_order', 'assignee'));
+            }
+            /**
+             * cek hak akses
+             */
+            if (!Auth::user()->hasPermissionTo('task_board.sales_admin')) {
+                return view('error', [
+                    'message' => "You’re not authorized to view this page."
+                ]);
+            }
         }
         if ($assignee == 'operation') {
             $view = 'task_board.operation';
+            $table = view('task_board.table_operation', compact('project_operation', 'assignee'));
+            /**
+             * cek hak akses
+             */
+            if (!Auth::user()->hasPermissionTo('task_board.operation')) {
+                return view('error', [
+                    'message' => "You’re not authorized to view this page."
+                ]);
+            }
         }
         if ($assignee == 'finance-accounting') {
+            /**
+             * cek hak akses
+             */
+            if (!Auth::user()->hasPermissionTo('task_board.finance-accounting')) {
+                return view('error', [
+                    'message' => "You’re not authorized to view this page."
+                ]);
+            }
             $view = 'task_board.finance_accounting';
         }
-        return view($view, compact('project_survey', 'project_offer', 'assignee'));
+        $tab = view('task_board.tab', compact('project_survey', 'project_offer', 'project_sales_order', 'assignee'));
+        return view($view, compact('project_survey', 'project_offer', 'project_sales_order', 'assignee', 'tab', 'table'));
     }
 
     public function show(Request $request, Project $project)
@@ -62,7 +140,13 @@ class TaskBoardController extends Controller
     {
         DB::beginTransaction();
         try {
-            $project_survey->update([
+            if ($project_survey->user_id != null) {
+                return view('error', [
+                    'message' => "Task has been picked up."
+                ]);
+            }
+            $survey = Project_survey::where('id', $project_survey->id)->lockForUpdate()->first();
+            $survey->update([
                 'user_id' => Auth::user()->id,
                 'projsur_started_at' => Carbon::now(),
                 'projsur_status' => "Started"
@@ -195,7 +279,150 @@ class TaskBoardController extends Controller
     /**
      * Sales Admin
      */
-    public function take_offering(Request $request, Project_survey $project_offer) {}
+    public function take_offer(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            if ($project_offer->user_id != null) {
+                return view('error', [
+                    'message' => "Task has been picked up."
+                ]);
+            }
+            $offer = Project_offer::where('id', $project_offer->id)->lockForUpdate()->first();
+            $offer->update([
+                'user_id' => Auth::user()->id,
+                'projoff_started_at' => Carbon::now(),
+                'projoff_status' => "Started"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been taken! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function hold_offer(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            $project_offer->update([
+                'projoff_status' => "Hold",
+                'projoff_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function continue_offer(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            $project_offer->update([
+                'projoff_status' => "Started",
+                'projoff_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function approval_offer(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            $project_offer->update([
+                'projoff_status' => "Approval"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function finish_offer(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            $project_offer->update([
+                'projoff_offer_number' => $request->projoff_offer_number,
+                'projoff_status' => "Done",
+                'projoff_finished_at' => Carbon::now(),
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function document_offer(Request $request, Project_offer $project_offer)
+    {
+        return view('task_board.document_offer', compact('project_offer'));
+    }
+
+    public function document_offer_update(Request $request, Project_offer $project_offer)
+    {
+        DB::beginTransaction();
+        try {
+            $file_upload = new File_upload();
+            $file_upload->file_doc_type = $request->file_doc_type;
+            $file_upload->file_table = 'project_offer';
+            $file_upload->file_table_id = $project_offer->id;
+            if ($request->has('file_upload')) {
+                $file = $request->file('file_upload');
+                $file_real_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $file_directory = "salesadmin";
+                $file_name = Str::random(24) . "." . $file_ext;
+                Storage::disk('local')->put($file_directory . '/' . $file_name, file_get_contents($request->file('file_upload')->getRealPath()));
+                $file_upload->file_directory = $file_directory;
+                $file_upload->file_name = $file_name;
+                $file_upload->file_real_name = $file_real_name;
+                $file_upload->file_ext = $file_ext;
+            }
+            $file_upload->file_link = $request->file_link;
+            $file_upload->save();
+            if ($request->file_doc_type == 'Sales Quotation') {
+                $project_offer->projoff_quotation = 1;
+            }
+            $project_offer->save();
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'sales-admin'])->with([
+                'status' => 'success',
+                'message' => 'Data has been uploaded! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
 
     public function take_salesorder(Request $request, Project_survey $project_offer) {}
 
@@ -247,7 +474,16 @@ class TaskBoardController extends Controller
                 $this->set_document_to_null($file_doc_type, $file_table, $file_table_id);
             }
             DB::commit();
-            return redirect()->route('task_board.show', $file_table_id)->with([
+            if ($file_table == 'project_survey') {
+                $assignee = 'pre-sales';
+            } elseif ($file_table == 'project_offer' || $file_table == 'project_sales_order') {
+                $assignee = 'sales-admin';
+            } elseif ($file_table == 'operational') {
+                $assignee = 'operational';
+            } elseif ($file_table == 'invoice_dp' || $file_table == 'invoice') {
+                $assignee = 'finance-accounting';
+            }
+            return redirect()->route('task_board.show', ['project' => $file_table_id, 'assignee' => $assignee])->with([
                 'status' => 'success',
                 'message' => 'Data has been updated! '
             ]);

@@ -154,7 +154,8 @@
                                                 <td>{{ $d->proj_finished_date ? \Carbon\Carbon::parse($d->proj_finished_date)->format('d M Y') : '-' }}
                                                 </td>
                                                 <td>{{ $d->proj_status }}
-                                                    {{ $d->proj_status == 'Pra-tender' && $d->project_survey->projsur_status == 'Done' ? ' - Done' : '' }}
+                                                    {{ $d->proj_status == 'Pra-tender' && $d->project_survey->projsur_status ? ' - ' . $d->project_survey->projsur_status : '' }}
+                                                    {{ $d->proj_status == 'Quotation' && $d->project_offer->projoff_status ? ' - ' . $d->project_offer->projoff_status : '' }}
                                                 </td>
                                                 <td class="text-end">
                                                     @if (!in_array($d->proj_status, ['Cancelled', 'Closed']))
@@ -220,30 +221,30 @@
                                                                                     <a class="dropdown-item"
                                                                                         href="#"
                                                                                         data-id="{{ $d->id }}"
-                                                                                        onclick="update_status('Request Offer Letter', {{ $d->id }}); return false;">
-                                                                                        Request Offer Letter
+                                                                                        onclick="update_status('Request Quotation', {{ $d->id }}); return false;">
+                                                                                        Request Quotation
                                                                                     </a>
                                                                                 </form>
                                                                             </li>
                                                                         @endif
+                                                                        <li>
+                                                                            <form class="d-inline"
+                                                                                action="{{ route('project.cancel', $d->id) }}"
+                                                                                method="POST"
+                                                                                id="form-cancel{{ $d->id }}">
+                                                                                @csrf
+                                                                                @method('PUT')
+                                                                                <input type="hidden"
+                                                                                    id="cancel-message{{ $d->id }}"
+                                                                                    name="message">
+                                                                                <a class="dropdown-item" href="#"
+                                                                                    data-id="{{ $d->id }}"
+                                                                                    onclick="cancel({{ $d->id }}); return false;">
+                                                                                    Cancel
+                                                                                </a>
+                                                                            </form>
+                                                                        </li>
                                                                     @endif
-                                                                    <li>
-                                                                        <form class="d-inline"
-                                                                            action="{{ route('project.cancel', $d->id) }}"
-                                                                            method="POST"
-                                                                            id="form-cancel{{ $d->id }}">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            <input type="hidden"
-                                                                                id="cancel-message{{ $d->id }}"
-                                                                                name="message">
-                                                                            <a class="dropdown-item" href="#"
-                                                                                data-id="{{ $d->id }}"
-                                                                                onclick="cancel({{ $d->id }}); return false;">
-                                                                                Cancel
-                                                                            </a>
-                                                                        </form>
-                                                                    </li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -345,7 +346,6 @@
                 text: "The process will enter " + status + "!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!"
             }).then((result) => {

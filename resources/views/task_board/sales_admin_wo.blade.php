@@ -22,14 +22,12 @@
                 <main>
                     {!! $tab !!}
 
-
                     {!! $table !!}
                 </main>
             </div>
         </div>
     </div>
 @endsection
-
 
 @push('javascript')
     <script>
@@ -64,11 +62,13 @@
                     'search' => '_search',
                     'status' => '_status',
                     'show' => '_show',
-                    'assignee' => 'pre-sales',
+                    'assignee' => 'sales-admin',
+                    'doc_type' => '_doc_type',
                 ]) !!}`
             url = url.replace('_search', $("#search").val())
             url = url.replace('_status', $("#status").val())
             url = url.replace('_show', $("#show").val())
+            url = url.replace('_doc_type', $("#doc_type").val())
             window.open(url, '_self')
         }
 
@@ -111,6 +111,21 @@
             });
         }
 
+        function approval(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Great job!",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, do it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-hold' + id + 'approval').submit();
+                }
+            });
+        }
+
         function finish(id) {
             Swal.fire({
                 title: "Are you sure?",
@@ -118,9 +133,20 @@
                 icon: "warning",
                 showCancelButton: true,
                 cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, do it!"
+                confirmButtonText: "Yes, do it!",
+                input: "text",
+                inputPlaceholder: "Type offer number here...",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    if (result.value == '') {
+                        Swal.fire({
+                            title: "Required Field!",
+                            text: "Please fill out this field",
+                            icon: "warning"
+                        });
+                        return false;
+                    }
+                    document.getElementById('finish-message' + id).value = result.value;
                     document.getElementById('form-finish' + id).submit();
                 }
             });

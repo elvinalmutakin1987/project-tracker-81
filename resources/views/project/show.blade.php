@@ -43,7 +43,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Work Type</td>
-                                        <td>{{ $project->proj_work_type }}</td>
+                                        <td>{{ $project->work_type->work_name }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Project Leader</td>
@@ -67,7 +67,7 @@
                                         <td class="fw-bold table-light">Document</td>
                                         <td style="padding:0">
                                             @if ($project->project_survey)
-                                                <table class="table table-bordered" style="margin:0;">
+                                                <table class="table table-borderless" style="margin:0;">
                                                     <tr>
                                                         <th class="table-light" style="width: 15%">Type</th>
                                                         <th class="table-light" style="width: 10%">Status</th>
