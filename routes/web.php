@@ -1,8 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\HelperController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TaskBoardController;
@@ -69,4 +73,19 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('task_board/document-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
         Route::delete('task_board/link-remove/{file_upload}', [TaskBoardController::class, 'link_remove'])->name('task_board.link_remove');
     });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|role']], function () {
+        Route::resource('role', RoleController::class)->names('role');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|brand']], function () {
+        Route::resource('brand', BrandController::class)->names('brand');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|customer']], function () {
+        Route::resource('customer', CustomerController::class)->names('customer');
+    });
+
+    Route::get('get_file_pdf', [HelperController::class, 'get_file_pdf'])->name('get_file_pdf');
+    Route::get('get_file_image', [HelperController::class, 'get_file_image'])->name('get_file_image');
 });

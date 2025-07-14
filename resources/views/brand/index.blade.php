@@ -9,7 +9,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('setting') }}">Setting</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Work Type</li>
+                    <li class="breadcrumb-item active" aria-current="page">Brand</li>
                 </ol>
             </nav>
 
@@ -20,14 +20,14 @@
                     <div class="row g-25 mb-2">
                         <div class="d-flex flex-row gap-2">
                             <div class="flex-fill w-100">
-                                <a class="btn btn-success"href="{{ route('work_type.create') }}" role="button">
+                                <a class="btn btn-success"href="{{ route('brand.create') }}" role="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16"
                                         height="16" fill="currentColor" aria-hidden="true">
                                         <!-- Font Awesome Free 6.7.2: Plus Icon -->
                                         <path
                                             d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
                                     </svg>
-                                    Create New Work Type
+                                    Create New Brand
                                 </a>
                             </div>
                         </div>
@@ -71,14 +71,14 @@
                                     </tr>
                                 </thead>
                                 <tbody class="table-group-divider">
-                                    @if ($work_type->count() == 0)
+                                    @if ($brand->count() == 0)
                                         <tr>
-                                            <td colspan="2" class="text-center">No data displayed</td>
+                                            <td colspan="100%" class="text-center">No data displayed</td>
                                         </tr>
                                     @else
-                                        @foreach ($work_type as $d)
+                                        @foreach ($brand as $d)
                                             <tr>
-                                                <td>{{ $d->work_name }}</td>
+                                                <td>{{ $d->brand_name }}</td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group"
                                                         aria-label="Button group with nested dropdown">
@@ -91,13 +91,13 @@
                                                             <ul class="dropdown-menu">
                                                                 <li>
                                                                     <a class="dropdown-item"
-                                                                        href="{{ route('work_type.edit', $d->id) }}">
+                                                                        href="{{ route('brand.edit', $d->id) }}">
                                                                         Edit
                                                                     </a>
                                                                 </li>
                                                                 <li>
                                                                     <form class="d-inline"
-                                                                        action="{{ route('work_type.destroy', $d->id) }}"
+                                                                        action="{{ route('brand.destroy', $d->id) }}"
                                                                         method="POST" id="form-delete{{ $d->id }}">
                                                                         @csrf
                                                                         @method('DELETE')
@@ -118,7 +118,7 @@
                                 </tbody>
                             </table>
                             <nav>
-                                {{ $work_type->links('pagination::bootstrap-5') }}
+                                {{ $brand->links('pagination::bootstrap-5') }}
                             </nav>
                         </div>
                     </div>
@@ -149,7 +149,7 @@
 
         function search() {
             var url =
-                `{!! route('work_type.index', [
+                `{!! route('brand.index', [
                     'search' => '_search',
                     'show' => '_show',
                 ]) !!}`

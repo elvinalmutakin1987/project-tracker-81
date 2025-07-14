@@ -29,7 +29,10 @@ return new class extends Migration
                 'BAST',
                 'BAP',
                 'BAT',
-                'BATC'
+                'BATC',
+                'KTP',
+                'NPWP',
+                'NIB'
             ])->nullable();
             $table->string('file_table', 50)->nullable();
             $table->string('file_table_id', 20)->nullable();

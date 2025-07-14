@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document_number;
+use App\Models\File_upload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class HelperController extends Controller
 {
@@ -30,7 +32,7 @@ class HelperController extends Controller
                 $initials .= strtoupper($word[0]);
             }
         }
-        $number = $project_number . '-' . $year . '-' . str_pad($prefix, 3, '0', STR_PAD_LEFT);
+        $number = $project_number; // . '-' . $year . '-' . str_pad($prefix, 3, '0', STR_PAD_LEFT);
         if ($type == 'auto') {
             $number = $initials . '-' . $year . '-' . str_pad($prefix, 3, '0', STR_PAD_LEFT);
         }
@@ -43,5 +45,23 @@ class HelperController extends Controller
         $document_number->year = $year;
         $document_number->save();
         return $number;
+    }
+
+    public function get_file_pdf(Request $request)
+    {
+        $file_upload = File_upload::find($request->file_upload_id);
+        $pathFile = storage_path('app/' . $file_upload->file_directory . '/' . $file_upload->file_name);
+        return Response::file($pathFile, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
+    public function get_file_image(Request $request)
+    {
+        $file_upload = File_upload::find($request->file_upload_id);
+        $pathFile = storage_path('app/' . $file_upload->file_directory . '/' . $file_upload->file_name);
+        return Response::file($pathFile, [
+            'Content-Type' => 'image/jpeg',
+        ]);
     }
 }

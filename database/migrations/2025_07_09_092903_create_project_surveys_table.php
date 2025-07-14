@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('projsur_schedule', 1)->nullable();
             $table->enum('projsur_status', [
                 'Open',
+                'Not Started',
                 'Started',
                 'Hold',
                 'Cancelled',

@@ -31,6 +31,9 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'report']);
 
         Permission::create(['name' => 'setting']);
+        Permission::create(['name' => 'setting.brand']);
+        Permission::create(['name' => 'setting.customer']);
+        Permission::create(['name' => 'setting.customer.partnership']);
         Permission::create(['name' => 'setting.work_type']);
         Permission::create(['name' => 'setting.role']);
         Permission::create(['name' => 'setting.user']);

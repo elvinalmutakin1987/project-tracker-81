@@ -9,7 +9,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('setting') }}">Setting</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Work Type</li>
+                    <li class="breadcrumb-item active" aria-current="page">Customer</li>
                 </ol>
             </nav>
 
@@ -20,14 +20,14 @@
                     <div class="row g-25 mb-2">
                         <div class="d-flex flex-row gap-2">
                             <div class="flex-fill w-100">
-                                <a class="btn btn-success"href="{{ route('work_type.create') }}" role="button">
+                                <a class="btn btn-success"href="{{ route('customer.create') }}" role="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="16"
                                         height="16" fill="currentColor" aria-hidden="true">
                                         <!-- Font Awesome Free 6.7.2: Plus Icon -->
                                         <path
                                             d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32v144H48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144v144c0 17.7 14.3 32 32 32s32-14.3 32-32V288h144c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
                                     </svg>
-                                    Create New Work Type
+                                    Create New Customer
                                 </a>
                             </div>
                         </div>
@@ -35,11 +35,28 @@
                     <div class="row g-5">
                         <div class="d-flex flex-row gap-2">
                             <div class="flex-fill w-100">
+                                <label for="cust_type" class="form-label">Type</label>
+                                <select class="form-select flex-fill" id="cust_type" name="cust_type">
+                                    <option value="All" {{ request()->get('cust_type') == 'All' ? 'selected' : '' }}>
+                                        All</option>
+                                    <option value="EU" {{ request()->get('cust_type') == 'EU' ? 'selected' : '' }}>
+                                        EU</option>
+                                    <option value="KT" {{ request()->get('cust_type') == 'KT' ? 'selected' : '' }}>
+                                        KT</option>
+                                    <option value="ME" {{ request()->get('cust_type') == 'ME' ? 'selected' : '' }}>
+                                        ME</option>
+                                    <option value="SI" {{ request()->get('cust_type') == 'SI' ? 'selected' : '' }}>
+                                        SI</option>
+                                    <option value="R" {{ request()->get('cust_type') == 'R' ? 'selected' : '' }}>
+                                        R</option>
+                                </select>
+                            </div>
+                            <div class="flex-fill w-100">
                                 <label for="search" class="form-label">Name</label>
                                 <input type="text" id="search" name="search" class="form-control" placeholder=""
                                     value="{{ request()->get('search') }}">
                             </div>
-                            <div class="flex-fill" style="width: 8%">
+                            <div class="flex-fill" style="width: 10%">
                                 <label for="show" class="form-label">Show</label>
                                 <select class="form-select" id="show" name="show">
                                     {{-- <option value="5" {{ request()->get('show') == '5' ? 'selected' : '' }}>
@@ -67,18 +84,26 @@
                                 <thead class="table-group-divider">
                                     <tr>
                                         <th>Name</th>
+                                        <th>Address</th>
+                                        <th>Director Name</th>
+                                        <th>Email</th>
+                                        <th>Type</th>
                                         <th class="text-end" style="width: 10%">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-group-divider">
-                                    @if ($work_type->count() == 0)
+                                    @if ($customer->count() == 0)
                                         <tr>
-                                            <td colspan="2" class="text-center">No data displayed</td>
+                                            <td colspan="100%" class="text-center">No data displayed</td>
                                         </tr>
                                     @else
-                                        @foreach ($work_type as $d)
+                                        @foreach ($customer as $d)
                                             <tr>
-                                                <td>{{ $d->work_name }}</td>
+                                                <td>{{ $d->cust_name }}</td>
+                                                <td>{{ $d->cust_address }}</td>
+                                                <td>{{ $d->cust_director_name }}</td>
+                                                <td>{{ $d->cust_email }}</td>
+                                                <td>{{ $d->cust_type }}</td>
                                                 <td class="text-end">
                                                     <div class="btn-group" role="group"
                                                         aria-label="Button group with nested dropdown">
@@ -91,13 +116,13 @@
                                                             <ul class="dropdown-menu">
                                                                 <li>
                                                                     <a class="dropdown-item"
-                                                                        href="{{ route('work_type.edit', $d->id) }}">
+                                                                        href="{{ route('customer.edit', $d->id) }}">
                                                                         Edit
                                                                     </a>
                                                                 </li>
                                                                 <li>
                                                                     <form class="d-inline"
-                                                                        action="{{ route('work_type.destroy', $d->id) }}"
+                                                                        action="{{ route('customer.destroy', $d->id) }}"
                                                                         method="POST" id="form-delete{{ $d->id }}">
                                                                         @csrf
                                                                         @method('DELETE')
@@ -118,7 +143,7 @@
                                 </tbody>
                             </table>
                             <nav>
-                                {{ $work_type->links('pagination::bootstrap-5') }}
+                                {{ $customer->links('pagination::bootstrap-5') }}
                             </nav>
                         </div>
                     </div>
@@ -142,6 +167,15 @@
         @endif
 
         $(document).ready(function() {
+            $('#cust_type').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+                    'style',
+                placeholder: $(this).data('placeholder'),
+            }).on('change', function() {
+                search();
+            });
+
             $("#show").on('change', function() {
                 search()
             })
@@ -149,11 +183,13 @@
 
         function search() {
             var url =
-                `{!! route('work_type.index', [
+                `{!! route('customer.index', [
                     'search' => '_search',
+                    'cust_type' => '_cust_type',
                     'show' => '_show',
                 ]) !!}`
             url = url.replace('_search', $("#search").val())
+            url = url.replace('_cust_type', $("#cust_type").val())
             url = url.replace('_show', $("#show").val())
             window.open(url, '_self')
         }

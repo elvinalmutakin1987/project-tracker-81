@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('projoff_quotation', 1)->nullable();
             $table->enum('projoff_status', [
                 'Open',
+                'Not Started',
                 'Started',
                 'Hold',
                 'Revisi Mesin',
@@ -34,6 +35,9 @@ return new class extends Migration
                 'Email',
                 'Whatsapp & Email',
             ])->nullable();
+            $table->string('projoff_email_to')->nullable();
+            $table->string('projoff_wa_to')->nullable();
+            $table->timestamp('projoff_send_at')->nullable();
             $table->longText('projoff_hold_message')->nullable();
             $table->longText('projoff_revisi_message')->nullable();
             $table->longText('projoff_cancel_message')->nullable();

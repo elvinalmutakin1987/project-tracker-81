@@ -111,20 +111,27 @@
         <div id="sidebar" class="sidebar pt-5 position-fixed bg-light">
             <a href="{{ route('home') }}" class="py-3"
                 style="{{ request()->routeIs('home') ? 'background-color: black; color: white' : '' }}">Home</a>
-            <a href="{{ route('project.index') }}"
-                style="{{ request()->routeIs('project.*') ? 'background-color: black; color: white' : '' }}">
-                Project
-            </a>
-            <a href="{{ route('task_board.index') }}"
-                style="{{ request()->routeIs('task_board.*') ? 'background-color: black; color: white' : '' }}">
-                Task Board
-            </a>
+            @if (Auth::user()->hasPermissionTo('project'))
+                <a href="{{ route('project.index') }}"
+                    style="{{ request()->routeIs('project.*') ? 'background-color: black; color: white' : '' }}">
+                    Project
+                </a>
+            @endif
+            @if (Auth::user()->hasAnyPermission('task_board'))
+                <a href="{{ route('task_board.index') }}"
+                    style="{{ request()->routeIs('task_board.*') ? 'background-color: black; color: white' : '' }}">
+                    Task Board
+                </a>
+            @endif
             <a href="#">Work Order</a>
             <a href="#">Assignment</a>
             <a href="#">Toolkit</a>
             <a href="#">Report</a>
-            <a href="{{ route('setting') }}"
-                style="{{ request()->routeIs(['setting', 'work_type.*', 'role.*', 'user.*']) ? 'background-color: black; color: white' : '' }}">Setting</a>
+            @if (Auth::user()->hasPermissionTo('setting'))
+                <a href="{{ route('setting') }}"
+                    style="{{ request()->routeIs(['setting', 'work_type.*', 'role.*', 'user.*']) ? 'background-color: black; color: white' : '' }}">Setting
+                </a>
+            @endif
             <a href="#">About</a>
             <a href="{{ route('logout') }}">Logout</a>
         </div>

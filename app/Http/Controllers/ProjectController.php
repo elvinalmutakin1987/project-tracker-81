@@ -160,14 +160,14 @@ class ProjectController extends Controller
         DB::beginTransaction();
         try {
             $project->proj_status = $request->proj_status;
-            if ($request->proj_status == 'Request Survey') {
+            if ($request->proj_status == 'Request Pre Sales') {
                 $project->proj_status = 'Pra-tender';
                 $this->create_task($request->proj_status, $project->id);
             }
-            if ($request->proj_status == 'Request Quotation') {
-                $project->proj_status = 'Quotation';
-                $this->create_task($request->proj_status, $project->id);
-            }
+            // if ($request->proj_status == 'Request Quotation') {
+            //     $project->proj_status = 'Quotation';
+            //     $this->create_task($request->proj_status, $project->id);
+            // }
             if ($request->proj_status == 'Request Sales Order') {
                 $project->proj_status = 'Sales Order';
                 $this->create_task($request->proj_status, $project->id);
@@ -190,24 +190,17 @@ class ProjectController extends Controller
     public function create_task(String $task, String $project_id)
     {
         $project = Project::find($project_id);
-        if ($task == 'Request Survey') {
+        if ($task == 'Request Pre Sales') {
             Project_survey::create([
                 'project_id' => $project_id,
                 'projsur_status' => 'Open',
             ]);
-            $project->proj_status = "Pra-tender";
-        } else if ($task == 'Request Quotation') {
+
             Project_offer::create([
                 'project_id' => $project_id,
                 'projoff_status' => 'Open',
             ]);
-            $project->proj_status = "Quotation";
-        } else if ($task == 'Request Sales Order') {
-            Project_sales_order::create([
-                'project_id' => $project_id,
-                'projso_status' => 'Open',
-            ]);
-            $project->proj_status = "Sales Order";
+            $project->proj_status = "Pra-tender";
         }
         $project->save();
     }

@@ -9,8 +9,8 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('setting') }}">Setting</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('work_type.index') }}">Work Type</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                    <li class="breadcrumb-item"><a href="{{ route('brand.index') }}">Brand</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create New</li>
                 </ol>
             </nav>
 
@@ -18,21 +18,19 @@
 
             <div class="col-lg-12 mt-3">
                 <main>
-                    <form action="{{ route('work_type.update', $work_type->id) }}" enctype="multipart/form-data"
-                        method="POST">
+                    <form action="{{ route('brand.store') }}" enctype="multipart/form-data" method="POST">
                         @csrf
-                        @method('put')
+                        @method('post')
                         <div class="card">
                             <div class="card-header">
-                                Work Type
+                                Brand
                             </div>
                             <div class="card-body">
                                 <div class="mb-2 row">
-                                    <label for="work_name" class="col-sm-3 col-form-label">Name</label>
+                                    <label for="brand_name" class="col-sm-3 col-form-label">Name</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control @error('work_name') is-invalid @enderror"
-                                            name="work_name" value="{{ old('work_name') ?? $work_type->work_name }}"
-                                            required>
+                                        <input type="text" class="form-control @error('brand_name') is-invalid @enderror"
+                                            name="brand_name" value="{{ old('brand_name') }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -40,7 +38,7 @@
                                 <button class="btn btn-success" type="submit">
                                     Save
                                 </button>
-                                <a class="btn btn-secondary" href="{{ route('work_type.index') }}" role="button">Back</a>
+                                <a class="btn btn-secondary" href="{{ route('brand.index') }}" role="button">Back</a>
                             </div>
                         </div>
                     </form>

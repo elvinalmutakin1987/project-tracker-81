@@ -127,6 +127,7 @@
                                         <th style="width: 11%">Project ID</th>
                                         <th>Project Name</th>
                                         <th>Customer</th>
+                                        <th>PIC</th>
                                         <th>Work Type</th>
                                         <th>Start At</th>
                                         <th>Finished At</th>
@@ -137,7 +138,7 @@
                                 <tbody class="table-group-divider">
                                     @if ($project->count() == 0)
                                         <tr>
-                                            <td colspan="8" class="text-center">No data displayed</td>
+                                            <td colspan="100%" class="text-center">No data displayed</td>
                                         </tr>
                                     @else
                                         @foreach ($project as $d)
@@ -148,6 +149,7 @@
                                                 </td>
                                                 <td>{{ $d->proj_name }}</td>
                                                 <td>{{ $d->proj_customer }}</td>
+                                                <td>{{ $d->proj_pic }}</td>
                                                 <td>{{ $d->work_type->work_name }}</td>
                                                 <td>{{ $d->proj_start_date ? \Carbon\Carbon::parse($d->proj_start_date)->format('d M Y') : '-' }}
                                                 </td>
@@ -187,8 +189,8 @@
                                                                                     name="proj_status">
                                                                                 <a class="dropdown-item" href="#"
                                                                                     data-id="{{ $d->id }}"
-                                                                                    onclick="update_status('Request Survey', {{ $d->id }}); return false;">
-                                                                                    Request Survey
+                                                                                    onclick="update_status('Request Pre Sales', {{ $d->id }}); return false;">
+                                                                                    Request Pre Sales
                                                                                 </a>
                                                                             </form>
                                                                         </li>
@@ -207,7 +209,7 @@
                                                                             </form>
                                                                         </li>
                                                                     @elseif($d->proj_status == 'Pra-tender')
-                                                                        @if ($d->project_survey->projsur_status == 'Done')
+                                                                        {{-- @if ($d->project_survey->projsur_status == 'Done')
                                                                             <li>
                                                                                 <form class="d-inline"
                                                                                     action="{{ route('project.update.status', $d->id) }}"
@@ -226,7 +228,7 @@
                                                                                     </a>
                                                                                 </form>
                                                                             </li>
-                                                                        @endif
+                                                                        @endif --}}
                                                                         <li>
                                                                             <form class="d-inline"
                                                                                 action="{{ route('project.cancel', $d->id) }}"

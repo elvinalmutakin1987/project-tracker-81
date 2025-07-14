@@ -19,25 +19,46 @@
                     <div class="row g-5">
                         <div class="col">
                             <ul class="list-unstyled ps-0">
-                                <li>
-                                    <a href="{{ route('work_type.index') }}"
-                                        class="align-items-center gap-2 text-decoration-none">
-                                        <span>Work Type</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('project.create') }}"
-                                        class="align-items-center gap-2 text-decoration-none">
-                                        <span>Role</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('project.index') }}"
-                                        class="align-items-center gap-2 text-decoration-none">
-                                        <span>User</span>
-                                    </a>
-                                </li>
-
+                                @if (Auth::user()->hasPermissionTo('setting.brand'))
+                                    <li>
+                                        <a href="{{ route('brand.index') }}"
+                                            class="align-items-center gap-2 text-decoration-none">
+                                            <span>Brand</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermissionTo('setting.customer'))
+                                    <li>
+                                        <a href="{{ route('customer.index') }}"
+                                            class="align-items-center gap-2 text-decoration-none">
+                                            <span>Customer</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermissionTo('setting.work_type'))
+                                    <li>
+                                        <a href="{{ route('work_type.index') }}"
+                                            class="align-items-center gap-2 text-decoration-none">
+                                            <span>Work Type</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermissionTo('setting.role'))
+                                    <li>
+                                        <a href="{{ route('role.index') }}"
+                                            class="align-items-center gap-2 text-decoration-none">
+                                            <span>Role</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermissionTo('setting.user'))
+                                    <li>
+                                        <a href="{{ route('project.index') }}"
+                                            class="align-items-center gap-2 text-decoration-none">
+                                            <span>User</span>
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>

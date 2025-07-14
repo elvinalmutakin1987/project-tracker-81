@@ -44,8 +44,16 @@
                                 <div class="mb-2 row">
                                     <label for="proj_customer" class="col-sm-3 col-form-label">Customer</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="proj_customer" required
-                                            value="{{ old('proj_customer') }}">
+                                        <input type="text"
+                                            class="form-control @error('proj_customer') is-invalid @enderror"
+                                            name="proj_customer" required value="{{ old('proj_customer') }}">
+                                    </div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <label for="proj_pic" class="col-sm-3 col-form-label">PIC</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control @error('proj_pic') is-invalid @enderror"
+                                            name="proj_pic" required value="{{ old('proj_pic') }}">
                                     </div>
                                 </div>
                                 <div class="mb-2 row">

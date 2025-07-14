@@ -24,6 +24,9 @@ class Project extends Model implements Auditable
         'proj_notes',
         'proj_progress',
         'proj_status',
+        'proj_pic',
+        'proj_customer',
+        'proj_type',
         'proj_hold_message',
         'proj_delayed_message',
         'proj_cancel_message'
@@ -33,7 +36,6 @@ class Project extends Model implements Auditable
         'work_type_id',
         'proj_number',
         'proj_name',
-        'proj_customer',
         'proj_work_type',
         'proj_leader',
         'proj_start_date',
@@ -42,6 +44,9 @@ class Project extends Model implements Auditable
         'proj_notes',
         'proj_progress',
         'proj_status',
+        'proj_pic',
+        'proj_customer',
+        'proj_type',
         'proj_hold_message',
         'proj_delayed_message',
         'proj_cancel_message'
@@ -65,5 +70,10 @@ class Project extends Model implements Auditable
     public function work_type(): BelongsTo
     {
         return $this->belongsTo(Work_type::class)->withDefault(['work_name' => null]);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class)->withDefault(['cust_name' => null]);
     }
 }
