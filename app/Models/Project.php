@@ -14,6 +14,7 @@ class Project extends Model implements Auditable
 
     protected $auditInclude = [
         'work_type_id',
+        'customer_id',
         'proj_number',
         'proj_name',
         'proj_work_type',
@@ -29,11 +30,20 @@ class Project extends Model implements Auditable
         'proj_type',
         'proj_hold_message',
         'proj_delayed_message',
-        'proj_cancel_message'
+        'proj_cancel_message',
+        'proj_denah',
+        'proj_shop',
+        'proj_sld',
+        'proj_rab',
+        'proj_personil',
+        'proj_schedule',
+        'proj_phone',
+        'proj_email',
     ];
 
     protected $fillable = [
         'work_type_id',
+        'customer_id',
         'proj_number',
         'proj_name',
         'proj_work_type',
@@ -49,7 +59,15 @@ class Project extends Model implements Auditable
         'proj_type',
         'proj_hold_message',
         'proj_delayed_message',
-        'proj_cancel_message'
+        'proj_cancel_message',
+        'proj_denah',
+        'proj_shop',
+        'proj_sld',
+        'proj_rab',
+        'proj_personil',
+        'proj_schedule',
+        'proj_phone',
+        'proj_email',
     ];
 
     public function project_survey(): HasOne

@@ -39,15 +39,23 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Customer</td>
-                                        <td>{{ $project->proj_customer }}</td>
+                                        <td>{{ $project->customer->cust_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold table-light">Email</td>
+                                        <td>{{ $project->proj_email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold table-light">Phone</td>
+                                        <td>{{ $project->proj_phone }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold table-light">PIC Sales</td>
+                                        <td>{{ $project->proj_pic }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Work Type</td>
                                         <td>{{ $project->work_type->work_name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-bold table-light">Project Leader</td>
-                                        <td>{{ $project->proj_leader }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold table-light">Start Date</td>

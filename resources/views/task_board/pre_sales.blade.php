@@ -22,7 +22,6 @@
                 <main>
                     {!! $tab !!}
 
-
                     {!! $table !!}
                 </main>
             </div>
@@ -140,5 +139,23 @@
                 }
             });
         }
+
+        @if (Auth::user()->hasRole('superadmin'))
+            function delete_data(id) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Once deleted, you won't be able to recover this record!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-delete' + id).submit();
+                    }
+                });
+            }
+        @endif
     </script>
 @endpush

@@ -53,7 +53,7 @@
                                 @endif
                                 @if (Auth::user()->hasPermissionTo('setting.user'))
                                     <li>
-                                        <a href="{{ route('project.index') }}"
+                                        <a href="{{ route('user.index') }}"
                                             class="align-items-center gap-2 text-decoration-none">
                                             <span>User</span>
                                         </a>

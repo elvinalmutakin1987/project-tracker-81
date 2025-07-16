@@ -24,6 +24,7 @@ return new class extends Migration
                 'Open',
                 'Not Started',
                 'Started',
+                'On Going',
                 'Hold',
                 'Revisi Mesin',
                 'Approval',

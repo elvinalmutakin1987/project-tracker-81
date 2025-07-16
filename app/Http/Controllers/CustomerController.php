@@ -102,7 +102,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validate = [
-            'brand_name' => 'required|unique:customers,cust_name,' . $customer->id . ',id',
+            'cust_name' => 'required|unique:customers,cust_name,' . $customer->id . ',id',
             'cust_address' => 'required'
         ];
         foreach (['file_ktp', 'file_nib', 'file_npwp'] as $field) {
@@ -198,5 +198,36 @@ class CustomerController extends Controller
         $file_upload->file_real_name = $file_real_name;
         $file_upload->file_ext = $file_ext;
         $file_upload->save();
+    }
+
+    public function file_download(Request $request, File_upload $file_upload)
+    {
+        $filePath = $file_upload->file_directory . '/' . $file_upload->file_name;
+
+        if (!Storage::disk('local')->exists($filePath)) {
+            return view('error', compact('File not found'));
+        }
+        return Storage::download($filePath, $file_upload->file_real_name);
+    }
+
+    public function file_remove(Request $request, File_upload $file_upload)
+    {
+        DB::beginTransaction();
+        try {
+            $filePath = $file_upload->file_directory . '/' . $file_upload->file_name;
+            if (!Storage::disk('local')->exists($filePath)) {
+                return view('error', compact('File not found'));
+            }
+            Storage::delete($filePath);
+            $file_upload->delete();
+            DB::commit();
+            return redirect()->route('customer.index')->with([
+                'status' => 'success',
+                'message' => 'Data has been deleted!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
     }
 }

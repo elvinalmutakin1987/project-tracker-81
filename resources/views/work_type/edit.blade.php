@@ -33,6 +33,11 @@
                                         <input type="text" class="form-control @error('work_name') is-invalid @enderror"
                                             name="work_name" value="{{ old('work_name') ?? $work_type->work_name }}"
                                             required>
+                                        @error('work_name')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>

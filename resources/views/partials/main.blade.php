@@ -111,22 +111,30 @@
         <div id="sidebar" class="sidebar pt-5 position-fixed bg-light">
             <a href="{{ route('home') }}" class="py-3"
                 style="{{ request()->routeIs('home') ? 'background-color: black; color: white' : '' }}">Home</a>
-            @if (Auth::user()->hasPermissionTo('project'))
-                <a href="{{ route('project.index') }}"
-                    style="{{ request()->routeIs('project.*') ? 'background-color: black; color: white' : '' }}">
-                    Project
-                </a>
-            @endif
             @if (Auth::user()->hasAnyPermission('task_board'))
                 <a href="{{ route('task_board.index') }}"
                     style="{{ request()->routeIs('task_board.*') ? 'background-color: black; color: white' : '' }}">
                     Task Board
                 </a>
             @endif
-            <a href="#">Work Order</a>
-            <a href="#">Assignment</a>
-            <a href="#">Toolkit</a>
-            <a href="#">Report</a>
+            @if (Auth::user()->hasPermissionTo('project'))
+                <a href="{{ route('project.index') }}"
+                    style="{{ request()->routeIs('project.*') ? 'background-color: black; color: white' : '' }}">
+                    Project
+                </a>
+            @endif
+            @if (Auth::user()->hasPermissionTo('work_order'))
+                <a href="#">Work Order</a>
+            @endif
+            @if (Auth::user()->hasPermissionTo('assignment'))
+                <a href="#">Assignment</a>
+            @endif
+            @if (Auth::user()->hasPermissionTo('tool_kit'))
+                <a href="#">Toolkit</a>
+            @endif
+            @if (Auth::user()->hasPermissionTo('report'))
+                <a href="#">Report</a>
+            @endif
             @if (Auth::user()->hasPermissionTo('setting'))
                 <a href="{{ route('setting') }}"
                     style="{{ request()->routeIs(['setting', 'work_type.*', 'role.*', 'user.*']) ? 'background-color: black; color: white' : '' }}">Setting

@@ -7,16 +7,17 @@
                      <th>Project Name</th>
                      <th>Customer</th>
                      <th>Taken By</th>
-                     <th>Start At</th>
+                     <th>Started At</th>
+                     <th>Finished At</th>
                      <th>Status</th>
                      <th>Aging</th>
-                     <th class="text-end" style="width: 10%">Action</th>
+                     <th class="text-end" style="width: 15%">Action</th>
                  </tr>
              </thead>
              <tbody class="table-group-divider">
                  @if ($project_offer->count() == 0)
                      <tr>
-                         <td colspan="8" class="text-center">No data displayed</td>
+                         <td colspan="100%" class="text-center">No data displayed</td>
                      </tr>
                  @else
                      @foreach ($project_offer as $d)
@@ -28,6 +29,7 @@
                              <td>{{ $d->project->proj_customer }}</td>
                              <td>{{ $d->user->username ?? '-' }}</td>
                              <td>{{ $d->projoff_started_at ?? '-' }}</td>
+                             <td>{{ $d->projoff_finished_at ?? '-' }}</td>
                              <td>{{ $d->projoff_status }}</td>
                              <td>
                                  @if (in_array($d->projoff_status, ['Started', 'Hold']))
@@ -35,7 +37,7 @@
                                          $now = \Carbon\Carbon::now();
                                          $started_at = \Carbon\Carbon::parse($d->projoff_started_at);
                                          $aging = '-';
-                                         if ($d->projsur_started_at) {
+                                         if ($d->projoff_started_at) {
                                              $diffInSeconds = $started_at->diffInSeconds($now);
                                              $hours = floor($diffInSeconds / 3600);
                                              $minutes = floor(($diffInSeconds % 3600) / 60);
@@ -105,21 +107,6 @@
                                                                      </a>
                                                                  </form>
                                                                  <form class="d-inline"
-                                                                     action="{{ route('task_board.approval_offer', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-hold{{ $d->id }}approval">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <input type="hidden"
-                                                                         id="hold-message{{ $d->id }}approval"
-                                                                         name="message">
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="approval({{ $d->id }}); return false;">
-                                                                         Approval
-                                                                     </a>
-                                                                 </form>
-                                                                 <form class="d-inline"
                                                                      action="{{ route('task_board.finish_offer', $d->id) }}"
                                                                      method="POST"
                                                                      id="form-finish{{ $d->id }}">
@@ -170,7 +157,13 @@
                                              </div>
                                          @endif
                                      @else
-                                         Already Taken
+                                         @if ($d->projoff_status == 'Cancelled')
+                                             Cancelled
+                                         @elseif ($d->projoff_status == 'Done')
+                                             Done
+                                         @else
+                                             Already Taken
+                                         @endif
                                      @endif
                                  @endif
                              </td>

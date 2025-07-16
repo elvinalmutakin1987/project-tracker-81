@@ -108,17 +108,20 @@
 
                                             </div>
                                             <div class="col-sm-9">
-                                                <a href="">{{ $file_upload->file_real_name }}</a>
-                                                {{-- <div id="div_file_ktp" style="max-width: 50%">
-                                                    @if ($file_upload->file_ext == 'pdf')
-                                                        <embed
-                                                            src="{{ route('get_file_pdf', ['file_upload_id' => $file_upload->id]) }}"
-                                                            type="application/pdf" width="100%" height="400px">
-                                                    @else
-                                                        <img src="{{ route('get_file_image', ['file_upload_id' => $file_upload->id]) }}"
-                                                            style="width: 100%; height: 400px;">
-                                                    @endif
-                                                </div> --}}
+
+                                                <a href="{{ route('customer.file_download', $file_upload->id) }}"
+                                                    target="_blank">{{ $file_upload->file_real_name }}</a>
+                                                <a href=""
+                                                    onclick="file_remove({{ $file_upload->id }}); return false;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"
+                                                        style="color:red">
+                                                        <path
+                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                        <path
+                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                    </svg>
+                                                </a>
                                             </div>
                                         </div>
                                     @endif
@@ -140,17 +143,19 @@
 
                                             </div>
                                             <div class="col-sm-9">
-                                                <a href="">{{ $file_upload->file_real_name }}</a>
-                                                {{-- <div id="div_file_ktp" style="max-width: 50%">
-                                                    @if ($file_upload->file_ext == 'pdf')
-                                                        <embed
-                                                            src="{{ route('get_file_pdf', ['file_upload_id' => $file_upload->id]) }}"
-                                                            type="application/pdf" width="100%" height="400px">
-                                                    @else
-                                                        <img src="{{ route('get_file_image', ['file_upload_id' => $file_upload->id]) }}"
-                                                            style="width: 100%; height: 400px;">
-                                                    @endif
-                                                </div> --}}
+                                                <a href="{{ route('customer.file_download', $file_upload->id) }}"
+                                                    target="_blank">{{ $file_upload->file_real_name }}</a>
+                                                <a href=""
+                                                    onclick="file_remove({{ $file_upload->id }}); return false;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"
+                                                        style="color:red">
+                                                        <path
+                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                        <path
+                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                    </svg>
+                                                </a>
                                             </div>
                                         </div>
                                     @endif
@@ -172,17 +177,19 @@
 
                                             </div>
                                             <div class="col-sm-9">
-                                                <a href="">{{ $file_upload->file_real_name }}</a>
-                                                {{-- <div id="div_file_ktp" style="max-width: 50%">
-                                                    @if ($file_upload->file_ext == 'pdf')
-                                                        <embed
-                                                            src="{{ route('get_file_pdf', ['file_upload_id' => $file_upload->id]) }}"
-                                                            type="application/pdf" width="100%" height="400px">
-                                                    @else
-                                                        <img src="{{ route('get_file_image', ['file_upload_id' => $file_upload->id]) }}"
-                                                            style="width: 100%; height: 400px;">
-                                                    @endif
-                                                </div> --}}
+                                                <a href="{{ route('customer.file_download', $file_upload->id) }}"
+                                                    target="_blank">{{ $file_upload->file_real_name }}</a>
+                                                <a href=""
+                                                    onclick="file_remove({{ $file_upload->id }}); return false;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"
+                                                        style="color:red">
+                                                        <path
+                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                        <path
+                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                    </svg>
+                                                </a>
                                             </div>
                                         </div>
                                     @endif
@@ -201,6 +208,12 @@
             </div>
         </div>
     </div>
+
+    <form class="d-inline" method="POST" id="form-delete">
+        @csrf
+        @method('DELETE')
+
+    </form>
 @endsection
 
 
@@ -213,5 +226,24 @@
                     'style',
             });
         });
+
+        function file_remove(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once deleted, you won't be able to recover this record!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var url = "{!! route('customer.file_remove', '_id') !!}"
+                    url = url.replace('_id', id)
+                    $("#form-delete").attr("action", url);
+                    document.getElementById('form-delete').submit();
+                }
+            });
+        }
     </script>
 @endpush

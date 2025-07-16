@@ -148,7 +148,7 @@
                                                         href="{{ route('project.show', $d->id) }}">{{ $d->proj_number }}</a>
                                                 </td>
                                                 <td>{{ $d->proj_name }}</td>
-                                                <td>{{ $d->proj_customer }}</td>
+                                                <td>{{ $d->customer->cust_name }}</td>
                                                 <td>{{ $d->proj_pic }}</td>
                                                 <td>{{ $d->work_type->work_name }}</td>
                                                 <td>{{ $d->proj_start_date ? \Carbon\Carbon::parse($d->proj_start_date)->format('d M Y') : '-' }}
@@ -156,8 +156,6 @@
                                                 <td>{{ $d->proj_finished_date ? \Carbon\Carbon::parse($d->proj_finished_date)->format('d M Y') : '-' }}
                                                 </td>
                                                 <td>{{ $d->proj_status }}
-                                                    {{ $d->proj_status == 'Pra-tender' && $d->project_survey->projsur_status ? ' - ' . $d->project_survey->projsur_status : '' }}
-                                                    {{ $d->proj_status == 'Quotation' && $d->project_offer->projoff_status ? ' - ' . $d->project_offer->projoff_status : '' }}
                                                 </td>
                                                 <td class="text-end">
                                                     @if (!in_array($d->proj_status, ['Cancelled', 'Closed']))
@@ -189,8 +187,8 @@
                                                                                     name="proj_status">
                                                                                 <a class="dropdown-item" href="#"
                                                                                     data-id="{{ $d->id }}"
-                                                                                    onclick="update_status('Request Pre Sales', {{ $d->id }}); return false;">
-                                                                                    Request Pre Sales
+                                                                                    onclick="update_status('Pre Sales', {{ $d->id }}); return false;">
+                                                                                    Pre Sales
                                                                                 </a>
                                                                             </form>
                                                                         </li>
@@ -208,27 +206,41 @@
                                                                                 </a>
                                                                             </form>
                                                                         </li>
-                                                                    @elseif($d->proj_status == 'Pra-tender')
-                                                                        {{-- @if ($d->project_survey->projsur_status == 'Done')
-                                                                            <li>
-                                                                                <form class="d-inline"
-                                                                                    action="{{ route('project.update.status', $d->id) }}"
-                                                                                    method="POST"
-                                                                                    id="form-request{{ $d->id }}">
-                                                                                    @csrf
-                                                                                    @method('PUT')
-                                                                                    <input type="hidden"
-                                                                                        id="proj_status{{ $d->id }}"
-                                                                                        name="proj_status">
-                                                                                    <a class="dropdown-item"
-                                                                                        href="#"
-                                                                                        data-id="{{ $d->id }}"
-                                                                                        onclick="update_status('Request Quotation', {{ $d->id }}); return false;">
-                                                                                        Request Quotation
-                                                                                    </a>
-                                                                                </form>
-                                                                            </li>
-                                                                        @endif --}}
+                                                                    @elseif($d->proj_status == 'Pre Sales')
+                                                                        <li>
+                                                                            <form class="d-inline"
+                                                                                action="{{ route('project.update.status', $d->id) }}"
+                                                                                method="POST"
+                                                                                id="form-presales{{ $d->id }}">
+                                                                                @csrf
+                                                                                @method('PUT')
+                                                                                <input type="hidden"
+                                                                                    id="proj_status{{ $d->id }}presales"
+                                                                                    name="proj_status">
+                                                                                <a class="dropdown-item" href="#"
+                                                                                    data-id="{{ $d->id }}"
+                                                                                    onclick="update_status('Assign Pre Sales', {{ $d->id }}); return false;">
+                                                                                    Assign Task to Pre Sales
+                                                                                </a>
+                                                                            </form>
+                                                                        </li>
+                                                                        <li>
+                                                                            <form class="d-inline"
+                                                                                action="{{ route('project.update.status', $d->id) }}"
+                                                                                method="POST"
+                                                                                id="form-salesadmin{{ $d->id }}">
+                                                                                @csrf
+                                                                                @method('PUT')
+                                                                                <input type="hidden"
+                                                                                    id="proj_status{{ $d->id }}salesadmin"
+                                                                                    name="proj_status">
+                                                                                <a class="dropdown-item" href="#"
+                                                                                    data-id="{{ $d->id }}"
+                                                                                    onclick="update_status('Assign Sales Admin', {{ $d->id }}); return false;">
+                                                                                    Assign Task to Sales Admin
+                                                                                </a>
+                                                                            </form>
+                                                                        </li>
                                                                         <li>
                                                                             <form class="d-inline"
                                                                                 action="{{ route('project.cancel', $d->id) }}"
@@ -352,8 +364,16 @@
                 confirmButtonText: "Yes, do it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('proj_status' + id).value = status;
-                    document.getElementById('form-request' + id).submit();
+                    if (status == 'Pre Sales') {
+                        document.getElementById('proj_status' + id).value = status;
+                        document.getElementById('form-request' + id).submit();
+                    } else if (status == 'Assign Pre Sales') {
+                        document.getElementById('proj_status' + id + 'presales').value = status;
+                        document.getElementById('form-presales' + id).submit();
+                    } else if (status == 'Assign Sales Admin') {
+                        document.getElementById('proj_status' + id + 'salesadmin').value = status;
+                        document.getElementById('form-salesadmin' + id).submit();
+                    }
                 }
             });
         }

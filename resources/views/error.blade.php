@@ -8,7 +8,7 @@
             <p>
                 {{ isset($th) ? $th->getMessage() : $message }}
 
-                @if (request()->routeIs('task_board.*'))
+                @if (request()->routeIs('task_board.index'))
                     <br>
                     <br>
                     <ul class="list-unstyled ps-0">

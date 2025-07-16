@@ -35,6 +35,7 @@ return new class extends Migration
             $table->enum('proj_status', [
                 'Draft',
                 'Pra-tender',
+                'Pre Sales',
                 'Quotation',
                 'Under Review',
                 'Shortlisted',
@@ -44,6 +45,7 @@ return new class extends Migration
                 'Sales Order',
                 'Planning',
                 'In Progress',
+                'On Going',
                 'On Hold',
                 'Delayed',
                 'Cancelled',

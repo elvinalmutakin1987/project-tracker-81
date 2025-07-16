@@ -19,7 +19,6 @@ class UserSeeder extends Seeder
     {
         Role::create(['name' => 'superadmin']);
 
-
         Permission::create(['name' => 'project']);
 
         Permission::create(['name' => 'task_board']);
@@ -28,7 +27,15 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'task_board.operation']);
         Permission::create(['name' => 'task_board.finance_accounting']);
 
+        Permission::create(['name' => 'work_order']);
+        Permission::create(['name' => 'assignment']);
+        Permission::create(['name' => 'invoice']);
         Permission::create(['name' => 'report']);
+
+        Permission::create(['name' => 'tool_kit']);
+        Permission::create(['name' => 'tool_kit.loan']);
+        Permission::create(['name' => 'tool_kit.return']);
+        Permission::create(['name' => 'tool_kit.stock']);
 
         Permission::create(['name' => 'setting']);
         Permission::create(['name' => 'setting.brand']);

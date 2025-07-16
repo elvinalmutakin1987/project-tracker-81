@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Customer extends Model implements Auditable
 {
+    use HasFactory;
     use \OwenIt\Auditing\Auditable;
 
     protected $auditInclude = [

@@ -36,7 +36,8 @@ class TaskBoardController extends Controller
         /**
          * Survey
          */
-        $project_survey = Project_survey::leftJoin('projects', 'projects.id', '=', 'project_surveys.project_id')
+        $project_survey = Project_survey::select('project_surveys.*', 'projects.proj_number')
+            ->leftJoin('projects', 'projects.id', '=', 'project_surveys.project_id')
             ->where('proj_number', 'like', '%' . $request->search . '%');
         if ($request->status && $request->status != 'All') {
             $project_survey = $project_survey->where('projsur_status', $request->status);
@@ -47,7 +48,8 @@ class TaskBoardController extends Controller
         /**
          * Offer
          */
-        $project_offer = Project_offer::leftJoin('projects', 'projects.id', '=', 'project_offers.project_id')
+        $project_offer = Project_offer::select('project_offers.*', 'projects.proj_number')
+            ->leftJoin('projects', 'projects.id', '=', 'project_offers.project_id')
             ->where('proj_number', 'like', '%' . $request->search . '%');
         if ($request->status && $request->status != 'All') {
             $project_offer = $project_offer->where('projoff_status', $request->status);
@@ -58,7 +60,8 @@ class TaskBoardController extends Controller
         /**
          * Sales Order
          */
-        $project_sales_order = Project_sales_order::leftJoin('projects', 'projects.id', '=', 'project_sales_orders.project_id')
+        $project_sales_order = Project_sales_order::select('project_sales_orders.*', 'projects.proj_number')
+            ->leftJoin('projects', 'projects.id', '=', 'project_sales_orders.project_id')
             ->where('proj_number', 'like', '%' . $request->search . '%');
         if ($request->status && $request->status != 'All') {
             $project_sales_order = $project_sales_order->where('projso_status', $request->status);
@@ -517,6 +520,10 @@ class TaskBoardController extends Controller
         }
     }
 
+
+    /**
+     * ini dipake kalau semua dokumen yang di upload sudah ke delete semua.
+     */
     public function set_document_to_null(String $file_doc_type, String $file_table, String $file_table_id)
     {
         if ($file_table == 'project_survey') {
@@ -545,6 +552,29 @@ class TaskBoardController extends Controller
                 }
                 $project_survey->save();
             }
+        }
+    }
+
+    /**
+     * Buat hapus task. Hanya superadmin yang bisa
+     */
+    public function destroy(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            if ($request->assignee == 'pre-sales') {
+                Project_survey::find($request->id)->delete();
+            } elseif ($request->assignee == 'sales-admin') {
+                Project_offer::find($request->id)->delete();
+            }
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => $request->assignee])->with([
+                'status' => 'success',
+                'message' => 'Data has been deleted!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
         }
     }
 }

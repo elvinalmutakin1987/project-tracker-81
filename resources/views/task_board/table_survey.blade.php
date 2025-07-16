@@ -7,16 +7,17 @@
                     <th>Project Name</th>
                     <th>Customer</th>
                     <th>Taken By</th>
-                    <th>Start At</th>
+                    <th>Started At</th>
+                    <th>Finished At</th>
                     <th>Status</th>
                     <th>Aging</th>
-                    <th class="text-end" style="width: 10%">Action</th>
+                    <th class="text-end" style="width: 15%">Action</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
                 @if ($project_survey->count() == 0)
                     <tr>
-                        <td colspan="8" class="text-center">No data displayed</td>
+                        <td colspan="100%" class="text-center">No data displayed</td>
                     </tr>
                 @else
                     @foreach ($project_survey as $d)
@@ -28,6 +29,7 @@
                             <td>{{ $d->project->proj_customer }}</td>
                             <td>{{ $d->user->username ?? '-' }}</td>
                             <td>{{ $d->projsur_started_at ?? '-' }}</td>
+                            <td>{{ $d->projsur_finished_at ?? '-' }}</td>
                             <td>{{ $d->projsur_status }}</td>
                             <td>
                                 @if (in_array($d->projsur_status, ['Started', 'Hold']))
@@ -138,8 +140,25 @@
                                             </div>
                                         @endif
                                     @else
-                                        Already Taken
+                                        @if ($d->projsur_status == 'Cancelled')
+                                            Cancelled
+                                        @elseif ($d->projsur_status == 'Done')
+                                            Done
+                                        @else
+                                            Already Taken
+                                        @endif
                                     @endif
+                                @endif
+
+                                @if (Auth::user()->hasRole('superadmin'))
+                                    <form class="d-inline"
+                                        action="{{ route('task_board.delete', ['assignee' => 'pre-sales', 'id' => $d->id]) }}"
+                                        method="POST" id="form-delete{{ $d->id }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <a class="btn btn-danger btn-sm" href="#" role="button"
+                                            onclick="delete_data({{ $d->id }}); return false;">Delete</a>
+                                    </form>
                                 @endif
                             </td>
                         </tr>

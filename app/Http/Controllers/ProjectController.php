@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Project;
 use App\Models\Project_offer;
 use App\Models\Project_sales_order;
@@ -42,7 +43,8 @@ class ProjectController extends Controller
     public function create()
     {
         $work_type = Work_type::all();
-        return view('project.create', compact('work_type'));
+        $customer = Customer::all();
+        return view('project.create', compact('work_type', 'customer'));
     }
 
     /**
@@ -52,28 +54,37 @@ class ProjectController extends Controller
     {
         $validate = [
             'proj_name' => 'required',
-            'proj_customer' => 'required',
-            'work_type_id' => 'required'
+            'customer_id' => 'required',
         ];
         if ($request->has('proj_number') && $request->proj_number != null) {
             $validate = [
                 'proj_name' => 'required',
-                'proj_customer' => 'required',
-                'work_type_id' => 'required',
+                'customer_id' => 'required',
                 'proj_number' => 'unique:projects,proj_number'
             ];
         }
         $request->validate($validate);
         DB::beginTransaction();
         try {
-            $proj_number = HelperController::generate_project_number("Project", $request->proj_name, $request->proj_number != null ? $request->proj_number : '', $request->proj_number != null ? 'manul' : 'auto');
+            $proj_number = HelperController::generate_project_number(
+                "Project",
+                $request->proj_name,
+                $request->proj_number != null ? $request->proj_number : '',
+                $request->proj_number != null ? 'manul' : 'auto'
+            );
             $data = array_merge($request->except('_token', '_method'), [
                 'proj_number' => $proj_number,
-                'proj_status' => 'Draft'
+                'proj_status' => 'Draft',
+                'proj_denah' => $request->proj_denah ? 1 : null,
+                'proj_shop' => $request->proj_shop ? 1 : null,
+                'proj_sld' => $request->proj_sld ? 1 : null,
+                'proj_rab' => $request->proj_rab ? 1 : null,
+                'proj_personil' => $request->proj_personil ? 1 : null,
+                'proj_schedule' => $request->proj_schedule ? 1 : null,
             ]);
             $project = Project::create($data);
-            if ($request->proj_status == 'Request Survey') {
-                $this->create_task('Request Survey', $project->id);
+            if ($request->proj_status == 'Pre Sales') {
+                $this->create_task('Pre Sales', $project->id);
             }
             DB::commit();
             return redirect()->route('project.index')->with([
@@ -92,7 +103,8 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $work_type = Work_type::all();
-        return view('project.show', compact('project', 'work_type'));
+        $customer = Customer::all();
+        return view('project.show', compact('project', 'work_type', 'customer'));
     }
 
     /**
@@ -101,7 +113,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $work_type = Work_type::all();
-        return view('project.edit', compact('project', 'work_type'));
+        $customer = Customer::all();
+        return view('project.edit', compact('project', 'work_type', 'customer'));
     }
 
     /**
@@ -111,16 +124,22 @@ class ProjectController extends Controller
     {
         $validate = [
             'proj_name' => 'required',
-            'proj_customer' => 'required',
-            'work_type_id' => 'required'
+            'customer_id' => 'required',
         ];
         $request->validate($validate);
         DB::beginTransaction();
         try {
-            $data = array_merge($request->except('_token', '_method'));
+            $data = array_merge($request->except('_token', '_method'), [
+                'proj_denah' => $request->proj_denah ? 1 : null,
+                'proj_shop' => $request->proj_shop ? 1 : null,
+                'proj_sld' => $request->proj_sld ? 1 : null,
+                'proj_rab' => $request->proj_rab ? 1 : null,
+                'proj_personil' => $request->proj_personil ? 1 : null,
+                'proj_schedule' => $request->proj_schedule ? 1 : null
+            ]);
             $project->update($data);
-            if ($request->proj_status == 'Request Survey') {
-                $this->create_task('Request Survey', $project->id);
+            if ($request->proj_status == 'Pra-tender') {
+                $this->create_task('Pra-tender', $project->id);
             }
             DB::commit();
             return redirect()->route('project.index')->with([
@@ -159,19 +178,10 @@ class ProjectController extends Controller
     {
         DB::beginTransaction();
         try {
-            $project->proj_status = $request->proj_status;
-            if ($request->proj_status == 'Request Pre Sales') {
-                $project->proj_status = 'Pra-tender';
-                $this->create_task($request->proj_status, $project->id);
+            if (!in_array($request->proj_status, ['Assign Pre Sales', 'Assign Sales Admin'])) {
+                $project->proj_status = $request->proj_status;
             }
-            // if ($request->proj_status == 'Request Quotation') {
-            //     $project->proj_status = 'Quotation';
-            //     $this->create_task($request->proj_status, $project->id);
-            // }
-            if ($request->proj_status == 'Request Sales Order') {
-                $project->proj_status = 'Sales Order';
-                $this->create_task($request->proj_status, $project->id);
-            }
+            $this->create_task($request->proj_status, $project->id);
             $project->save();
             DB::commit();
             return redirect()->route('project.index')->with([
@@ -189,18 +199,35 @@ class ProjectController extends Controller
      */
     public function create_task(String $task, String $project_id)
     {
+        /**
+         * Ini jika project nya belum started
+         */
         $project = Project::find($project_id);
-        if ($task == 'Request Pre Sales') {
+        if ($task == 'Pre Sales') {
             Project_survey::create([
                 'project_id' => $project_id,
                 'projsur_status' => 'Open',
             ]);
-
             Project_offer::create([
                 'project_id' => $project_id,
                 'projoff_status' => 'Open',
             ]);
-            $project->proj_status = "Pra-tender";
+            $project->proj_status = "Pre Sales";
+        }
+        /**
+         * Ini jika project nya sudah Started
+         */
+        if ($task == 'Assign Pre Sales') {
+            Project_survey::create([
+                'project_id' => $project_id,
+                'projsur_status' => 'Open',
+            ]);
+        }
+        if ($task == 'Assign Sales Admin') {
+            Project_offer::create([
+                'project_id' => $project_id,
+                'projoff_status' => 'Open',
+            ]);
         }
         $project->save();
     }
@@ -246,9 +273,9 @@ class ProjectController extends Controller
     {
         if ($request->ajax()) {
             $term = trim($request->term);
-            $work_type = Work_type::selectRaw("id, name as text")
-                ->where('name', 'like', '%' . $term . '%')
-                ->orderBy('name')->simplePaginate(10);
+            $work_type = Work_type::selectRaw("id, work_name as text")
+                ->where('work_name', 'like', '%' . $term . '%')
+                ->orderBy('work_name')->simplePaginate(10);
             $total_count = count($work_type);
             $morePages = true;
             $pagination_obj = json_encode($work_type);
@@ -257,6 +284,30 @@ class ProjectController extends Controller
             }
             $result = [
                 "results" => $work_type->items(),
+                "pagination" => [
+                    "more" => $morePages
+                ],
+                "total_count" => $total_count
+            ];
+            return response()->json($result);
+        }
+    }
+
+    public function get_customer(Request $request)
+    {
+        if ($request->ajax()) {
+            $term = trim($request->term);
+            $customer = Customer::selectRaw("id, cust_name as text")
+                ->where('cust_name', 'like', '%' . $term . '%')
+                ->orderBy('cust_name')->simplePaginate(10);
+            $total_count = count($customer);
+            $morePages = true;
+            $pagination_obj = json_encode($customer);
+            if (empty($customer->nextPageUrl())) {
+                $morePages = false;
+            }
+            $result = [
+                "results" => $customer->items(),
                 "pagination" => [
                     "more" => $morePages
                 ],

@@ -10,46 +10,54 @@
 
 
  <ul class="nav nav-pills mb-2">
-     <li class="nav-item">
-         <a class="nav-link {{ $assignee == 'pre-sales' ? 'active' : '' }}"
-             {{ $assignee == 'pre-sales' ? 'aria-current="page"' : '' }}
-             href="{{ route('task_board.index', ['assignee' => 'pre-sales']) }}">Pre
-             Sales
-             @if ($total_survey_pending > 0)
-                 <span class="badge text-bg-warning rounded-pill">{{ $total_survey_pending }}</span>
-             @endif
-         </a>
-     </li>
-     <li class="nav-item">
-         <a class="nav-link {{ $assignee == 'sales-admin' ? 'active' : '' }}"
-             {{ $assignee == 'sales-admin' ? 'aria-current="page"' : '' }}
-             href="{{ route('task_board.index', ['assignee' => 'sales-admin']) }}">Sales
-             Admin
-             @if ($total_offer_pending > 0)
-                 <span class="badge text-bg-warning rounded-pill">{{ $total_offer_pending }}</span>
-             @endif
-         </a>
-     </li>
-     <li class="nav-item">
-         <a class="nav-link {{ $assignee == 'finance_accounting' ? 'active' : '' }}"
-             {{ $assignee == 'finance_accounting' ? 'aria-current="page"' : '' }}
-             href="{{ route('task_board.index', ['assignee' => 'finance_accounting']) }}">Finance & Accounting
-             @if ($project_offer->where('projoff_status', '!=', 'Done')->count() > 0)
-                 <span
-                     class="badge text-bg-warning rounded-pill">{{ $project_offer->where('projoff_status', '!=', 'Done')->count() }}</span>
-             @endif
-         </a>
-     </li>
-     <li class="nav-item">
-         <a class="nav-link {{ $assignee == 'operation' ? 'active' : '' }}"
-             {{ $assignee == 'operation' ? 'aria-current="page"' : '' }}
-             href="{{ route('task_board.index', ['assignee' => 'operation']) }}">Operation
-             @if ($project_offer->where('projoff_status', '!=', 'Done')->count() > 0)
-                 <span
-                     class="badge text-bg-warning rounded-pill">{{ $project_offer->where('projoff_status', '!=', 'Done')->count() }}</span>
-             @endif
-         </a>
-     </li>
+     @if (Auth::user()->hasPermissionTo('task_board.pre_sales'))
+         <li class="nav-item">
+             <a class="nav-link {{ $assignee == 'pre-sales' ? 'active' : '' }}"
+                 {{ $assignee == 'pre-sales' ? 'aria-current="page"' : '' }}
+                 href="{{ route('task_board.index', ['assignee' => 'pre-sales']) }}">Pre
+                 Sales
+                 @if ($total_survey_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill">{{ $total_survey_pending }}</span>
+                 @endif
+             </a>
+         </li>
+     @endif
+     @if (Auth::user()->hasPermissionTo('task_board.sales_admin'))
+         <li class="nav-item">
+             <a class="nav-link {{ $assignee == 'sales-admin' ? 'active' : '' }}"
+                 {{ $assignee == 'sales-admin' ? 'aria-current="page"' : '' }}
+                 href="{{ route('task_board.index', ['assignee' => 'sales-admin']) }}">Sales
+                 Admin
+                 @if ($total_offer_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill">{{ $total_offer_pending }}</span>
+                 @endif
+             </a>
+         </li>
+     @endif
+     @if (Auth::user()->hasPermissionTo('task_board.finance_accounting'))
+         <li class="nav-item">
+             <a class="nav-link {{ $assignee == 'finance_accounting' ? 'active' : '' }}"
+                 {{ $assignee == 'finance_accounting' ? 'aria-current="page"' : '' }}
+                 href="{{ route('task_board.index', ['assignee' => 'finance_accounting']) }}">Finance & Accounting
+                 @if ($project_offer->where('projoff_status', '!=', 'Done')->count() > 0)
+                     <span
+                         class="badge text-bg-warning rounded-pill">{{ $project_offer->where('projoff_status', '!=', 'Done')->count() }}</span>
+                 @endif
+             </a>
+         </li>
+     @endif
+     @if (Auth::user()->hasPermissionTo('task_board.operation'))
+         <li class="nav-item">
+             <a class="nav-link {{ $assignee == 'operation' ? 'active' : '' }}"
+                 {{ $assignee == 'operation' ? 'aria-current="page"' : '' }}
+                 href="{{ route('task_board.index', ['assignee' => 'operation']) }}">Operation
+                 @if ($project_offer->where('projoff_status', '!=', 'Done')->count() > 0)
+                     <span
+                         class="badge text-bg-warning rounded-pill">{{ $project_offer->where('projoff_status', '!=', 'Done')->count() }}</span>
+                 @endif
+             </a>
+         </li>
+     @endif
  </ul>
 
  <hr class="col-12 ">

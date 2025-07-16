@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TaskBoardController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['middleware' => ['role_or_permission:superadmin|project']], function () {
         Route::resource('project', ProjectController::class)->names('project');
         Route::put('project-get-work_type', [ProjectController::class, 'get_work_type'])->name('project.get.work_type');
+        Route::put('project-get-customer', [ProjectController::class, 'get_customer'])->name('project.get.customer');
         Route::put('project-update-status/{project}', [ProjectController::class, 'update_status'])->name('project.update.status');
         Route::put('project-cancel/{project}', [ProjectController::class, 'cancel'])->name('project.cancel');
     });
@@ -50,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('task_board', [TaskBoardController::class, 'index'])->name('task_board.index');
         Route::get('task_board/{project}', [TaskBoardController::class, 'show'])->name('task_board.show');
 
+        /**
+         * Pre sales
+         */
         Route::group(['middleware' => ['role_or_permission:task_board.pre_sales']], function () {
             Route::put('task_board/take-survey/{project_survey}', [TaskBoardController::class, 'take_survey'])->name('task_board.take_survey');
             Route::put('task_board/hold-survey/{project_survey}', [TaskBoardController::class, 'hold_survey'])->name('task_board.hold_survey');
@@ -59,6 +64,9 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/document-survey/{project_survey}', [TaskBoardController::class, 'document_survey_update'])->name('task_board.document_survey.update');
         });
 
+        /**
+         * Sales admin
+         */
         Route::group(['middleware' => ['role_or_permission:task_board.sales_admin']], function () {
             Route::put('task_board/take-offer/{project_offer}', [TaskBoardController::class, 'take_offer'])->name('task_board.take_offer');
             Route::put('task_board/hold-offer/{project_offer}', [TaskBoardController::class, 'hold_offer'])->name('task_board.hold_offer');
@@ -69,13 +77,26 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/document-offer/{project_offer}', [TaskBoardController::class, 'document_offer_update'])->name('task_board.document_offer.update');
         });
 
-        Route::get('task_board/download-file/{file_upload}', [TaskBoardController::class, 'document_download'])->name('task_board.document_download');
-        Route::delete('task_board/document-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
+        /**
+         * Operation
+         */
+
+        /**
+         * Finance & Accounting
+         */
+
+        Route::get('task_board-file-download/{file_upload}', [TaskBoardController::class, 'document_download'])->name('task_board.document_download');
+        Route::delete('task_board', [TaskBoardController::class, 'destroy'])->name('task_board.delete');
+        Route::delete('task_board/file-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
         Route::delete('task_board/link-remove/{file_upload}', [TaskBoardController::class, 'link_remove'])->name('task_board.link_remove');
     });
 
     Route::group(['middleware' => ['role_or_permission:superadmin|role']], function () {
         Route::resource('role', RoleController::class)->names('role');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|user']], function () {
+        Route::resource('user', UserController::class)->names('user');
     });
 
     Route::group(['middleware' => ['role_or_permission:superadmin|brand']], function () {
@@ -84,6 +105,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['middleware' => ['role_or_permission:superadmin|customer']], function () {
         Route::resource('customer', CustomerController::class)->names('customer');
+
+        Route::get('customer/file-download/{file_upload}', [CustomerController::class, 'file_download'])->name('customer.file_download');
+        Route::delete('customer/file-remove/{file_upload}', [CustomerController::class, 'file_remove'])->name('customer.file_remove');
     });
 
     Route::get('get_file_pdf', [HelperController::class, 'get_file_pdf'])->name('get_file_pdf');
