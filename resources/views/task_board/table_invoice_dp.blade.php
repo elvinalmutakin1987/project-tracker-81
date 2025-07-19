@@ -16,19 +16,19 @@
                  </tr>
              </thead>
              <tbody class="table-group-divider">
-                 @if ($project_sales_order->count() == 0)
+                 @if ($project_invoice_dp->count() == 0)
                      <tr>
                          <td colspan="100%" class="text-center">No data displayed</td>
                      </tr>
                  @else
-                     @foreach ($project_sales_order as $d)
+                     @foreach ($project_invoice_dp as $d)
                          @php
                              $isMoreThan36Hours = false;
                              $isMoreThan48Hours = false;
                              $now = \Carbon\Carbon::now();
-                             $started_at = \Carbon\Carbon::parse($d->projso_started_at);
-                             if ($d->projso_started_at) {
-                                 $started_at = \Carbon\Carbon::parse($d->projso_started_at);
+                             $started_at = \Carbon\Carbon::parse($d->projoff_started_at);
+                             if ($d->projoff_started_at) {
+                                 $started_at = \Carbon\Carbon::parse($d->projoff_started_at);
                                  $diffInHours = $started_at->diffInHours($now);
 
                                  // Cek apakah lebih dari 36 jam
@@ -38,29 +38,29 @@
                          @endphp
                          <tr
                              class="
-                        @if ($d->projso_status == 'Done') table-success
-                        @elseif(in_array($d->projso_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
+                        @if ($d->projoff_status == 'Done') table-success
+                        @elseif(in_array($d->projoff_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
                             @if ($isMoreThan36Hours == true) table-warning @endif
                             @if ($isMoreThan48Hours == true) table-danger @endif
                         @endif
                         ">
-                             <td>{{ $d->projso_number }}</td>
+                             <td>{{ $d->projoff_number }}</td>
                              <td><a
                                      href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                              </td>
                              <td>{{ $d->project->proj_name }}</td>
                              <td>{{ $d->project->customer->cust_name }}</td>
                              <td>{{ $d->user->name ?? '-' }}</td>
-                             <td>{{ $d->projso_started_at ?? '-' }}</td>
-                             <td>{{ $d->projso_finished_at ?? '-' }}</td>
-                             <td>{{ $d->projso_status }}</td>
+                             <td>{{ $d->projinvdp_started_at ?? '-' }}</td>
+                             <td>{{ $d->projinvdp_finished_at ?? '-' }}</td>
+                             <td>{{ $d->projinvdp_status }}</td>
                              <td>
-                                 @if (in_array($d->projso_status, ['Started', 'Hold']))
+                                 @if (in_array($d->projinvdp_status, ['Started', 'Hold']))
                                      @php
                                          $now = \Carbon\Carbon::now();
-                                         $started_at = \Carbon\Carbon::parse($d->projso_started_at);
+                                         $started_at = \Carbon\Carbon::parse($d->projinvdp_started_at);
                                          $aging = '-';
-                                         if ($d->projso_started_at) {
+                                         if ($d->projinvdp_started_at) {
                                              $diffInSeconds = $started_at->diffInSeconds($now);
                                              $hours = floor($diffInSeconds / 3600);
                                              $minutes = floor(($diffInSeconds % 3600) / 60);
@@ -68,12 +68,12 @@
                                          }
                                      @endphp
                                      {{ $aging }}
-                                 @elseif($d->projso_status == 'Done')
+                                 @elseif($d->projinvdp_status == 'Done')
                                      @php
-                                         $started_at = \Carbon\Carbon::parse($d->projso_started_at);
-                                         $finished_at = \Carbon\Carbon::parse($d->projso_finished_at);
+                                         $started_at = \Carbon\Carbon::parse($d->projinvdp_started_at);
+                                         $finished_at = \Carbon\Carbon::parse($d->projinvdp_finished_at);
                                          $aging = '-';
-                                         if ($d->projso_started_at) {
+                                         if ($d->projinvdp_started_at) {
                                              $diffInSeconds = $started_at->diffInSeconds($finished_at);
                                              $hours = floor($diffInSeconds / 3600);
                                              $minutes = floor(($diffInSeconds % 3600) / 60);
@@ -86,8 +86,8 @@
                                  @endif
                              </td>
                              <td class="text-end">
-                                 @if ($d->projso_status == 'Open')
-                                     <form class="d-inline" action="{{ route('task_board.take_sales_order', $d->id) }}"
+                                 @if ($d->projinvdp_status == 'Open')
+                                     <form class="d-inline" action="{{ route('task_board.take_invoice_dp', $d->id) }}"
                                          method="POST" id="form-take{{ $d->id }}">
                                          @csrf
                                          @method('PUT')
@@ -97,7 +97,7 @@
                                      </form>
                                  @else
                                      @if ($d->user_id == auth()->user()->id)
-                                         @if ($d->projso_status != 'Done')
+                                         @if ($d->projinvdp_status != 'Done')
                                              <div class="btn-group" role="group"
                                                  aria-label="Button group with nested dropdown">
                                                  <div class="btn-group" role="group">
@@ -109,14 +109,14 @@
                                                      <ul class="dropdown-menu">
                                                          <li>
                                                              <a class="dropdown-item"
-                                                                 href="{{ route('task_board.document_sales_order', $d->id) }}">
+                                                                 href="{{ route('task_board.document_invoice_dp', $d->id) }}">
                                                                  Document Upload
                                                              </a>
                                                          </li>
                                                          <li>
-                                                             @if ($d->projso_status == 'Started')
+                                                             @if ($d->projinvdp_status == 'Started')
                                                                  <form class="d-inline"
-                                                                     action="{{ route('task_board.hold_sales_order', $d->id) }}"
+                                                                     action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
                                                                      method="POST" id="form-hold{{ $d->id }}">
                                                                      @csrf
                                                                      @method('PUT')
@@ -130,36 +130,7 @@
                                                                      </a>
                                                                  </form>
                                                                  <form class="d-inline"
-                                                                     action="{{ route('task_board.finish_sales_order', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-finish{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <input type="hidden"
-                                                                         id="finish-message{{ $d->id }}"
-                                                                         name="projso_so_number">
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="finish({{ $d->id }}); return false;">
-                                                                         Finish
-                                                                     </a>
-                                                                 </form>
-                                                             @elseif($d->projso_status == 'Hold')
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.continue_sales_order', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-continue{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="continue_({{ $d->id }}); return false;">
-                                                                         Continue
-                                                                     </a>
-                                                                 </form>
-                                                             @elseif($d->projso_status == 'Approval')
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.finish_offer', $d->id) }}"
+                                                                     action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
                                                                      method="POST"
                                                                      id="form-finish{{ $d->id }}">
                                                                      @csrf
@@ -173,6 +144,35 @@
                                                                          Finish
                                                                      </a>
                                                                  </form>
+                                                             @elseif($d->projinvdp_status == 'Hold')
+                                                                 <form class="d-inline"
+                                                                     action="{{ route('task_board.continue_invoice_dp', $d->id) }}"
+                                                                     method="POST"
+                                                                     id="form-continue{{ $d->id }}">
+                                                                     @csrf
+                                                                     @method('PUT')
+                                                                     <a class="dropdown-item" href="#"
+                                                                         data-id="{{ $d->id }}"
+                                                                         onclick="continue_({{ $d->id }}); return false;">
+                                                                         Continue
+                                                                     </a>
+                                                                 </form>
+                                                             @elseif($d->projinvdp_status == 'Approval')
+                                                                 <form class="d-inline"
+                                                                     action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
+                                                                     method="POST"
+                                                                     id="form-finish{{ $d->id }}">
+                                                                     @csrf
+                                                                     @method('PUT')
+                                                                     <input type="hidden"
+                                                                         id="finish-message{{ $d->id }}"
+                                                                         name="projinvdp_number">
+                                                                     <a class="dropdown-item" href="#"
+                                                                         data-id="{{ $d->id }}"
+                                                                         onclick="finish({{ $d->id }}); return false;">
+                                                                         Finish
+                                                                     </a>
+                                                                 </form>
                                                              @endif
                                                          </li>
                                                      </ul>
@@ -180,9 +180,9 @@
                                              </div>
                                          @endif
                                      @else
-                                         @if ($d->projso_status == 'Cancelled')
+                                         @if ($d->projinvdp_status == 'Cancelled')
                                              Cancelled
-                                         @elseif ($d->projso_status == 'Done')
+                                         @elseif ($d->projinvdp_status == 'Done')
                                              Done
                                          @else
                                              Already Taken
@@ -192,7 +192,7 @@
 
                                  @if (Auth::user()->hasRole('superadmin'))
                                      <form class="d-inline"
-                                         action="{{ route('task_board.cancel', ['assignee' => 'pre-sales', 'id' => $d->id, 'doc_type' => 'sales-order']) }}"
+                                         action="{{ route('task_board.cancel', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
                                          method="POST" id="form-cancel{{ $d->id }}">
                                          @csrf
                                          @method('PUT')
@@ -200,7 +200,7 @@
                                              onclick="cancel({{ $d->id }}); return false;">Cancel</a>
                                      </form>
                                      <form class="d-inline"
-                                         action="{{ route('task_board.delete', ['assignee' => 'sales-admin', 'id' => $d->id]) }}"
+                                         action="{{ route('task_board.delete', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
                                          method="POST" id="form-delete{{ $d->id }}">
                                          @csrf
                                          @method('DELETE')
@@ -215,7 +215,7 @@
              </tbody>
          </table>
          <nav>
-             {{ $project_sales_order->links('pagination::bootstrap-5') }}
+             {{ $project_invoice_dp->links('pagination::bootstrap-5') }}
          </nav>
      </div>
  </div>

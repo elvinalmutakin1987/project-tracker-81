@@ -72,4 +72,9 @@ class User extends Authenticatable implements Auditable
     {
         return $this->hasMany(Project_sales_order::class);
     }
+
+    public function project_invoice_dp(): HasMany
+    {
+        return $this->hasMany(Project_invoice_dp::class);
+    }
 }

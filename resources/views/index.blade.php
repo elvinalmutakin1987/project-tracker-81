@@ -36,3 +36,18 @@
         </div>
     </div>
 @endsection
+
+
+@push('javascript')
+    <script>
+        @if (session('message'))
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "Success!",
+                    text: "{{ session('message') }}",
+                    icon: "success"
+                });
+            });
+        @endif
+    </script>
+@endpush

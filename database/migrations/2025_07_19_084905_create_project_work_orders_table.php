@@ -11,20 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_surveys', function (Blueprint $table) {
+        Schema::create('project_work_orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('projsur_number', 20)->nullable();
-            $table->timestamp('projsur_started_at')->nullable();
-            $table->timestamp('projsur_finished_at')->nullable();
-            $table->string('projsur_denah', 1)->nullable();
-            $table->string('projsur_shop', 1)->nullable();
-            $table->string('projsur_sld', 1)->nullable();
-            $table->string('projsur_rab', 1)->nullable();
-            $table->string('projsur_personil', 1)->nullable();
-            $table->string('projsur_schedule', 1)->nullable();
-            $table->enum('projsur_status', [
+            $table->string('projwo_number', 20)->nullable();
+            $table->timestamp('projwo_started_at')->nullable();
+            $table->timestamp('projwo_finished_at')->nullable();
+            $table->enum('projwo_status', [
                 'Open',
                 'Not Started',
                 'Started',
@@ -35,8 +29,9 @@ return new class extends Migration
                 'Cancelled',
                 'Done',
             ])->nullable();
-            $table->longText('projsur_hold_message')->nullable();
-            $table->longText('projsur_cancel_message')->nullable();
+            $table->longText('projwo_hold_message')->nullable();
+            $table->longText('projwo_revisi_message')->nullable();
+            $table->longText('projwo_cancel_message')->nullable();
             $table->timestamps();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -48,6 +43,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_surveys');
+        Schema::dropIfExists('project_work_orders');
     }
 };

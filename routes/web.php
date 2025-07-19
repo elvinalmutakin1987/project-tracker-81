@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\HomeController;
@@ -75,6 +76,14 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/finish-offer/{project_offer}', [TaskBoardController::class, 'finish_offer'])->name('task_board.finish_offer');
             Route::get('task_board/document-offer/{project_offer}', [TaskBoardController::class, 'document_offer'])->name('task_board.document_offer');
             Route::put('task_board/document-offer/{project_offer}', [TaskBoardController::class, 'document_offer_update'])->name('task_board.document_offer.update');
+
+            Route::put('task_board/take-sales-order/{project_sales_order}', [TaskBoardController::class, 'take_sales_order'])->name('task_board.take_sales_order');
+            Route::put('task_board/hold-sales-order/{project_sales_order}', [TaskBoardController::class, 'hold_sales_order'])->name('task_board.hold_sales_order');
+            Route::put('task_board/continue-sales-order/{project_sales_order}', [TaskBoardController::class, 'continue_sales_order'])->name('task_board.continue_sales_order');
+            Route::put('task_board/approval-sales-order/{project_sales_order}', [TaskBoardController::class, 'approval_sales_order'])->name('task_board.approval_sales_order');
+            Route::put('task_board/finish-sales-order/{project_sales_order}', [TaskBoardController::class, 'finish_sales_order'])->name('task_board.finish_sales_order');
+            Route::get('task_board/document-sales-order/{project_sales_order}', [TaskBoardController::class, 'document_sales_order'])->name('task_board.document_sales_order');
+            Route::put('task_board/document-sales-order/{project_sales_order}', [TaskBoardController::class, 'document_sales_order_update'])->name('task_board.document_sales_order.update');
         });
 
         /**
@@ -82,9 +91,19 @@ Route::middleware(['auth'])->group(function () {
          */
 
         /**
-         * Finance & Accounting
+         * Finance Accounting
          */
+        Route::group(['middleware' => ['role_or_permission:task_board.sales_admin']], function () {
+            Route::put('task_board/take-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'take_invoice_dp'])->name('task_board.take_invoice_dp');
+            Route::put('task_board/hold-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'hold_invoice_dp'])->name('task_board.hold_invoice_dp');
+            Route::put('task_board/continue-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'continue_invoice_dp'])->name('task_board.continue_invoice_dp');
+            Route::put('task_board/approval-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'approval_invoice_dp'])->name('task_board.approval_invoice_dp');
+            Route::put('task_board/finish-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'finish_invoice_dp'])->name('task_board.finish_invoice_dp');
+            Route::get('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp'])->name('task_board.document_invoice_dp');
+            Route::put('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp_update'])->name('task_board.document_offer.update');
+        });
 
+        Route::put('task_board/cancel', [TaskBoardController::class, 'cancel'])->name('task_board.cancel');
         Route::get('task_board-file-download/{file_upload}', [TaskBoardController::class, 'document_download'])->name('task_board.document_download');
         Route::delete('task_board', [TaskBoardController::class, 'destroy'])->name('task_board.delete');
         Route::delete('task_board/file-remove/{file_upload}', [TaskBoardController::class, 'document_remove'])->name('task_board.document_remove');
@@ -112,4 +131,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('get_file_pdf', [HelperController::class, 'get_file_pdf'])->name('get_file_pdf');
     Route::get('get_file_image', [HelperController::class, 'get_file_image'])->name('get_file_image');
+
+    Route::get('change_password', [ChangePasswordController::class, 'index'])->name('change_password.index');
+    Route::put('change_password', [ChangePasswordController::class, 'store'])->name('change_password.store');
 });

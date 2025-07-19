@@ -15,14 +15,18 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('projso_number', 20)->nullable();
             $table->timestamp('projso_started_at')->nullable();
             $table->timestamp('projso_finished_at')->nullable();
             $table->string('projso_grand_total', 16)->nullable();
+            $table->string('projso_sales_order', 1)->nullable();
             $table->string('projso_so_number', 20)->nullable();
             $table->string('projso_po_number', 20)->nullable();
             $table->enum('projso_status', [
                 'Open',
+                'Not Started',
                 'Started',
+                'On Going',
                 'Hold',
                 'Revisi Mesin',
                 'Approval',

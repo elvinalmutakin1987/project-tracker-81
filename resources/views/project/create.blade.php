@@ -125,9 +125,14 @@
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
-                                    <label for="proj_notes" class="col-sm-3 col-form-label">Notes</label>
+                                    <label for="brand_id" class="col-sm-3 col-form-label">Brand</label>
                                     <div class="col-sm-9">
-                                        <textarea class="form-control" name="proj_notes" rows="3">{!! old('proj_notes') !!}</textarea>
+                                        <select class="form-select" id="brand_id" name="brand_id[]" multiple>
+                                            @foreach ($brand as $d)
+                                                <option value="{{ $d->id }}">
+                                                    {{ $d->brand_name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
@@ -177,6 +182,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="mb-2 row">
+                                    <label for="proj_notes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" name="proj_notes" rows="3">{!! old('proj_notes') !!}</textarea>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-footer">
                                 <div class="dropdown d-inline">
@@ -189,7 +200,7 @@
                                                 value="Draft">As
                                                 Draft</button></li>
                                         <li><button class="dropdown-item" type="submit" name="proj_status"
-                                                value="Pra-tender">Pre sales</button></li>
+                                                value="Pre Sales">Pre sales</button></li>
                                     </ul>
                                 </div>
                                 <a class="btn btn-secondary" href="{{ route('project.index') }}" role="button">Back</a>
@@ -213,6 +224,12 @@
             });
 
             $('#customer_id').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+                    'style',
+            });
+
+            $('#brand_id').select2({
                 theme: "bootstrap-5",
                 width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
                     'style',

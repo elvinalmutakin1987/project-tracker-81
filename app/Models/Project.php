@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -11,6 +13,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Project extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
+    use HasFactory;
 
     protected $auditInclude = [
         'work_type_id',
@@ -80,9 +83,14 @@ class Project extends Model implements Auditable
         return $this->hasOne(Project_offer::class);
     }
 
-    public function project_so(): HasOne
+    public function project_sales_order(): HasOne
     {
         return $this->hasOne(Project_sales_order::class);
+    }
+
+    public function project_invoice_dp(): HasOne
+    {
+        return $this->hasOne(Project_invoice_dp::class);
     }
 
     public function work_type(): BelongsTo
@@ -93,5 +101,10 @@ class Project extends Model implements Auditable
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class)->withDefault(['cust_name' => null]);
+    }
+
+    public function project_brand(): BelongsToMany
+    {
+        return $this->belongsToMany(Brand::class, 'project_brands');
     }
 }

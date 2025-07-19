@@ -68,6 +68,13 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td class="fw-bold table-light">Brand</td>
+                                        @php
+                                            $brand = $project->project_brand->pluck('brand_name');
+                                        @endphp
+                                        <td>{{ $brand->implode(', ') }}</td>
+                                    </tr>
+                                    <tr>
                                         <td class="fw-bold table-light">Notes</td>
                                         <td>{!! $project->proj_notes !!}</td>
                                     </tr>

@@ -55,6 +55,10 @@
             $("#show").on('change', function() {
                 search()
             })
+
+            $("#taker").on('change', function() {
+                search()
+            })
         });
 
         function search() {
@@ -63,11 +67,13 @@
                     'search' => '_search',
                     'status' => '_status',
                     'show' => '_show',
+                    'taker' => '_taker',
                     'assignee' => 'pre-sales',
                 ]) !!}`
             url = url.replace('_search', $("#search").val())
             url = url.replace('_status', $("#status").val())
             url = url.replace('_show', $("#show").val())
+            url = url.replace('_taker', $("#taker").val())
             window.open(url, '_self')
         }
 
@@ -141,6 +147,22 @@
         }
 
         @if (Auth::user()->hasRole('superadmin'))
+            function cancel(id) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "The process will be cancelled",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, cancel it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-cancel' + id).submit();
+                    }
+                });
+            }
+
             function delete_data(id) {
                 Swal.fire({
                     title: "Are you sure?",

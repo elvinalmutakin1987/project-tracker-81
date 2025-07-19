@@ -64,4 +64,48 @@ class HelperController extends Controller
             'Content-Type' => 'image/jpeg',
         ]);
     }
+
+    public static function generate_code(String $document)
+    {
+        $initials = '';
+        $date = date('Y-m-d');
+        $day = date('d', strtotime($date));
+        $month = date('m', strtotime($date));
+        $year = date('Y', strtotime($date));
+        $document_number = Document_number::where('document', $document)
+            ->where('year', date('Y'))
+            ->orderBy('id')
+            ->first();
+        if (!$document_number) {
+            $document_number = new Document_number();
+            $prefix = 1;
+        } else {
+            $prefix = (int) $document_number->prefix + 1;
+        }
+        if ($document == 'Pre Sales') {
+            $initials = '1';
+        } elseif ($document == 'Sales Admin - Quotation') {
+            $initials = '2-1';
+        } elseif ($document == 'Sales Admin - Sales Order') {
+            $initials = '2-2';
+        } elseif ($document == 'Sales Admin - Work Order') {
+            $initials = '2-3';
+        } elseif ($document == 'Finance Accounting - Invoice DP') {
+            $initials = '3-1';
+        } elseif ($document == 'Finance Accounting - Invoice') {
+            $initials = '3-2';
+        } elseif ($document == 'Operation') {
+            $initials = '4';
+        }
+        $number = $initials . '-' . str_pad($prefix, 4, '0', STR_PAD_LEFT);
+        $document_number->document = $document;
+        $document_number->number = $number;
+        $document_number->date = $date;
+        $document_number->prefix = $prefix;
+        $document_number->day = $day;
+        $document_number->month = $month;
+        $document_number->year = $year;
+        $document_number->save();
+        return $number;
+    }
 }

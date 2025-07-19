@@ -2,10 +2,12 @@
      use App\Models\Project_offer;
      use App\Models\Project_sales_order;
      use App\Models\Project_survey;
+     use App\Models\Project_invoice_dp;
 
      $total_survey_pending = Project_survey::whereNotIn('projsur_status', ['Cancelled', 'Done'])->count();
      $total_offer_pending = Project_offer::whereNotIn('projoff_status', ['Cancelled', 'Done'])->count();
      $total_so_pending = Project_sales_order::whereNotIn('projso_status', ['Cancelled', 'Done'])->count();
+     $total_invdp_pending = Project_invoice_dp::whereNotIn('projinvdp_status', ['Cancelled', 'Done'])->count();
  @endphp
 
 
@@ -17,7 +19,9 @@
                  href="{{ route('task_board.index', ['assignee' => 'pre-sales']) }}">Pre
                  Sales
                  @if ($total_survey_pending > 0)
-                     <span class="badge text-bg-warning rounded-pill">{{ $total_survey_pending }}</span>
+                     <span class="badge text-bg-warning rounded-pill">
+                         {{ $total_survey_pending }}
+                     </span>
                  @endif
              </a>
          </li>
@@ -28,20 +32,23 @@
                  {{ $assignee == 'sales-admin' ? 'aria-current="page"' : '' }}
                  href="{{ route('task_board.index', ['assignee' => 'sales-admin']) }}">Sales
                  Admin
-                 @if ($total_offer_pending > 0)
-                     <span class="badge text-bg-warning rounded-pill">{{ $total_offer_pending }}</span>
+                 @if ($total_offer_pending + $total_so_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill">
+                         {{ $total_offer_pending + $total_so_pending }}
+                     </span>
                  @endif
              </a>
          </li>
      @endif
      @if (Auth::user()->hasPermissionTo('task_board.finance_accounting'))
          <li class="nav-item">
-             <a class="nav-link {{ $assignee == 'finance_accounting' ? 'active' : '' }}"
-                 {{ $assignee == 'finance_accounting' ? 'aria-current="page"' : '' }}
-                 href="{{ route('task_board.index', ['assignee' => 'finance_accounting']) }}">Finance & Accounting
-                 @if ($project_offer->where('projoff_status', '!=', 'Done')->count() > 0)
-                     <span
-                         class="badge text-bg-warning rounded-pill">{{ $project_offer->where('projoff_status', '!=', 'Done')->count() }}</span>
+             <a class="nav-link {{ $assignee == 'finance-accounting' ? 'active' : '' }}"
+                 {{ $assignee == 'finance-accounting' ? 'aria-current="page"' : '' }}
+                 href="{{ route('task_board.index', ['assignee' => 'finance-accounting']) }}">Finance Accounting
+                 @if ($total_invdp_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill">
+                         {{ $total_invdp_pending }}
+                     </span>
                  @endif
              </a>
          </li>
@@ -63,10 +70,33 @@
  <hr class="col-12 ">
 
  @if ($assignee == 'sales-admin')
-     <div class="mb-2">
-         <span class="badge text-bg-warning rounded-pill">Quotation : {{ $total_offer_pending }}</span>
-         <span class="badge text-bg-primary rounded-pill">Sale Order : {{ $total_so_pending }}</span>
-         <span class="badge text-bg-success rounded-pill">Work Order : 5</span>
+     <div class="mb-4 h4">
+         <a href=""
+             onclick="$('#doc_type').val('quotation').trigger('change').on('change', function(){search()}); return false;">
+             <span class="badge text-bg-warning rounded-pill">Quotation : {{ $total_offer_pending }}</span>
+         </a>
+
+         <a href=""
+             onclick="$('#doc_type').val('sales-order').trigger('change').on('change', function(){search()}); return false;">
+             <span class="badge text-bg-primary rounded-pill">Sale Order : {{ $total_so_pending }}</span>
+         </a>
+
+         <a href=""
+             onclick="$('#doc_type').val('work-order').trigger('change').on('change', function(){search()}); return false;">
+             <span class="badge text-bg-success rounded-pill">Work Order : 5</span>
+         </a>
+     </div>
+ @elseif($assignee == 'finance-accounting')
+     <div class="mb-4 h4">
+         <a href=""
+             onclick="$('#doc_type').val('invoice-dp').trigger('change').on('change', function(){search()}); return false;">
+             <span class="badge text-bg-warning rounded-pill">Invoice DP : {{ $total_offer_pending }}</span>
+         </a>
+
+         <a href=""
+             onclick="$('#doc_type').val('invoice').trigger('change').on('change', function(){search()}); return false;">
+             <span class="badge text-bg-primary rounded-pill">Invoce : {{ $total_so_pending }}</span>
+         </a>
      </div>
  @endif
 
@@ -105,12 +135,22 @@
              <input type="text" id="search" name="search" class="form-control" placeholder=""
                  value="{{ request()->get('search') }}">
          </div>
-         <div class="flex-fill" style="width: 22%">
+         @if (Auth::user()->hasAnyPermission(['task_board.pre_sales', 'task_board.sales_admin']))
+             <div class="flex-fill" style="width: 25%">
+                 <label for="taker" class="form-label">Taker</label>
+                 <select class="form-select" id="taker" name="taker">
+                     <option value="All" {{ request()->get('taker') == 'All' ? 'selected' : '' }}>
+                         All
+                     </option>
+                     <option value="Me" {{ request()->get('taker') == 'Me' ? 'selected' : '' }}>
+                         Me
+                     </option>
+                 </select>
+             </div>
+         @endif
+         <div class="flex-fill" style="width: 25%">
              <label for="show" class="form-label">Show</label>
              <select class="form-select" id="show" name="show">
-                 {{-- <option value="5" {{ request()->get('show') == '5' ? 'selected' : '' }}>
-                                        5
-                                    </option> --}}
                  <option value="10" {{ request()->get('show') == '10' ? 'selected' : '' }}>
                      10
                  </option>

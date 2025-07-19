@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_offers', function (Blueprint $table) {
+        Schema::create('project_invoice_dps', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('projoff_number', 20)->nullable();
-            $table->timestamp('projoff_started_at')->nullable();
-            $table->timestamp('projoff_finished_at')->nullable();
-            $table->string('projoff_grand_total', 16)->nullable();
-            $table->string('projoff_offer_number', 20)->nullable();
-            $table->string('projoff_quotation', 1)->nullable();
-            $table->enum('projoff_status', [
+            $table->string('projinvdp_number', 20)->nullable();
+            $table->string('projinvdp_invoice', 1)->nullable();
+            $table->string('projinvdp_invoice_number', 20)->nullable();
+            $table->string('projinvdp_grand_total', 16)->nullable();
+            $table->timestamp('projinvdp_started_at')->nullable();
+            $table->timestamp('projinvdp_finished_at')->nullable();
+            $table->enum('projinvdp_status', [
                 'Open',
                 'Not Started',
                 'Started',
@@ -32,17 +32,17 @@ return new class extends Migration
                 'Cancelled',
                 'Done',
             ])->nullable();
-            $table->enum('projoff_sent_by', [
+            $table->enum('projinvdp_sent_by', [
                 'Whatsapp',
                 'Email',
                 'Whatsapp & Email',
             ])->nullable();
-            $table->string('projoff_email_to')->nullable();
-            $table->string('projoff_wa_to')->nullable();
-            $table->timestamp('projoff_send_at')->nullable();
-            $table->longText('projoff_hold_message')->nullable();
-            $table->longText('projoff_revisi_message')->nullable();
-            $table->longText('projoff_cancel_message')->nullable();
+            $table->string('projinvdp_email_to')->nullable();
+            $table->string('projinvdp_wa_to')->nullable();
+            $table->timestamp('projinvdp_send_at')->nullable();
+            $table->longText('projinvdp_hold_message')->nullable();
+            $table->longText('projinvdp_revisi_message')->nullable();
+            $table->longText('projinvdp_cancel_message')->nullable();
             $table->timestamps();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -54,6 +54,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_offers');
+        Schema::dropIfExists('project_invoice_dps');
     }
 };

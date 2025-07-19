@@ -1,3 +1,7 @@
+@php
+    use App\Models\Project_brand;
+@endphp
+
 @extends('partials.main')
 
 @section('content')
@@ -103,9 +107,21 @@
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
-                                    <label for="proj_notes" class="col-sm-3 col-form-label">Notes</label>
+                                    <label for="brand_id" class="col-sm-3 col-form-label">Brand</label>
                                     <div class="col-sm-9">
-                                        <textarea class="form-control" name="proj_notes" rows="3">{!! old('proj_notes') ?? $project->proj_notes !!}</textarea>
+                                        <select class="form-select" id="brand_id" name="brand_id[]" multiple>
+                                            @php
+                                                $project_brand = Project_brand::where(
+                                                    'project_id',
+                                                    $project->id,
+                                                )->get();
+                                            @endphp
+                                            @foreach ($project_brand as $d)
+                                                <option value="{{ $d->brand_id }}" selected>
+                                                    {{ $d->brand->brand_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
@@ -155,6 +171,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="mb-2 row">
+                                    <label for="proj_notes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" name="proj_notes" rows="3">{!! old('proj_notes') ?? $project->proj_notes !!}</textarea>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-footer">
                                 @if ($project->proj_status == 'Draft')
@@ -168,7 +190,7 @@
                                                     value="Draft">As
                                                     Draft</button></li>
                                             <li><button class="dropdown-item" type="submit" name="proj_status"
-                                                    value="Pra-tender">Pre Sales</button></li>
+                                                    value="Pre Sales">Pre Sales</button></li>
                                         </ul>
                                     </div>
                                 @else
@@ -197,6 +219,12 @@
             });
 
             $('#customer_id').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+                    'style',
+            });
+
+            $('#brand_id').select2({
                 theme: "bootstrap-5",
                 width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
                     'style',

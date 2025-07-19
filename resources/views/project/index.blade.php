@@ -142,7 +142,11 @@
                                         </tr>
                                     @else
                                         @foreach ($project as $d)
-                                            <tr>
+                                            @php
+                                                $pre_sales_status = 'On Going';
+                                                $sales_order_status = 'On Going';
+                                            @endphp
+                                            <tr class="@if ($d->projsur_status == 'Done') table-success @endif">
                                                 <td>
                                                     <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover me-2"
                                                         href="{{ route('project.show', $d->id) }}">{{ $d->proj_number }}</a>
@@ -156,6 +160,16 @@
                                                 <td>{{ $d->proj_finished_date ? \Carbon\Carbon::parse($d->proj_finished_date)->format('d M Y') : '-' }}
                                                 </td>
                                                 <td>{{ $d->proj_status }}
+                                                    @php
+                                                        if (
+                                                            isset($d->project_offer) &&
+                                                            $d->project_offer->projoff_status == 'Done' &&
+                                                            (isset($d->project_survey) &&
+                                                                $d->project_survey->projsur_status == 'Done')
+                                                        ):
+                                                            $pre_sales_status = 'Done';
+                                                        endif;
+                                                    @endphp
                                                 </td>
                                                 <td class="text-end">
                                                     @if (!in_array($d->proj_status, ['Cancelled', 'Closed']))
@@ -207,6 +221,48 @@
                                                                             </form>
                                                                         </li>
                                                                     @elseif($d->proj_status == 'Pre Sales')
+                                                                        @if ($pre_sales_status == 'On Going')
+                                                                        @elseif ($pre_sales_status == 'Done')
+                                                                            <li>
+                                                                                <form class="d-inline"
+                                                                                    action="{{ route('project.update.status', $d->id) }}"
+                                                                                    method="POST"
+                                                                                    id="form-salesorder{{ $d->id }}">
+                                                                                    @csrf
+                                                                                    @method('PUT')
+                                                                                    <input type="hidden"
+                                                                                        id="proj_status{{ $d->id }}salesorder"
+                                                                                        name="proj_status">
+                                                                                    <a class="dropdown-item"
+                                                                                        href="#"
+                                                                                        data-id="{{ $d->id }}"
+                                                                                        onclick="update_status('Sales Order', {{ $d->id }}); return false;">
+                                                                                        Sales Order
+                                                                                    </a>
+                                                                                </form>
+                                                                            </li>
+                                                                        @endif
+                                                                    @elseif($d->proj_status == 'Sales Order')
+                                                                    @endif
+                                                                    <li>
+                                                                        <form class="d-inline"
+                                                                            action="{{ route('project.cancel', $d->id) }}"
+                                                                            method="POST"
+                                                                            id="form-cancel{{ $d->id }}">
+                                                                            @csrf
+                                                                            @method('PUT')
+                                                                            <input type="hidden"
+                                                                                id="cancel-message{{ $d->id }}"
+                                                                                name="message">
+                                                                            <a class="dropdown-item" href="#"
+                                                                                data-id="{{ $d->id }}"
+                                                                                onclick="cancel({{ $d->id }}); return false;">
+                                                                                Cancel
+                                                                            </a>
+                                                                        </form>
+                                                                    </li>
+                                                                    @if (Auth::user()->hasRole('superadmin'))
+                                                                        <hr class="my-1">
                                                                         <li>
                                                                             <form class="d-inline"
                                                                                 action="{{ route('project.update.status', $d->id) }}"
@@ -220,7 +276,7 @@
                                                                                 <a class="dropdown-item" href="#"
                                                                                     data-id="{{ $d->id }}"
                                                                                     onclick="update_status('Assign Pre Sales', {{ $d->id }}); return false;">
-                                                                                    Assign Task to Pre Sales
+                                                                                    Pre Sales
                                                                                 </a>
                                                                             </form>
                                                                         </li>
@@ -237,24 +293,7 @@
                                                                                 <a class="dropdown-item" href="#"
                                                                                     data-id="{{ $d->id }}"
                                                                                     onclick="update_status('Assign Sales Admin', {{ $d->id }}); return false;">
-                                                                                    Assign Task to Sales Admin
-                                                                                </a>
-                                                                            </form>
-                                                                        </li>
-                                                                        <li>
-                                                                            <form class="d-inline"
-                                                                                action="{{ route('project.cancel', $d->id) }}"
-                                                                                method="POST"
-                                                                                id="form-cancel{{ $d->id }}">
-                                                                                @csrf
-                                                                                @method('PUT')
-                                                                                <input type="hidden"
-                                                                                    id="cancel-message{{ $d->id }}"
-                                                                                    name="message">
-                                                                                <a class="dropdown-item" href="#"
-                                                                                    data-id="{{ $d->id }}"
-                                                                                    onclick="cancel({{ $d->id }}); return false;">
-                                                                                    Cancel
+                                                                                    Quotation
                                                                                 </a>
                                                                             </form>
                                                                         </li>
@@ -373,6 +412,9 @@
                     } else if (status == 'Assign Sales Admin') {
                         document.getElementById('proj_status' + id + 'salesadmin').value = status;
                         document.getElementById('form-salesadmin' + id).submit();
+                    } else if (status == 'Sales Order') {
+                        document.getElementById('proj_status' + id + 'salesorder').value = status;
+                        document.getElementById('form-salesorder' + id).submit();
                     }
                 }
             });

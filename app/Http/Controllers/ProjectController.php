@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\Project_offer;
@@ -44,7 +45,12 @@ class ProjectController extends Controller
     {
         $work_type = Work_type::all();
         $customer = Customer::all();
-        return view('project.create', compact('work_type', 'customer'));
+        $brand = Brand::all();
+        return view('project.create', compact(
+            'work_type',
+            'customer',
+            'brand'
+        ));
     }
 
     /**
@@ -86,6 +92,9 @@ class ProjectController extends Controller
             if ($request->proj_status == 'Pre Sales') {
                 $this->create_task('Pre Sales', $project->id);
             }
+            if ($request->has('brand_id')) {
+                $project->project_brand()->attach($request->brand_id);
+            }
             DB::commit();
             return redirect()->route('project.index')->with([
                 'status' => 'success',
@@ -104,7 +113,13 @@ class ProjectController extends Controller
     {
         $work_type = Work_type::all();
         $customer = Customer::all();
-        return view('project.show', compact('project', 'work_type', 'customer'));
+        $brand = Brand::all();
+        return view('project.show', compact(
+            'project',
+            'work_type',
+            'customer',
+            'brand'
+        ));
     }
 
     /**
@@ -114,7 +129,13 @@ class ProjectController extends Controller
     {
         $work_type = Work_type::all();
         $customer = Customer::all();
-        return view('project.edit', compact('project', 'work_type', 'customer'));
+        $brand = Brand::all();
+        return view('project.edit', compact(
+            'project',
+            'work_type',
+            'customer',
+            'brand'
+        ));
     }
 
     /**
@@ -140,6 +161,9 @@ class ProjectController extends Controller
             $project->update($data);
             if ($request->proj_status == 'Pra-tender') {
                 $this->create_task('Pra-tender', $project->id);
+            }
+            if ($request->has('brand_id')) {
+                $project->project_brand()->sync($request->brand_id);
             }
             DB::commit();
             return redirect()->route('project.index')->with([
@@ -199,37 +223,50 @@ class ProjectController extends Controller
      */
     public function create_task(String $task, String $project_id)
     {
-        /**
-         * Ini jika project nya belum started
-         */
         $project = Project::find($project_id);
-        if ($task == 'Pre Sales') {
-            Project_survey::create([
-                'project_id' => $project_id,
-                'projsur_status' => 'Open',
-            ]);
-            Project_offer::create([
-                'project_id' => $project_id,
-                'projoff_status' => 'Open',
-            ]);
-            $project->proj_status = "Pre Sales";
+
+        $mapping = [
+            'Pre Sales' => function () use ($project_id, $project) {
+                Project_survey::create([
+                    'project_id' => $project_id,
+                    'projsur_number' => HelperController::generate_code("Pre Sales"),
+                    'projsur_status' => 'Open',
+                ]);
+                Project_offer::create([
+                    'project_id' => $project_id,
+                    'projoff_number' => HelperController::generate_code("Sales Admin - Quotation"),
+                    'projoff_status' => 'Open',
+                ]);
+                $project->proj_status = "Pre Sales";
+            },
+            'Assign Pre Sales' => function () use ($project_id) {
+                Project_survey::create([
+                    'project_id' => $project_id,
+                    'projsur_number' => HelperController::generate_code("Pre Sales"),
+                    'projsur_status' => 'Open',
+                ]);
+            },
+            'Assign Sales Admin' => function () use ($project_id) {
+                Project_offer::create([
+                    'project_id' => $project_id,
+                    'projoff_number' => HelperController::generate_code("Sales Admin - Quotation"),
+                    'projoff_status' => 'Open',
+                ]);
+            },
+            'Sales Order' => function () use ($project_id, $project) {
+                Project_sales_order::create([
+                    'project_id' => $project_id,
+                    'projso_number' => HelperController::generate_code("Sales Admin - Sales Order"),
+                    'projso_status' => 'Open',
+                ]);
+                $project->proj_status = "Sales Order";
+            },
+        ];
+
+        if (isset($mapping[$task])) {
+            $mapping[$task]();
+            $project->save();
         }
-        /**
-         * Ini jika project nya sudah Started
-         */
-        if ($task == 'Assign Pre Sales') {
-            Project_survey::create([
-                'project_id' => $project_id,
-                'projsur_status' => 'Open',
-            ]);
-        }
-        if ($task == 'Assign Sales Admin') {
-            Project_offer::create([
-                'project_id' => $project_id,
-                'projoff_status' => 'Open',
-            ]);
-        }
-        $project->save();
     }
 
     /**

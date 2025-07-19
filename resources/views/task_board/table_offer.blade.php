@@ -3,6 +3,7 @@
          <table id="table1" class="table table-striped mt-3 table-sm">
              <thead class="table-group-divider">
                  <tr>
+                     <th>Task ID</th>
                      <th>Project ID</th>
                      <th>Project Name</th>
                      <th>Customer</th>
@@ -11,7 +12,7 @@
                      <th>Finished At</th>
                      <th>Status</th>
                      <th>Aging</th>
-                     <th class="text-end" style="width: 15%">Action</th>
+                     <th class="text-end">Action</th>
                  </tr>
              </thead>
              <tbody class="table-group-divider">
@@ -21,13 +22,35 @@
                      </tr>
                  @else
                      @foreach ($project_offer as $d)
-                         <tr>
+                         @php
+                             $isMoreThan36Hours = false;
+                             $isMoreThan48Hours = false;
+                             $now = \Carbon\Carbon::now();
+                             $started_at = \Carbon\Carbon::parse($d->projoff_started_at);
+                             if ($d->projoff_started_at) {
+                                 $started_at = \Carbon\Carbon::parse($d->projoff_started_at);
+                                 $diffInHours = $started_at->diffInHours($now);
+
+                                 // Cek apakah lebih dari 36 jam
+                                 $isMoreThan36Hours = $diffInHours >= 36 && $diffInHours < 48;
+                                 $isMoreThan48Hours = $diffInHours >= 48;
+                             }
+                         @endphp
+                         <tr
+                             class="
+                        @if ($d->projoff_status == 'Done') table-success
+                        @elseif(in_array($d->projoff_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
+                            @if ($isMoreThan36Hours == true) table-warning @endif
+                            @if ($isMoreThan48Hours == true) table-danger @endif
+                        @endif
+                        ">
+                             <td>{{ $d->projoff_number }}</td>
                              <td><a
-                                     href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee]) }}">{{ $d->project->proj_number }}</a>
+                                     href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                              </td>
                              <td>{{ $d->project->proj_name }}</td>
-                             <td>{{ $d->project->proj_customer }}</td>
-                             <td>{{ $d->user->username ?? '-' }}</td>
+                             <td>{{ $d->project->customer->cust_name }}</td>
+                             <td>{{ $d->user->name ?? '-' }}</td>
                              <td>{{ $d->projoff_started_at ?? '-' }}</td>
                              <td>{{ $d->projoff_finished_at ?? '-' }}</td>
                              <td>{{ $d->projoff_status }}</td>
@@ -123,7 +146,7 @@
                                                                  </form>
                                                              @elseif($d->projoff_status == 'Hold')
                                                                  <form class="d-inline"
-                                                                     action="{{ route('task_board.continue_survey', $d->id) }}"
+                                                                     action="{{ route('task_board.continue_offer', $d->id) }}"
                                                                      method="POST"
                                                                      id="form-continue{{ $d->id }}">
                                                                      @csrf
@@ -165,6 +188,25 @@
                                              Already Taken
                                          @endif
                                      @endif
+                                 @endif
+
+                                 @if (Auth::user()->hasRole('superadmin'))
+                                     <form class="d-inline"
+                                         action="{{ route('task_board.cancel', ['assignee' => 'sales-admin', 'id' => $d->id, 'doc_type' => 'quotation']) }}"
+                                         method="POST" id="form-cancel{{ $d->id }}">
+                                         @csrf
+                                         @method('PUT')
+                                         <a class="btn btn-secondary btn-sm" href="#" role="button"
+                                             onclick="cancel({{ $d->id }}); return false;">Cancel</a>
+                                     </form>
+                                     <form class="d-inline"
+                                         action="{{ route('task_board.delete', ['assignee' => 'sales-admin', 'id' => $d->id, 'doc_type' => 'quotation']) }}"
+                                         method="POST" id="form-delete{{ $d->id }}">
+                                         @csrf
+                                         @method('DELETE')
+                                         <a class="btn btn-danger btn-sm" href="#" role="button"
+                                             onclick="delete_data({{ $d->id }}); return false;">Delete</a>
+                                     </form>
                                  @endif
                              </td>
                          </tr>

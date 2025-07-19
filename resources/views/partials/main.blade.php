@@ -96,7 +96,8 @@
                         <a class="nav-link dropdown-toggle text-light" href="#" id="dropdown02"
                             data-bs-toggle="dropdown" aria-expanded="false">{{ auth()->user()->name }}</a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown02">
-                            <li><a class="dropdown-item" href="#">Change Password</a></li>
+                            <li><a class="dropdown-item" href="{{ route('change_password.index') }}">Change Password</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ route('logout') }}">Log Out</a></li>
                         </ul>
                     </li>

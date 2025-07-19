@@ -1,8 +1,9 @@
 <div class="row">
     <div class="col">
-        <table id="table1" class="table table-striped mt-3 table-sm">
+        <table id="table1" class="table mt-3 table-sm">
             <thead class="table-group-divider">
                 <tr>
+                    <th>Task ID</th>
                     <th>Project ID</th>
                     <th>Project Name</th>
                     <th>Customer</th>
@@ -11,7 +12,7 @@
                     <th>Finished At</th>
                     <th>Status</th>
                     <th>Aging</th>
-                    <th class="text-end" style="width: 15%">Action</th>
+                    <th class="text-end">Action</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -21,13 +22,35 @@
                     </tr>
                 @else
                     @foreach ($project_survey as $d)
-                        <tr>
+                        @php
+                            $isMoreThan36Hours = false;
+                            $isMoreThan48Hours = false;
+                            $now = \Carbon\Carbon::now();
+                            $started_at = \Carbon\Carbon::parse($d->projsur_started_at);
+                            if ($d->projsur_started_at) {
+                                $started_at = \Carbon\Carbon::parse($d->projsur_started_at);
+                                $diffInHours = $started_at->diffInHours($now);
+
+                                // Cek apakah lebih dari 36 jam
+                                $isMoreThan36Hours = $diffInHours >= 36 && $diffInHours < 48;
+                                $isMoreThan48Hours = $diffInHours >= 48;
+                            }
+                        @endphp
+                        <tr
+                            class="
+                        @if ($d->projsur_status == 'Done') table-success
+                        @elseif(in_array($d->projsur_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
+                            @if ($isMoreThan36Hours == true) table-warning @endif
+                            @if ($isMoreThan48Hours == true) table-danger @endif
+                        @endif
+                        ">
+                            <td>{{ $d->projsur_number }}</td>
                             <td><a
-                                    href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee]) }}">{{ $d->project->proj_number }}</a>
+                                    href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                             </td>
                             <td>{{ $d->project->proj_name }}</td>
-                            <td>{{ $d->project->proj_customer }}</td>
-                            <td>{{ $d->user->username ?? '-' }}</td>
+                            <td>{{ $d->project->customer->cust_name }}</td>
+                            <td>{{ $d->user->name ?? '-' }}</td>
                             <td>{{ $d->projsur_started_at ?? '-' }}</td>
                             <td>{{ $d->projsur_finished_at ?? '-' }}</td>
                             <td>{{ $d->projsur_status }}</td>
@@ -63,103 +86,114 @@
                                 @endif
                             </td>
                             <td class="text-end">
-                                @if ($d->projsur_status == 'Open')
-                                    <form class="d-inline" action="{{ route('task_board.take_survey', $d->id) }}"
-                                        method="POST" id="form-take{{ $d->id }}">
-                                        @csrf
-                                        @method('PUT')
-                                        <a class="btn btn-warning btn-sm" href="#" role="button"
-                                            onclick="take_task({{ $d->id }}); return false;">Pick
-                                            Up</a>
-                                    </form>
-                                @else
-                                    @if ($d->user_id == auth()->user()->id)
-                                        @if ($d->projsur_status != 'Done')
-                                            <div class="btn-group" role="group"
-                                                aria-label="Button group with nested dropdown">
-                                                <div class="btn-group" role="group">
-                                                    <button type="button"
-                                                        class="btn btn-primary btn-sm dropdown-toggle"
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                        Action
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('task_board.document_survey', $d->id) }}">
-                                                                Document Upload
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            @if ($d->projsur_status == 'Started')
-                                                                <form class="d-inline"
-                                                                    action="{{ route('task_board.hold_survey', $d->id) }}"
-                                                                    method="POST" id="form-hold{{ $d->id }}">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden"
-                                                                        id="hold-message{{ $d->id }}"
-                                                                        name="message">
-                                                                    <a class="dropdown-item" href="#"
-                                                                        data-id="{{ $d->id }}"
-                                                                        onclick="hold({{ $d->id }}); return false;">
-                                                                        Hold
-                                                                    </a>
-                                                                </form>
-                                                                <form class="d-inline"
-                                                                    action="{{ route('task_board.finish_survey', $d->id) }}"
-                                                                    method="POST" id="form-finish{{ $d->id }}">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <input type="hidden"
-                                                                        id="finih-message{{ $d->id }}"
-                                                                        name="message">
-                                                                    <a class="dropdown-item" href="#"
-                                                                        data-id="{{ $d->id }}"
-                                                                        onclick="finish({{ $d->id }}); return false;">
-                                                                        Finish
-                                                                    </a>
-                                                                </form>
-                                                            @elseif($d->projsur_status == 'Hold')
-                                                                <form class="d-inline"
-                                                                    action="{{ route('task_board.continue_survey', $d->id) }}"
-                                                                    method="POST"
-                                                                    id="form-continue{{ $d->id }}">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <a class="dropdown-item" href="#"
-                                                                        data-id="{{ $d->id }}"
-                                                                        onclick="continue_({{ $d->id }}); return false;">
-                                                                        Continue
-                                                                    </a>
-                                                                </form>
-                                                            @endif
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
+                                <div class="d-inline-flex gap-1">
+                                    @if ($d->projsur_status == 'Open')
+                                        <form class="d-inline" action="{{ route('task_board.take_survey', $d->id) }}"
+                                            method="POST" id="form-take{{ $d->id }}">
+                                            @csrf
+                                            @method('PUT')
+                                            <a class="btn btn-warning btn-sm" href="#" role="button"
+                                                onclick="take_task({{ $d->id }}); return false;">Pick
+                                                Up</a>
+                                        </form>
                                     @else
-                                        @if ($d->projsur_status == 'Cancelled')
-                                            Cancelled
-                                        @elseif ($d->projsur_status == 'Done')
-                                            Done
+                                        @if ($d->user_id == auth()->user()->id)
+                                            @if ($d->projsur_status != 'Done')
+                                                <div class="btn-group" role="group"
+                                                    aria-label="Button group with nested dropdown">
+                                                    <div class="btn-group" role="group">
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm dropdown-toggle"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            Action
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('task_board.document_survey', $d->id) }}">
+                                                                    Document Upload
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                @if ($d->projsur_status == 'Started')
+                                                                    <form class="d-inline"
+                                                                        action="{{ route('task_board.hold_survey', $d->id) }}"
+                                                                        method="POST"
+                                                                        id="form-hold{{ $d->id }}">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <input type="hidden"
+                                                                            id="hold-message{{ $d->id }}"
+                                                                            name="message">
+                                                                        <a class="dropdown-item" href="#"
+                                                                            data-id="{{ $d->id }}"
+                                                                            onclick="hold({{ $d->id }}); return false;">
+                                                                            Hold
+                                                                        </a>
+                                                                    </form>
+                                                                    <form class="d-inline"
+                                                                        action="{{ route('task_board.finish_survey', $d->id) }}"
+                                                                        method="POST"
+                                                                        id="form-finish{{ $d->id }}">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <input type="hidden"
+                                                                            id="finih-message{{ $d->id }}"
+                                                                            name="message">
+                                                                        <a class="dropdown-item" href="#"
+                                                                            data-id="{{ $d->id }}"
+                                                                            onclick="finish({{ $d->id }}); return false;">
+                                                                            Finish
+                                                                        </a>
+                                                                    </form>
+                                                                @elseif($d->projsur_status == 'Hold')
+                                                                    <form class="d-inline"
+                                                                        action="{{ route('task_board.continue_survey', $d->id) }}"
+                                                                        method="POST"
+                                                                        id="form-continue{{ $d->id }}">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <a class="dropdown-item" href="#"
+                                                                            data-id="{{ $d->id }}"
+                                                                            onclick="continue_({{ $d->id }}); return false;">
+                                                                            Continue
+                                                                        </a>
+                                                                    </form>
+                                                                @endif
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @else
-                                            Already Taken
+                                            @if ($d->projsur_status == 'Cancelled')
+                                                Cancelled
+                                            @elseif ($d->projsur_status == 'Done')
+                                                Done
+                                            @else
+                                                Already Taken
+                                            @endif
                                         @endif
                                     @endif
-                                @endif
-
-                                @if (Auth::user()->hasRole('superadmin'))
-                                    <form class="d-inline"
-                                        action="{{ route('task_board.delete', ['assignee' => 'pre-sales', 'id' => $d->id]) }}"
-                                        method="POST" id="form-delete{{ $d->id }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <a class="btn btn-danger btn-sm" href="#" role="button"
-                                            onclick="delete_data({{ $d->id }}); return false;">Delete</a>
-                                    </form>
-                                @endif
+                                    @if (Auth::user()->hasRole('superadmin'))
+                                        <form class="d-inline"
+                                            action="{{ route('task_board.cancel', ['assignee' => 'pre-sales', 'id' => $d->id]) }}"
+                                            method="POST" id="form-cancel{{ $d->id }}">
+                                            @csrf
+                                            @method('PUT')
+                                            <a class="btn btn-secondary btn-sm" href="#" role="button"
+                                                onclick="cancel({{ $d->id }}); return false;">Cancel</a>
+                                        </form>
+                                        <form class="d-inline"
+                                            action="{{ route('task_board.delete', ['assignee' => 'pre-sales', 'id' => $d->id]) }}"
+                                            method="POST" id="form-delete{{ $d->id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <a class="btn btn-danger btn-sm" href="#" role="button"
+                                                onclick="delete_data({{ $d->id }}); return false;">Delete</a>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach
