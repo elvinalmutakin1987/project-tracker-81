@@ -73,6 +73,10 @@
             background-color: #616161;
             color: white
         }
+
+        .sidebar.collapsed {
+            margin-left: -250px;
+        }
     </style>
 </head>
 
@@ -183,6 +187,8 @@
             }
         });
     </script>
+
+
 </body>
 
 </html>

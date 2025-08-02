@@ -93,14 +93,14 @@ Route::middleware(['auth'])->group(function () {
         /**
          * Finance Accounting
          */
-        Route::group(['middleware' => ['role_or_permission:task_board.sales_admin']], function () {
+        Route::group(['middleware' => ['role_or_permission:task_board.accounting']], function () {
             Route::put('task_board/take-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'take_invoice_dp'])->name('task_board.take_invoice_dp');
             Route::put('task_board/hold-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'hold_invoice_dp'])->name('task_board.hold_invoice_dp');
             Route::put('task_board/continue-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'continue_invoice_dp'])->name('task_board.continue_invoice_dp');
             Route::put('task_board/approval-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'approval_invoice_dp'])->name('task_board.approval_invoice_dp');
             Route::put('task_board/finish-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'finish_invoice_dp'])->name('task_board.finish_invoice_dp');
             Route::get('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp'])->name('task_board.document_invoice_dp');
-            Route::put('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp_update'])->name('task_board.document_offer.update');
+            Route::put('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp_update'])->name('task_board.document_invoice_dp.update');
         });
 
         Route::put('task_board/cancel', [TaskBoardController::class, 'cancel'])->name('task_board.cancel');
