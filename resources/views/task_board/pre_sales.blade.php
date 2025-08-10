@@ -43,14 +43,18 @@
         @endif
 
         $(document).ready(function() {
-            $('#status').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#status').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
+
+            $("#status").on('change', function() {
+                search()
+            })
 
             $("#show").on('change', function() {
                 search()

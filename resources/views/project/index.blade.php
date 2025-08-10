@@ -333,23 +333,23 @@
         @endif
 
         $(document).ready(function() {
-            $('#work_type').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#work_type').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
 
-            $('#status').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#status').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
 
             $("#show").on('change', function() {
                 search()

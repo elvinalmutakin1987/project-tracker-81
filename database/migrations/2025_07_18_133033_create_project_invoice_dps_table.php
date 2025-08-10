@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('projinvdp_invoice', 1)->nullable();
             $table->string('projinvdp_invoice_number', 20)->nullable();
             $table->string('projinvdp_grand_total', 16)->nullable();
+            $table->string('projinvdp_total', 16)->nullable();
+            $table->string('projinvdp_tax', 16)->nullable();
+            $table->string('projinvdp_discount', 16)->nullable();
             $table->timestamp('projinvdp_started_at')->nullable();
             $table->timestamp('projinvdp_finished_at')->nullable();
             $table->enum('projinvdp_status', [

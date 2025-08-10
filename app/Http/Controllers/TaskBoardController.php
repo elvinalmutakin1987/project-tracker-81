@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\File_upload;
 use App\Models\Project;
+use App\Models\Project_invoice;
 use App\Models\Project_invoice_dp;
 use App\Models\Project_offer;
 use App\Models\Project_sales_order;
 use App\Models\Project_survey;
+use App\Models\Project_work_order;
 use App\Models\Work_type;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -127,6 +129,7 @@ class TaskBoardController extends Controller
                 ]);
             }
         }
+
         if ($assignee == 'sales-admin') {
             $doc_type = "quotation";
             if ($request->has('doc_type')) {
@@ -210,14 +213,17 @@ class TaskBoardController extends Controller
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
-            'assignee'
+            'assignee',
+            'doc_type'
         ));
+
         return view($view, compact(
             'project_survey',
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
             'assignee',
+            'doc_type',
             'tab',
             'table'
         ));
@@ -624,7 +630,7 @@ class TaskBoardController extends Controller
              */
             Project_invoice_dp::create([
                 'project_id' => $project_sales_order->project_id,
-                'projinvdp_number' => HelperController::generate_code("Invoice DP"),
+                'projinvdp_number' => HelperController::generate_code("Finance Accounting - Invoice DP"),
                 'projinvdp_status' => 'Open'
             ]);
             DB::commit();
@@ -688,6 +694,7 @@ class TaskBoardController extends Controller
     /**
      * Finance & Accounting
      */
+    //Invoice DP
     public function take_invoice_dp(Request $request, Project_invoice_dp $project_invoice_dp)
     {
         DB::beginTransaction();
@@ -795,6 +802,192 @@ class TaskBoardController extends Controller
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'sales-order'])->with([
                 'status' => 'success',
                 'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function document_invoice_dp(Request $request, Project_invoice_dp $project_invoice_dp)
+    {
+        return view('task_board.document_invoice_dp', compact('project_invoice_dp'));
+    }
+
+    public function document_invoice_dp_update(Request $request, Project_invoice_dp $project_invoice_dp)
+    {
+        DB::beginTransaction();
+        try {
+            $file_upload = new File_upload();
+            $file_upload->file_doc_type = $request->file_doc_type;
+            $file_upload->file_table = 'project_invoice_dp';
+            $file_upload->file_table_id = $project_invoice_dp->id;
+            if ($request->has('file_upload')) {
+                $file = $request->file('file_upload');
+                $file_real_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $file_directory = "accounting";
+                $file_name = Str::random(24) . "." . $file_ext;
+                Storage::disk('local')->put($file_directory . '/' . $file_name, file_get_contents($request->file('file_upload')->getRealPath()));
+                $file_upload->file_directory = $file_directory;
+                $file_upload->file_name = $file_name;
+                $file_upload->file_real_name = $file_real_name;
+                $file_upload->file_ext = $file_ext;
+            }
+            $file_upload->file_link = $request->file_link;
+            $file_upload->save();
+            $project_invoice_dp->projinvdp_invoice = 1;
+            $project_invoice_dp->save();
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
+                'status' => 'success',
+                'message' => 'Data has been uploaded! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    //Invoice
+    public function take_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            if ($project_invoice->user_id != null) {
+                return view('error', [
+                    'message' => "Task has been picked up."
+                ]);
+            }
+            $project_invoice = Project_invoice::where('id', $project_invoice->id)->lockForUpdate()->first();
+            $project_invoice->update([
+                'user_id' => Auth::user()->id,
+                'projinv_started_at' => Carbon::now(),
+                'projinv_status' => "Started"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been taken! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function hold_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            $project_invoice->update([
+                'projinv_status' => "Hold",
+                'projinv_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function continue_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            $project_invoice->update([
+                'projinv_status' => "Started",
+                'projinv_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function approval_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            $project_invoice->update([
+                'projinv_status' => "Approval"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function finish_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            $project_invoice->update([
+                'projinv_invoice_number' => $request->projinv_invoice_number,
+                'projinv_status' => "Done",
+                'projinv_finished_at' => Carbon::now(),
+            ]);
+            $project = Project::find($project_invoice->project_id);
+            $project->update([
+                'proj_status' => "Paid"
+            ]);
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function document_invoice(Request $request, Project_invoice $project_invoice)
+    {
+        return view('task_board.document_invoice_dp', compact('project_invoice_dp'));
+    }
+
+    public function document_invoice_update(Request $request, Project_invoice $project_invoice)
+    {
+        DB::beginTransaction();
+        try {
+            $file_upload = new File_upload();
+            $file_upload->file_doc_type = $request->file_doc_type;
+            $file_upload->file_table = 'project_invoice';
+            $file_upload->file_table_id = $project_invoice->id;
+            if ($request->has('file_upload')) {
+                $file = $request->file('file_upload');
+                $file_real_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $file_directory = "accounting";
+                $file_name = Str::random(24) . "." . $file_ext;
+                Storage::disk('local')->put($file_directory . '/' . $file_name, file_get_contents($request->file('file_upload')->getRealPath()));
+                $file_upload->file_directory = $file_directory;
+                $file_upload->file_name = $file_name;
+                $file_upload->file_real_name = $file_real_name;
+                $file_upload->file_ext = $file_ext;
+            }
+            $file_upload->file_link = $request->file_link;
+            $file_upload->save();
+            $project_invoice->projinvdp_invoice = 1;
+            $project_invoice->save();
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice'])->with([
+                'status' => 'success',
+                'message' => 'Data has been uploaded! '
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();

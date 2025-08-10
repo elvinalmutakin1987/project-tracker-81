@@ -150,7 +150,7 @@
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!",
                 input: "text",
-                inputPlaceholder: "Type offer number here...",
+                inputPlaceholder: "Type sales number here...",
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value == '') {

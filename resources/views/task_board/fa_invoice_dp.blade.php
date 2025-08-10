@@ -42,23 +42,31 @@
         @endif
 
         $(document).ready(function() {
-            $('#status').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#status').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
 
-            $('#doc_type').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#doc_type').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
+
+            $("#status").on('change', function() {
+                search()
+            })
+
+            $("#doc_type").on('change', function() {
+                search()
+            })
 
             $("#show").on('change', function() {
                 search()
@@ -76,7 +84,7 @@
                     'status' => '_status',
                     'show' => '_show',
                     'taker' => '_taker',
-                    'assignee' => 'sales-admin',
+                    'assignee' => 'finance-accounting',
                     'doc_type' => '_doc_type',
                 ]) !!}`
             url = url.replace('_search', $("#search").val())
@@ -150,7 +158,11 @@
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!",
                 input: "text",
-                inputPlaceholder: "Type offer number here...",
+                @if ($doc_type == 'invoice-dp')
+                    inputPlaceholder: "Type invoice dp number here...",
+                @elseif ($doc_type == 'invoice')
+                    inputPlaceholder: "Type invoice number here...",
+                @endif
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value == '') {
@@ -178,6 +190,24 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('form-continue' + id).submit();
+                }
+            });
+        }
+
+        function permit(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Proceeding with the work permit may carry financial risk! Do you want to continue anyway?",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, do it!",
+                input: "textarea",
+                inputPlaceholder: "Type your message here...",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('permit-message' + id).value = result.value;
+                    document.getElementById('form-permit' + id).submit();
                 }
             });
         }

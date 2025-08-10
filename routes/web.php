@@ -93,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
         /**
          * Finance Accounting
          */
-        Route::group(['middleware' => ['role_or_permission:task_board.accounting']], function () {
+        Route::group(['middleware' => ['role_or_permission:task_board.finance_accounting']], function () {
             Route::put('task_board/take-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'take_invoice_dp'])->name('task_board.take_invoice_dp');
             Route::put('task_board/hold-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'hold_invoice_dp'])->name('task_board.hold_invoice_dp');
             Route::put('task_board/continue-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'continue_invoice_dp'])->name('task_board.continue_invoice_dp');

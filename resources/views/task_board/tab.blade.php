@@ -3,11 +3,13 @@
      use App\Models\Project_sales_order;
      use App\Models\Project_survey;
      use App\Models\Project_invoice_dp;
+     //  use App\Models\Project_invoice;
 
      $total_survey_pending = Project_survey::whereNotIn('projsur_status', ['Cancelled', 'Done'])->count();
      $total_offer_pending = Project_offer::whereNotIn('projoff_status', ['Cancelled', 'Done'])->count();
      $total_so_pending = Project_sales_order::whereNotIn('projso_status', ['Cancelled', 'Done'])->count();
      $total_invdp_pending = Project_invoice_dp::whereNotIn('projinvdp_status', ['Cancelled', 'Done'])->count();
+     //  $total_inv_pending = Project_invoice::whereNotIn('projinv_status', ['Cancelled', 'Done'])->count();
  @endphp
 
 
@@ -73,29 +75,36 @@
      <div class="mb-4 h4">
          <a href=""
              onclick="$('#doc_type').val('quotation').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-warning rounded-pill">Quotation : {{ $total_offer_pending }}</span>
+             <span class="badge text-bg-{{ $doc_type == 'quotation' ? 'primary' : 'dark' }} rounded-pill">Quotation :
+                 {{ $total_offer_pending }}</span>
          </a>
 
          <a href=""
              onclick="$('#doc_type').val('sales-order').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-primary rounded-pill">Sale Order : {{ $total_so_pending }}</span>
+             <span class="badge text-bg-{{ $doc_type == 'sales-order' ? 'primary' : 'dark' }} rounded-pill">Sale Order
+                 :
+                 {{ $total_so_pending }}</span>
          </a>
 
          <a href=""
              onclick="$('#doc_type').val('work-order').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-success rounded-pill">Work Order : 5</span>
+             <span class="badge text-bg-{{ $doc_type == 'work-order' ? 'primary' : 'dark' }} rounded-pill">Work Order :
+                 5</span>
          </a>
      </div>
  @elseif($assignee == 'finance-accounting')
      <div class="mb-4 h4">
          <a href=""
              onclick="$('#doc_type').val('invoice-dp').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-warning rounded-pill">Invoice DP : {{ $total_offer_pending }}</span>
+             <span class="badge text-bg-{{ $doc_type == 'invoice-dp' ? 'primary' : 'dark' }} rounded-pill">Invoice
+                 DP
+                 : {{ $total_invdp_pending }}</span>
          </a>
 
          <a href=""
              onclick="$('#doc_type').val('invoice').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-primary rounded-pill">Invoce : {{ $total_so_pending }}</span>
+             <span class="badge text-bg-{{ $doc_type == 'invoice' ? 'primary' : 'dark' }} rounded-pill">Invoce :
+                 {{ $total_so_pending }}</span>
          </a>
      </div>
  @endif
@@ -106,15 +115,28 @@
              <div class="flex-fill w-100">
                  <label for="doc_type" class="form-label">Document</label>
                  <select class="form-select flex-fill" id="doc_type" name="doc_type">
-                     <option value="quotation" {{ request()->get('doc_type') == 'quotation' ? 'selected' : '' }}>
+                     <option value="quotation" {{ $doc_type == 'quotation' ? 'selected' : '' }}>
                          Quotation</option>
-                     <option value="sales-order" {{ request()->get('doc_type') == 'sales-order' ? 'selected' : '' }}>
+                     <option value="sales-order" {{ $doc_type == 'sales-order' ? 'selected' : '' }}>
                          Sales Order</option>
-                     <option value="work-order" {{ request()->get('doc_type') == 'work-order' ? 'selected' : '' }}>
+                     <option value="work-order" {{ $doc_type == 'work-order' ? 'selected' : '' }}>
                          Work Order</option>
                  </select>
              </div>
          @endif
+
+         @if ($assignee == 'finance-accounting')
+             <div class="flex-fill w-100">
+                 <label for="doc_type" class="form-label">Document</label>
+                 <select class="form-select flex-fill" id="doc_type" name="doc_type">
+                     <option value="invoice-dp" {{ $doc_type == 'invoice-dp' ? 'selected' : '' }}>
+                         Invoice DP</option>
+                     <option value="invoice" {{ $doc_type == 'invoice' ? 'selected' : '' }}>
+                         Invoice</option>
+                 </select>
+             </div>
+         @endif
+
          <div class="flex-fill w-100">
              <label for="status" class="form-label">Status</label>
              <select class="form-select flex-fill" id="status" name="status">
@@ -135,6 +157,7 @@
              <input type="text" id="search" name="search" class="form-control" placeholder=""
                  value="{{ request()->get('search') }}">
          </div>
+
          @if (Auth::user()->hasAnyPermission(['task_board.pre_sales', 'task_board.sales_admin']))
              <div class="flex-fill" style="width: 25%">
                  <label for="taker" class="form-label">Taker</label>
@@ -148,6 +171,7 @@
                  </select>
              </div>
          @endif
+
          <div class="flex-fill" style="width: 25%">
              <label for="show" class="form-label">Show</label>
              <select class="form-select" id="show" name="show">

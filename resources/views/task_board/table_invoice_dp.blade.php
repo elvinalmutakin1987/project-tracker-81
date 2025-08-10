@@ -38,13 +38,14 @@
                          @endphp
                          <tr
                              class="
-                        @if ($d->projoff_status == 'Done') table-success
-                        @elseif(in_array($d->projoff_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
+                        @if ($d->projinvdp_status == 'Done') table-success
+                        @elseif(in_array($d->projinvdp_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
                             @if ($isMoreThan36Hours == true) table-warning @endif
                             @if ($isMoreThan48Hours == true) table-danger @endif
                         @endif
                         ">
-                             <td>{{ $d->projoff_number }}</td>
+
+                             <td>{{ $d->projinvdp_number }}</td>
                              <td><a
                                      href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                              </td>
@@ -86,128 +87,147 @@
                                  @endif
                              </td>
                              <td class="text-end">
-                                 @if ($d->projinvdp_status == 'Open')
-                                     <form class="d-inline" action="{{ route('task_board.take_invoice_dp', $d->id) }}"
-                                         method="POST" id="form-take{{ $d->id }}">
-                                         @csrf
-                                         @method('PUT')
-                                         <a class="btn btn-warning btn-sm" href="#" role="button"
-                                             onclick="take_task({{ $d->id }}); return false;">Pick
-                                             Up</a>
-                                     </form>
-                                 @else
-                                     @if ($d->user_id == auth()->user()->id)
-                                         @if ($d->projinvdp_status != 'Done')
-                                             <div class="btn-group" role="group"
-                                                 aria-label="Button group with nested dropdown">
-                                                 <div class="btn-group" role="group">
-                                                     <button type="button"
-                                                         class="btn btn-primary btn-sm dropdown-toggle"
-                                                         data-bs-toggle="dropdown" aria-expanded="false">
-                                                         Action
-                                                     </button>
-                                                     <ul class="dropdown-menu">
-                                                         <li>
-                                                             <a class="dropdown-item"
-                                                                 href="{{ route('task_board.document_invoice_dp', $d->id) }}">
-                                                                 Document Upload
-                                                             </a>
-                                                         </li>
-                                                         <li>
-                                                             @if ($d->projinvdp_status == 'Started')
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
-                                                                     method="POST" id="form-hold{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <input type="hidden"
-                                                                         id="hold-message{{ $d->id }}"
-                                                                         name="message">
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="hold({{ $d->id }}); return false;">
-                                                                         Hold
-                                                                     </a>
-                                                                 </form>
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-finish{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <input type="hidden"
-                                                                         id="finish-message{{ $d->id }}"
-                                                                         name="projoff_offer_number">
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="finish({{ $d->id }}); return false;">
-                                                                         Finish
-                                                                     </a>
-                                                                 </form>
-                                                             @elseif($d->projinvdp_status == 'Hold')
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.continue_invoice_dp', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-continue{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="continue_({{ $d->id }}); return false;">
-                                                                         Continue
-                                                                     </a>
-                                                                 </form>
-                                                             @elseif($d->projinvdp_status == 'Approval')
-                                                                 <form class="d-inline"
-                                                                     action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
-                                                                     method="POST"
-                                                                     id="form-finish{{ $d->id }}">
-                                                                     @csrf
-                                                                     @method('PUT')
-                                                                     <input type="hidden"
-                                                                         id="finish-message{{ $d->id }}"
-                                                                         name="projinvdp_number">
-                                                                     <a class="dropdown-item" href="#"
-                                                                         data-id="{{ $d->id }}"
-                                                                         onclick="finish({{ $d->id }}); return false;">
-                                                                         Finish
-                                                                     </a>
-                                                                 </form>
-                                                             @endif
-                                                         </li>
-                                                     </ul>
-                                                 </div>
-                                             </div>
-                                         @endif
+                                 <div class="d-inline-flex gap-1">
+                                     @if ($d->projinvdp_status == 'Open')
+                                         <form class="d-inline"
+                                             action="{{ route('task_board.take_invoice_dp', $d->id) }}" method="POST"
+                                             id="form-take{{ $d->id }}">
+                                             @csrf
+                                             @method('PUT')
+                                             <a class="btn btn-warning btn-sm" href="#" role="button"
+                                                 onclick="take_task({{ $d->id }}); return false;">Pick
+                                                 Up</a>
+                                         </form>
                                      @else
-                                         @if ($d->projinvdp_status == 'Cancelled')
-                                             Cancelled
-                                         @elseif ($d->projinvdp_status == 'Done')
-                                             Done
+                                         @if ($d->user_id == auth()->user()->id)
+                                             @if ($d->projinvdp_status != 'Done')
+                                                 <div class="btn-group" role="group"
+                                                     aria-label="Button group with nested dropdown">
+                                                     <div class="btn-group" role="group">
+                                                         <button type="button"
+                                                             class="btn btn-primary btn-sm dropdown-toggle"
+                                                             data-bs-toggle="dropdown" aria-expanded="false">
+                                                             Action
+                                                         </button>
+                                                         <ul class="dropdown-menu">
+                                                             <li>
+                                                                 <a class="dropdown-item"
+                                                                     href="{{ route('task_board.document_invoice_dp', $d->id) }}">
+                                                                     Document Upload
+                                                                 </a>
+                                                             </li>
+                                                             <li>
+                                                                 @if ($d->projinvdp_status == 'Started')
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
+                                                                         method="POST"
+                                                                         id="form-permit{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <input type="hidden"
+                                                                             id="permit-message{{ $d->id }}"
+                                                                             name="message">
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="permit({{ $d->id }}); return false;">
+                                                                             Permit To WO
+                                                                         </a>
+                                                                     </form>
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
+                                                                         method="POST"
+                                                                         id="form-hold{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <input type="hidden"
+                                                                             id="hold-message{{ $d->id }}"
+                                                                             name="message">
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="hold({{ $d->id }}); return false;">
+                                                                             Hold
+                                                                         </a>
+                                                                     </form>
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
+                                                                         method="POST"
+                                                                         id="form-finish{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <input type="hidden"
+                                                                             id="finish-message{{ $d->id }}"
+                                                                             name="projso_so_number">
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="finish({{ $d->id }}); return false;">
+                                                                             Finish
+                                                                         </a>
+                                                                     </form>
+                                                                 @elseif($d->projinvdp_status == 'Hold')
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.continue_invoice_dp', $d->id) }}"
+                                                                         method="POST"
+                                                                         id="form-continue{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="continue_({{ $d->id }}); return false;">
+                                                                             Continue
+                                                                         </a>
+                                                                     </form>
+                                                                 @elseif($d->projinvdp_status == 'Approval')
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.finish_invoice_dp', $d->id) }}"
+                                                                         method="POST"
+                                                                         id="form-finish{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <input type="hidden"
+                                                                             id="finish-message{{ $d->id }}"
+                                                                             name="projoff_offer_number">
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="finish({{ $d->id }}); return false;">
+                                                                             Finish
+                                                                         </a>
+                                                                     </form>
+                                                                 @endif
+                                                             </li>
+                                                         </ul>
+                                                     </div>
+                                                 </div>
+                                             @endif
                                          @else
-                                             Already Taken
+                                             @if ($d->projinvdp_status == 'Cancelled')
+                                                 Cancelled
+                                             @elseif ($d->projinvdp_status == 'Done')
+                                                 Done
+                                             @else
+                                                 Already Taken
+                                             @endif
                                          @endif
                                      @endif
-                                 @endif
 
-                                 @if (Auth::user()->hasRole('superadmin'))
-                                     <form class="d-inline"
-                                         action="{{ route('task_board.cancel', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
-                                         method="POST" id="form-cancel{{ $d->id }}">
-                                         @csrf
-                                         @method('PUT')
-                                         <a class="btn btn-secondary btn-sm" href="#" role="button"
-                                             onclick="cancel({{ $d->id }}); return false;">Cancel</a>
-                                     </form>
-                                     <form class="d-inline"
-                                         action="{{ route('task_board.delete', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
-                                         method="POST" id="form-delete{{ $d->id }}">
-                                         @csrf
-                                         @method('DELETE')
-                                         <a class="btn btn-danger btn-sm" href="#" role="button"
-                                             onclick="delete_data({{ $d->id }}); return false;">Delete</a>
-                                     </form>
-                                 @endif
+                                     @if (Auth::user()->hasRole('superadmin'))
+                                         <form class="d-inline"
+                                             action="{{ route('task_board.cancel', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
+                                             method="POST" id="form-cancel{{ $d->id }}">
+                                             @csrf
+                                             @method('PUT')
+                                             <a class="btn btn-secondary btn-sm" href="#" role="button"
+                                                 onclick="cancel({{ $d->id }}); return false;">Cancel</a>
+                                         </form>
+                                         <form class="d-inline"
+                                             action="{{ route('task_board.delete', ['assignee' => 'finance-accounting', 'id' => $d->id, 'doc_type' => 'invoice-dp']) }}"
+                                             method="POST" id="form-delete{{ $d->id }}">
+                                             @csrf
+                                             @method('DELETE')
+                                             <a class="btn btn-danger btn-sm" href="#" role="button"
+                                                 onclick="delete_data({{ $d->id }}); return false;">Delete</a>
+                                         </form>
+                                     @endif
+                                 </div>
                              </td>
                          </tr>
                      @endforeach

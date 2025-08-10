@@ -31,8 +31,7 @@
                                     <label for="file_doc_type" class="col-sm-3 col-form-label">Document</label>
                                     <div class="col-sm-9">
                                         <select class="form-select" id="file_doc_type" name="file_doc_type" required>
-                                            <option value="Sales Order"
-                                                {{ old('file_doc_type') == 'Sales Order' ? 'selected' : '' }}>
+                                            <option value="Sales Order" selected>
                                                 Sales Order</option>
                                         </select>
                                     </div>

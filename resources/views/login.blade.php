@@ -31,9 +31,10 @@
 
 <body class="min-vh-100">
     <div class="login-container">
-        <h2 class="text-center mb-3 font-weight-bold">
+        <h3 class="text-center mb-3 font-weight-bold">
             <p class="fw-bold">{{ env('APP_NAME') }}</p>
-        </h2>
+            <p class="fw-bold">{{ env('CORP_NAME') }}</p>
+        </h3>
         <form action="{{ route('login.store') }}" method="post">
             @csrf
             @method('POST')

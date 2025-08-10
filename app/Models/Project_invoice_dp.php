@@ -14,7 +14,7 @@ class Project_invoice_dp extends Model implements Auditable
 
     protected $auditInclude = [
         'project_id',
-        'use_id',
+        'user_id',
         'projinvdp_number',
         'projinvdp_invoice',
         'projinvdp_invoice_number',
@@ -33,7 +33,7 @@ class Project_invoice_dp extends Model implements Auditable
 
     protected $fillable = [
         'project_id',
-        'use_id',
+        'user_id',
         'projinvdp_number',
         'projinvdp_invoice',
         'projinvdp_invoice_number',

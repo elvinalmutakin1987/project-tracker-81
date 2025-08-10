@@ -8,7 +8,8 @@
                 aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('task_board.index', ['assignee' => 'sales-admin']) }}">Task
+                    <li class="breadcrumb-item"><a
+                            href="{{ route('task_board.index', ['assignee' => 'finance-accounting']) }}">Task
                             Board</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Document Upload</li>
                 </ol>
@@ -18,7 +19,7 @@
 
             <div class="col-lg-12 mt-3">
                 <main>
-                    <form action="{{ route('task_board.document_offer.update', $project_offer->id) }}"
+                    <form action="{{ route('task_board.document_invoice_dp.update', $project_invoice_dp->id) }}"
                         enctype="multipart/form-data" method="POST">
                         @csrf
                         @method('put')
@@ -31,8 +32,8 @@
                                     <label for="file_doc_type" class="col-sm-3 col-form-label">Document</label>
                                     <div class="col-sm-9">
                                         <select class="form-select" id="file_doc_type" name="file_doc_type" required>
-                                            <option value="Sales Quotation" selected>
-                                                Sales Quotation</option>
+                                            <option value="Invoice DP" selected>
+                                                Invoice DP</option>
                                         </select>
                                     </div>
                                 </div>
@@ -54,7 +55,7 @@
                                     Save
                                 </button>
                                 <a class="btn btn-secondary"
-                                    href="{{ route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'quotation']) }}"
+                                    href="{{ route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp']) }}"
                                     role="button">Back</a>
                             </div>
                         </div>

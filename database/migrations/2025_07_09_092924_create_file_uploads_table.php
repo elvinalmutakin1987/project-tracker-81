@@ -24,7 +24,7 @@ return new class extends Migration
                 'Sales Order',
                 'Work Order',
                 'Assignment',
-                'Down Payment Invoice',
+                'Invoice DP',
                 'Invoice',
                 'BAST',
                 'BAP',

@@ -30,65 +30,65 @@
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
-                                        <td class="fw-bold table-light" style="width: 20%">
+                                        <td class="table-light" style="width: 20%">
                                             Project ID</td>
                                         <td>{{ $project->proj_number }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Project Name</td>
+                                        <td class="table-light">Project Name</td>
                                         <td>{{ $project->proj_name }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Customer</td>
+                                        <td class="table-light">Customer</td>
                                         <td>{{ $project->customer->cust_name }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Email</td>
+                                        <td class="table-light">Email</td>
                                         <td>{{ $project->proj_email }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Phone</td>
+                                        <td class="table-light">Phone</td>
                                         <td>{{ $project->proj_phone }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">PIC Sales</td>
+                                        <td class="table-light">PIC Sales</td>
                                         <td>{{ $project->proj_pic }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Work Type</td>
+                                        <td class="table-light">Work Type</td>
                                         <td>{{ $project->work_type->work_name }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Start Date</td>
+                                        <td class="table-light">Start Date</td>
                                         <td>{{ $project->proj_start_date ? \Carbon\Carbon::parse($project->proj_start_date)->format('d M Y') : '-' }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Finished Date</td>
+                                        <td class="table-light">Finished Date</td>
                                         <td>{{ $project->proj_finished_date ? \Carbon\Carbon::parse($project->proj_finished_date)->format('d M Y') : '-' }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Brand</td>
+                                        <td class="table-light">Brand</td>
                                         @php
                                             $brand = $project->project_brand->pluck('brand_name');
                                         @endphp
                                         <td>{{ $brand->implode(', ') }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Notes</td>
+                                        <td class="table-light">Notes</td>
                                         <td>{!! $project->proj_notes !!}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Pre Sales</td>
+                                        <td class="table-light">Pre Sales</td>
                                         <td style="padding:0">
                                             <table class="table fixed" style="margin:0;">
                                                 <tr>
-                                                    <th class="table-light" style="width: 30%">Document</th>
-                                                    <th class="table-light" style="width: 5%">Required</th>
-                                                    <th class="table-light" style="width: 5%">Done</th>
-                                                    <th class="table-light" style="width: 30%">File</th>
-                                                    <th class="table-light" style="width: 30%">Link</th>
+                                                    <td class="table-light" style="width: 30%">Document</td>
+                                                    <td class="table-light" style="width: 5%">Required</td>
+                                                    <td class="table-light" style="width: 5%">Status</td>
+                                                    <td class="table-light" style="width: 30%">File</td>
+                                                    <td class="table-light" style="width: 30%">Link</td>
                                                 </tr>
                                                 @php
                                                     $_doc_type = [
@@ -358,15 +358,15 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold table-light">Sales Admin</td>
+                                        <td class="table-light">Sales Admin</td>
                                         <td style="padding:0">
                                             <table class="table fixed" style="margin:0;">
                                                 <tr>
-                                                    <th class="table-light" style="width: 30%">Document</th>
-                                                    <th class="table-light" style="width: 5%">Required</th>
-                                                    <th class="table-light" style="width: 5%">Done</th>
-                                                    <th class="table-light" style="width: 30%">File</th>
-                                                    <th class="table-light" style="width: 30%">Link</th>
+                                                    <td class="table-light" style="width: 30%">Document</td>
+                                                    <td class="table-light" style="width: 5%">Required</td>
+                                                    <td class="table-light" style="width: 5%">Status</td>
+                                                    <td class="table-light" style="width: 30%">File</td>
+                                                    <td class="table-light" style="width: 30%">Link</td>
                                                 </tr>
                                                 <tr>
                                                     <td style="vertical-align: top">
@@ -593,6 +593,9 @@
                                                                     @foreach ($file_upload as $d)
                                                                         @if ($d->file_real_name)
                                                                             <tr>
+                                                                                <td class="align-top">
+                                                                                    {{ $loop->iteration }}
+                                                                                </td>
                                                                                 <td class="align-top" style="width: 25px">
                                                                                     @if (
                                                                                         $project->project_sales_order->projso_status != 'Done' &&
@@ -637,14 +640,243 @@
                                                     </td>
                                                     <td>
                                                         @if ($file_upload)
+                                                            <table class="w-100">
+                                                                @foreach ($file_upload as $d)
+                                                                    @if ($d->file_link)
+                                                                        <tr>
+                                                                            <td class="align-top">{{ $loop->iteration }}
+                                                                            </td>
+                                                                            <td class="align-top" style="width: 25px">
+                                                                                @if (
+                                                                                    $project->project_sales_order->projso_status != 'Done' &&
+                                                                                        $project->project_sales_order->user_id == auth()->user()->id)
+                                                                                    <form class="d-inline"
+                                                                                        action="{{ route('task_board.link_remove', $d->id) }}"
+                                                                                        method="POST"
+                                                                                        id="form-delete{{ $d->id }}link">
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <input type="hidden"
+                                                                                            name="assignee"
+                                                                                            value="pre-sales">
+                                                                                        <a href=""
+                                                                                            onclick="link_remove({{ $d->id }}); return false;">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                width="16"
+                                                                                                height="16"
+                                                                                                fill="currentColor"
+                                                                                                class="bi bi-trash"
+                                                                                                viewBox="0 0 16 16"
+                                                                                                style="color:red">
+                                                                                                <path
+                                                                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                <path
+                                                                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </form>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td class="align-top">
+                                                                                <a href="{{ $d->file_link }}"
+                                                                                    target="_blank">{{ $d->file_link }}</a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </table>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Work Order (SPK)
+                                                    </td>
+                                                    <td style="vertical-align: top" class="text-center">
+                                                        @if (isset($project->project_work_order))
+                                                            <span class="badge text-bg-success rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                </svg>
+                                                            </span>
+                                                        @else
+                                                            <span class="badge text-bg-danger rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-x"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                </svg>
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td style="vertical-align: top" class="text-center">
+                                                        @if (isset($project->project_work_order->proj))
+                                                            {{-- {{ $project->project_sales_order->projso_so_number }} --}}
+                                                            <span class="badge text-bg-success rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                </svg>
+                                                            </span>
+                                                        @else
+                                                            @if (isset($project->project_sales_order))
+                                                                <span class="badge text-bg-danger rounded-pill">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-x" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                    </svg>
+                                                                </span>
+                                                            @endif
+                                                        @endif
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-light">Finance & Accounting</td>
+                                        <td style="padding:0">
+                                            <table class="table fixed" style="margin:0;">
+                                                <tr>
+                                                    <td class="table-light" style="width: 30%">Document</td>
+                                                    <td class="table-light" style="width: 5%">Required</td>
+                                                    <td class="table-light" style="width: 5%">Status</td>
+                                                    <td class="table-light" style="width: 30%">File</td>
+                                                    <td class="table-light" style="width: 30%">Link</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="vertical-align: top">
+                                                        Invoice DP
+                                                        {{ $project->project_invoice_dp->projinvdp_invoice_number ? ' : ' . $project->project_invoice_dp > projinvdp_invoice_dp : '' }}
+                                                    </td>
+                                                    <td style="vertical-align: top" class="text-center">
+                                                        @if (isset($project->project_invoice_dp))
+                                                            <span class="badge text-bg-success rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                </svg>
+                                                            </span>
+                                                        @else
+                                                            <span class="badge text-bg-danger rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-x"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                </svg>
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td style="vertical-align: top" class="text-center">
+                                                        @if (isset($project->project_invoice_dp->projinvdp_invoice_number))
+                                                            {{-- {{ $project->project_offer->projoff_offer_number }} --}}
+                                                            <span class="badge text-bg-success rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                </svg>
+                                                            </span>
+                                                        @else
+                                                            @if (isset($project->project_invoice_dp))
+                                                                <span class="badge text-bg-danger rounded-pill">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-x" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                    </svg>
+                                                                </span>
+                                                            @endif
+                                                        @endif
+                                                    </td>
+                                                    <td style="vertical-align: top">
+                                                        @if ($project->project_invoice_dp)
+                                                            @php
+                                                                $file_upload = File_upload::where(
+                                                                    'file_doc_type',
+                                                                    'Invoice DP',
+                                                                )
+                                                                    ->where('file_table', 'project_invoice_dp')
+                                                                    ->where(
+                                                                        'file_table_id',
+                                                                        $project->project_offer->id,
+                                                                    )
+                                                                    ->get();
+                                                            @endphp
+                                                            <table class="w-100">
+                                                                @if ($file_upload)
+                                                                    @foreach ($file_upload as $d)
+                                                                        @if ($d->file_real_name)
+                                                                            <tr>
+                                                                                <td class="align-top">
+                                                                                    {{ $loop->iteration }}</td>
+                                                                                <td class="align-top" style="width: 25px">
+                                                                                    @if (
+                                                                                        $project->project_invoice_dp->projinvdp_status != 'Done' &&
+                                                                                            $project->project_invoice_dp->user_id == auth()->user()->id)
+                                                                                        <form class="d-inline"
+                                                                                            action="{{ route('task_board.document_remove', $d->id) }}"
+                                                                                            method="POST"
+                                                                                            id="form-delete{{ $d->id }}">
+                                                                                            @csrf
+                                                                                            @method('DELETE')
+                                                                                            <input type="hidden"
+                                                                                                name="assignee"
+                                                                                                value="pre-sales">
+                                                                                            <a href=""
+                                                                                                onclick="document_remove({{ $d->id }}); return false;">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                    width="16"
+                                                                                                    height="16"
+                                                                                                    fill="currentColor"
+                                                                                                    class="bi bi-trash"
+                                                                                                    viewBox="0 0 16 16"
+                                                                                                    style="color:red">
+                                                                                                    <path
+                                                                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                    <path
+                                                                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                </svg>
+                                                                                            </a>
+                                                                                        </form>
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td class="align-top">
+                                                                                    <a href="{{ route('task_board.document_download', $d->id) }}"
+                                                                                        target="_blank">{{ $d->file_real_name }}</a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @endif
+                                                            </table>
+                                                        @endif
+                                                    </td>
+                                                    <td style="vertical-align: top">
+                                                        @if ($file_upload)
                                                             @foreach ($file_upload as $d)
                                                                 @if ($d->file_link)
                                                                     <table class="w-100">
                                                                         <tr>
                                                                             <td class="align-top" style="width: 25px">
                                                                                 @if (
-                                                                                    $project->project_sales_order->projso_status != 'Done' &&
-                                                                                        $project->project_sales_order->user_id == auth()->user()->id)
+                                                                                    $project->project_invoice_dp->projinvdp_status != 'Done' &&
+                                                                                        $project->project_invoice_dp > user_id == auth()->user()->id)
                                                                                     <form class="d-inline"
                                                                                         action="{{ route('task_board.link_remove', $d->id) }}"
                                                                                         method="POST"
@@ -685,10 +917,10 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        Work Order (SPK)
+                                                        Invoice
                                                     </td>
                                                     <td style="vertical-align: top" class="text-center">
-                                                        @if (isset($project->project_work_order))
+                                                        @if (isset($project->project_invoice))
                                                             <span class="badge text-bg-success rounded-pill">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                     height="16" fill="currentColor"
@@ -708,9 +940,141 @@
                                                             </span>
                                                         @endif
                                                     </td>
-                                                    <td style="vertical-align: top" class="text-center"></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td style="vertical-align: top" class="text-center">
+                                                        @if (isset($project->project_invoice->projinv_invoice_number))
+                                                            {{-- {{ $project->project_sales_order->projso_so_number }} --}}
+                                                            <span class="badge text-bg-success rounded-pill">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor"
+                                                                    class="bi bi-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                                                                </svg>
+                                                            </span>
+                                                        @else
+                                                            @if (isset($project->project_invoice))
+                                                                <span class="badge text-bg-danger rounded-pill">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" fill="currentColor"
+                                                                        class="bi bi-x" viewBox="0 0 16 16">
+                                                                        <path
+                                                                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                                                    </svg>
+                                                                </span>
+                                                            @endif
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($project->project_invoice)
+                                                            @php
+                                                                $file_upload = File_upload::where(
+                                                                    'file_doc_type',
+                                                                    'Invoice',
+                                                                )
+                                                                    ->where('file_table', 'project_invoice')
+                                                                    ->where(
+                                                                        'file_table_id',
+                                                                        $project->project_invoice->id,
+                                                                    )
+                                                                    ->get();
+                                                            @endphp
+                                                            <table class="w-100">
+                                                                @if ($file_upload)
+                                                                    @foreach ($file_upload as $d)
+                                                                        @if ($d->file_real_name)
+                                                                            <tr>
+                                                                                <td class="align-top">
+                                                                                    {{ $loop->iteration }}
+                                                                                </td>
+                                                                                <td class="align-top" style="width: 25px">
+                                                                                    @if ($project->project_invoice->projinv_status != 'Done' && $project->project_invoice->user_id == auth()->user()->id)
+                                                                                        <form class="d-inline"
+                                                                                            action="{{ route('task_board.document_remove', $d->id) }}"
+                                                                                            method="POST"
+                                                                                            id="form-delete{{ $d->id }}">
+                                                                                            @csrf
+                                                                                            @method('DELETE')
+                                                                                            <input type="hidden"
+                                                                                                name="assignee"
+                                                                                                value="pre-sales">
+                                                                                            <a href=""
+                                                                                                onclick="document_remove({{ $d->id }}); return false;">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                    width="16"
+                                                                                                    height="16"
+                                                                                                    fill="currentColor"
+                                                                                                    class="bi bi-trash"
+                                                                                                    viewBox="0 0 16 16"
+                                                                                                    style="color:red">
+                                                                                                    <path
+                                                                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                    <path
+                                                                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                                </svg>
+                                                                                            </a>
+                                                                                        </form>
+                                                                                    @endif
+                                                                                </td>
+                                                                                <td class="align-top">
+                                                                                    <a href="{{ route('task_board.document_download', $d->id) }}"
+                                                                                        target="_blank">{{ $d->file_real_name }}</a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @endif
+                                                            </table>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($file_upload)
+                                                            <table class="w-100">
+                                                                @foreach ($file_upload as $d)
+                                                                    @if ($d->file_link)
+                                                                        <tr>
+                                                                            <td class="align-top">{{ $loop->iteration }}
+                                                                            </td>
+                                                                            <td class="align-top" style="width: 25px">
+                                                                                @if (
+                                                                                    $project->project_sales_order->projso_status != 'Done' &&
+                                                                                        $project->project_sales_order->user_id == auth()->user()->id)
+                                                                                    <form class="d-inline"
+                                                                                        action="{{ route('task_board.link_remove', $d->id) }}"
+                                                                                        method="POST"
+                                                                                        id="form-delete{{ $d->id }}link">
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <input type="hidden"
+                                                                                            name="assignee"
+                                                                                            value="pre-sales">
+                                                                                        <a href=""
+                                                                                            onclick="link_remove({{ $d->id }}); return false;">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                width="16"
+                                                                                                height="16"
+                                                                                                fill="currentColor"
+                                                                                                class="bi bi-trash"
+                                                                                                viewBox="0 0 16 16"
+                                                                                                style="color:red">
+                                                                                                <path
+                                                                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                                                <path
+                                                                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </form>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td class="align-top">
+                                                                                <a href="{{ $d->file_link }}"
+                                                                                    target="_blank">{{ $d->file_link }}</a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </table>
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </td>

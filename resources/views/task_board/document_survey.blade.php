@@ -31,23 +31,36 @@
                                     <label for="file_doc_type" class="col-sm-3 col-form-label">Document</label>
                                     <div class="col-sm-9">
                                         <select class="form-select" id="file_doc_type" name="file_doc_type" required>
-                                            <option value="Denah" {{ old('file_doc_type') == 'Denah' ? 'selected' : '' }}>
-                                                Denah</option>
-                                            <option value="Shop Drawing"
-                                                {{ old('file_doc_type') == 'Shop Drawing' ? 'selected' : '' }}>
-                                                Shop Drawing</option>
-                                            <option value="SLD/Topology"
-                                                {{ old('file_doc_type') == 'SLD/Topology' ? 'selected' : '' }}>
-                                                SLD/Topology</option>
-                                            <option value="RAB/BOQ/Budget"
-                                                {{ old('file_doc_type') == 'RAB/BOQ/Budget' ? 'selected' : '' }}>
-                                                RAB/BOQ/Budget</option>
-                                            <option value="Personil"
-                                                {{ old('file_doc_type') == 'Personil' ? 'selected' : '' }}>
-                                                Personil</option>
-                                            <option value="Schedule"
-                                                {{ old('file_doc_type') == 'Schedule' ? 'selected' : '' }}>
-                                                Schedule</option>
+                                            @if ($project_survey->project->proj_denah)
+                                                <option value="Denah"
+                                                    {{ old('file_doc_type') == 'Denah' ? 'selected' : '' }}>
+                                                    Denah</option>
+                                            @endif
+                                            @if ($project_survey->project->proj_shop)
+                                                <option value="Shop Drawing"
+                                                    {{ old('file_doc_type') == 'Shop Drawing' ? 'selected' : '' }}>
+                                                    Shop Drawing</option>
+                                            @endif
+                                            @if ($project_survey->project->proj_sld)
+                                                <option value="SLD/Topology"
+                                                    {{ old('file_doc_type') == 'SLD/Topology' ? 'selected' : '' }}>
+                                                    SLD/Topology</option>
+                                            @endif
+                                            @if ($project_survey->project->proj_rab)
+                                                <option value="RAB/BOQ/Budget"
+                                                    {{ old('file_doc_type') == 'RAB/BOQ/Budget' ? 'selected' : '' }}>
+                                                    RAB/BOQ/Budget</option>
+                                            @endif
+                                            @if ($project_survey->project->proj_personil)
+                                                <option value="Personil"
+                                                    {{ old('file_doc_type') == 'Personil' ? 'selected' : '' }}>
+                                                    Personil</option>
+                                            @endif
+                                            @if ($project_survey->project->proj_schedule)
+                                                <option value="Schedule"
+                                                    {{ old('file_doc_type') == 'Schedule' ? 'selected' : '' }}>
+                                                    Schedule</option>
+                                            @endif
                                         </select>
                                     </div>
                                 </div>

@@ -42,23 +42,31 @@
         @endif
 
         $(document).ready(function() {
-            $('#status').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#status').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
 
-            $('#doc_type').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
-                search();
-            });
+            // $('#doc_type').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
+
+            $("#status").on('change', function() {
+                search()
+            })
+
+            $("#doc_type").on('change', function() {
+                search()
+            })
 
             $("#show").on('change', function() {
                 search()
@@ -150,7 +158,13 @@
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!",
                 input: "text",
-                inputPlaceholder: "Type offer number here...",
+                @if ($doc_type == 'quotation')
+                    inputPlaceholder: "Type offer number here...",
+                @elseif ($doc_type == 'sales-order')
+                    inputPlaceholder: "Type sales order number here...",
+                @elseif ($doc_type == 'work-order')
+                    inputPlaceholder: "Type work order number here...",
+                @endif
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value == '') {
