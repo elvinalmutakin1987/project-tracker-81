@@ -312,6 +312,14 @@ class TaskBoardController extends Controller
                 'projsur_status' => "Done",
                 'projsur_finished_at' => Carbon::now(),
             ]);
+            $project_offer = Project_offer::where('project_id', $project_survey->project_id)->latest()->first();
+            if ($project_offer) {
+                Project_sales_order::create([
+                    'project_id' => $project_offer->project_id,
+                    'projso_number' => HelperController::generate_code("Sales Admin - Sales Order"),
+                    'projso_status' => 'Open'
+                ]);
+            }
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'pre-sales'])->with([
                 'status' => 'success',
@@ -474,6 +482,14 @@ class TaskBoardController extends Controller
                 'projoff_status' => "Done",
                 'projoff_finished_at' => Carbon::now(),
             ]);
+            $project_survery = Project_survey::where('project_id', $project_offer->project_id)->latest()->first();
+            if ($project_survery->projsur_status == 'Done') {
+                Project_sales_order::create([
+                    'project_id' => $project_offer->project_id,
+                    'projso_number' => HelperController::generate_code("Sales Admin - Sales Order"),
+                    'projso_status' => 'Open'
+                ]);
+            }
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'quotation'])->with([
                 'status' => 'success',
@@ -625,9 +641,6 @@ class TaskBoardController extends Controller
             $project->update([
                 'proj_status' => 'Down Payment'
             ]);
-            /**
-             * Create task untuk finance accounting > invoice DP
-             */
             Project_invoice_dp::create([
                 'project_id' => $project_sales_order->project_id,
                 'projinvdp_number' => HelperController::generate_code("Finance Accounting - Invoice DP"),
@@ -790,13 +803,10 @@ class TaskBoardController extends Controller
             $project->update([
                 'proj_permit_wo' => 1
             ]);
-            /**
-             * Create task untuk sales admin > work order
-             */
             Project_work_order::create([
                 'project_id' => $project_invoice_dp->project_id,
-                'projinvdp_number' => HelperController::generate_code("Invoice DP"),
-                'projinvdp_status' => 'Open'
+                'projwo_number' => HelperController::generate_code("Operation - Work Order"),
+                'projwo_status' => 'Open'
             ]);
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'sales-order'])->with([
@@ -1040,6 +1050,7 @@ class TaskBoardController extends Controller
             DB::commit();
             if ($file_table == 'project_survey') {
                 $assignee = 'pre-sales';
+                $doc_type = null;
             } elseif ($file_table == 'project_offer') {
                 $assignee = 'sales-admin';
                 $doc_type = 'quotation';
@@ -1099,31 +1110,39 @@ class TaskBoardController extends Controller
      */
     public function set_document_to_null(String $file_doc_type, String $file_table, String $file_table_id)
     {
-        if ($file_table == 'project_survey') {
-            $file_total = File_upload::where('file_table', 'project_survey')
-                ->where('file_table_id', $file_table_id)
-                ->count();
-            if ($file_total == 0) {
-                $project_survey = Project_survey::find($file_table_id);
-                if ($file_doc_type == 'Denah') {
-                    $project_survey->projsur_denah = null;
+        $file_total = File_upload::where('file_table', $file_table)
+            ->where('file_doc_type', $file_doc_type)
+            ->where('file_table_id', $file_table_id)
+            ->count();
+
+        if ($file_total == 0) {
+            if ($file_table === 'project_survey') {
+                $map = [
+                    'Denah'          => 'projsur_denah',
+                    'Shop Drawing'   => 'projsur_shop',
+                    'SLD/Topology'   => 'projsur_sld',
+                    'RAB/BOQ/Budget' => 'projsur_rab',
+                    'Personil'       => 'projsur_personil',
+                    'Schedule'       => 'projsur_schedule',
+                ];
+                if (isset($map[$file_doc_type])) {
+                    $project_survey = Project_survey::find($file_table_id);
+                    $project_survey->{$map[$file_doc_type]} = null;
+                    $project_survey->save();
                 }
-                if ($file_doc_type == 'Shop Drawing') {
-                    $project_survey->projsur_shop = null;
+            }
+
+            if ($file_table === 'project_offer') {
+                $map = [
+                    'Sales Quotation' => [Project_offer::class, 'projoff_quotation'],
+                    'Sales Order'     => [Project_sales_order::class, 'projso_sales_order'],
+                ];
+                if (isset($map[$file_doc_type])) {
+                    [$model, $column] = $map[$file_doc_type];
+                    $instance = $model::find($file_table_id);
+                    $instance->{$column} = null;
+                    $instance->save();
                 }
-                if ($file_doc_type == 'SLD/Topology') {
-                    $project_survey->projsur_sld = null;
-                }
-                if ($file_doc_type == 'RAB/BOQ/Budget') {
-                    $project_survey->projsur_rab = null;
-                }
-                if ($file_doc_type == 'Personil') {
-                    $project_survey->projsur_personil = null;
-                }
-                if ($file_doc_type == 'Schedule') {
-                    $project_survey->projsur_schedule = null;
-                }
-                $project_survey->save();
             }
         }
     }
