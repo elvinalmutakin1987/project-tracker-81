@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col">
-        <table id="table1" class="table mt-3 table-sm">
+        <table id="table1" class="table table-striped  mt-3 table-sm">
             <thead class="table-group-divider">
                 <tr>
                     <th>Task ID</th>

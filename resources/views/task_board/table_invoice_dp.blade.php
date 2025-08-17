@@ -119,7 +119,7 @@
                                                              <li>
                                                                  @if ($d->projinvdp_status == 'Started')
                                                                      <form class="d-inline"
-                                                                         action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
+                                                                         action="{{ route('task_board.permit_to_wo', $d->id) }}"
                                                                          method="POST"
                                                                          id="form-permit{{ $d->id }}">
                                                                          @csrf

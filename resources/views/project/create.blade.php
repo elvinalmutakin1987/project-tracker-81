@@ -200,7 +200,7 @@
                                                 value="Draft">As
                                                 Draft</button></li>
                                         <li><button class="dropdown-item" type="submit" name="proj_status"
-                                                value="Pre Sales">Pre sales</button></li>
+                                                value="Pre Sales">Run Project</button></li>
                                     </ul>
                                 </div>
                                 <a class="btn btn-secondary" href="{{ route('project.index') }}" role="button">Back</a>

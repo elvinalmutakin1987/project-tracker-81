@@ -202,7 +202,7 @@
                                                                                 <a class="dropdown-item" href="#"
                                                                                     data-id="{{ $d->id }}"
                                                                                     onclick="update_status('Pre Sales', {{ $d->id }}); return false;">
-                                                                                    Pre Sales
+                                                                                    Run Project
                                                                                 </a>
                                                                             </form>
                                                                         </li>
@@ -220,7 +220,7 @@
                                                                                 </a>
                                                                             </form>
                                                                         </li>
-                                                                    @elseif($d->proj_status == 'Pre Sales')
+                                                                        {{-- @elseif($d->proj_status == 'Pre Sales')
                                                                         @if ($pre_sales_status == 'On Going')
                                                                         @elseif ($pre_sales_status == 'Done')
                                                                             <li>
@@ -242,7 +242,7 @@
                                                                                 </form>
                                                                             </li>
                                                                         @endif
-                                                                    @elseif($d->proj_status == 'Sales Order')
+                                                                    @elseif($d->proj_status == 'Sales Order') --}}
                                                                     @endif
                                                                     <li>
                                                                         <form class="d-inline"
@@ -261,7 +261,7 @@
                                                                             </a>
                                                                         </form>
                                                                     </li>
-                                                                    @if (Auth::user()->hasRole('superadmin'))
+                                                                    {{-- @if (Auth::user()->hasRole('superadmin'))
                                                                         <hr class="my-1">
                                                                         <li>
                                                                             <form class="d-inline"
@@ -297,7 +297,7 @@
                                                                                 </a>
                                                                             </form>
                                                                         </li>
-                                                                    @endif
+                                                                    @endif --}}
                                                                 </ul>
                                                             </div>
                                                         </div>

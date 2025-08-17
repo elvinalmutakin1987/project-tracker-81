@@ -190,7 +190,7 @@
                                                     value="Draft">As
                                                     Draft</button></li>
                                             <li><button class="dropdown-item" type="submit" name="proj_status"
-                                                    value="Pre Sales">Pre Sales</button></li>
+                                                    value="Pre Sales">Run Project</button></li>
                                         </ul>
                                     </div>
                                 @else

@@ -101,6 +101,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/finish-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'finish_invoice_dp'])->name('task_board.finish_invoice_dp');
             Route::get('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp'])->name('task_board.document_invoice_dp');
             Route::put('task_board/document-invoice_dp/{project_invoice_dp}', [TaskBoardController::class, 'document_invoice_dp_update'])->name('task_board.document_invoice_dp.update');
+            Route::put('task_board/permit-to-wo/{project_invoice_dp}', [TaskBoardController::class, 'permit_to_wo'])->name('task_board.permit_to_wo');
         });
 
         Route::put('task_board/cancel', [TaskBoardController::class, 'cancel'])->name('task_board.cancel');

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('projwo_number', 20)->nullable();
+            $table->string('projwo_work_order', 1)->nullable();
             $table->timestamp('projwo_started_at')->nullable();
             $table->timestamp('projwo_finished_at')->nullable();
             $table->enum('projwo_status', [

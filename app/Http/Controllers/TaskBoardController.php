@@ -315,9 +315,12 @@ class TaskBoardController extends Controller
             $project_offer = Project_offer::where('project_id', $project_survey->project_id)->latest()->first();
             if ($project_offer) {
                 Project_sales_order::create([
-                    'project_id' => $project_offer->project_id,
+                    'project_id' => $project_survey->project_id,
                     'projso_number' => HelperController::generate_code("Sales Admin - Sales Order"),
                     'projso_status' => 'Open'
+                ]);
+                Project::find($project_survey->project_id)->update([
+                    'project_status' => 'Sales Order'
                 ]);
             }
             DB::commit();
@@ -489,6 +492,9 @@ class TaskBoardController extends Controller
                     'projso_number' => HelperController::generate_code("Sales Admin - Sales Order"),
                     'projso_status' => 'Open'
                 ]);
+                Project::find($project_offer->project_id)->update([
+                    'project_status' => 'Sales Order'
+                ]);
             }
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'quotation'])->with([
@@ -637,14 +643,13 @@ class TaskBoardController extends Controller
                 'projso_status' => "Done",
                 'projso_finished_at' => Carbon::now(),
             ]);
-            $project = Project::find($project_sales_order->project_id);
-            $project->update([
-                'proj_status' => 'Down Payment'
-            ]);
             Project_invoice_dp::create([
                 'project_id' => $project_sales_order->project_id,
                 'projinvdp_number' => HelperController::generate_code("Finance Accounting - Invoice DP"),
                 'projinvdp_status' => 'Open'
+            ]);
+            Project::find($project_sales_order->project_id)->update([
+                'proj_status' => 'Down Payment'
             ]);
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'sales-order'])->with([
@@ -799,17 +804,17 @@ class TaskBoardController extends Controller
                 'projso_status' => "Done",
                 'projso_finished_at' => Carbon::now(),
             ]);
-            $project = Project::find($project_invoice_dp->project_id);
-            $project->update([
-                'proj_permit_wo' => 1
-            ]);
             Project_work_order::create([
                 'project_id' => $project_invoice_dp->project_id,
                 'projwo_number' => HelperController::generate_code("Operation - Work Order"),
                 'projwo_status' => 'Open'
             ]);
+            $project = Project::find($project_invoice_dp->project_id);
+            if ($project->proj_permit_wo == 0) {
+                $project->proj_permit_wo = 1;
+            }
             DB::commit();
-            return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'sales-order'])->with([
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
                 'status' => 'success',
                 'message' => 'Data has been updated! '
             ]);
@@ -852,6 +857,31 @@ class TaskBoardController extends Controller
             return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
                 'status' => 'success',
                 'message' => 'Data has been uploaded! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function permit_to_wo(Request $request, Project_invoice_dp $project_invoice_dp)
+    {
+        dd($request->all());
+        DB::beginTransaction();
+        try {
+            Project_work_order::create([
+                'project_id' => $project_invoice_dp->project_id,
+                'projwo_number' => HelperController::generate_code("Operation - Work Order"),
+                'projwo_status' => 'Open'
+            ]);
+            $project = Project::find($project_invoice_dp->project_id);
+            if ($project->proj_permit_wo == 0) {
+                $project->proj_permit_wo = 1;
+            }
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
