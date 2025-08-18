@@ -86,6 +86,7 @@
                                         <th>Name</th>
                                         <th>Address</th>
                                         <th>Director Name</th>
+                                        <th>Contact Number</th>
                                         <th>Email</th>
                                         <th>Type</th>
                                         <th class="text-end" style="width: 10%">Action</th>
@@ -102,6 +103,7 @@
                                                 <td>{{ $d->cust_name }}</td>
                                                 <td>{{ $d->cust_address }}</td>
                                                 <td>{{ $d->cust_director_name }}</td>
+                                                <td>{{ $d->cust_contact_number }}</td>
                                                 <td>{{ $d->cust_email }}</td>
                                                 <td>{{ $d->cust_type }}</td>
                                                 <td class="text-end">
@@ -167,12 +169,16 @@
         @endif
 
         $(document).ready(function() {
-            $('#cust_type').select2({
-                theme: "bootstrap-5",
-                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
-                    'style',
-                placeholder: $(this).data('placeholder'),
-            }).on('change', function() {
+            // $('#cust_type').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
+
+            $('#cust_type').on('change', function() {
                 search();
             });
 

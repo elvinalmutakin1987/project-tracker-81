@@ -31,7 +31,6 @@
                                  $started_at = \Carbon\Carbon::parse($d->projso_started_at);
                                  $diffInHours = $started_at->diffInHours($now);
 
-                                 // Cek apakah lebih dari 36 jam
                                  $isMoreThan36Hours = $diffInHours >= 36 && $diffInHours < 48;
                                  $isMoreThan48Hours = $diffInHours >= 48;
                              }
@@ -115,8 +114,9 @@
                                                                      Document Upload
                                                                  </a>
                                                              </li>
-                                                             <li>
-                                                                 @if ($d->projso_status == 'Started')
+
+                                                             @if ($d->projso_status == 'Started')
+                                                                 <li>
                                                                      <form class="d-inline"
                                                                          action="{{ route('task_board.hold_sales_order', $d->id) }}"
                                                                          method="POST"
@@ -132,6 +132,8 @@
                                                                              Hold
                                                                          </a>
                                                                      </form>
+                                                                 </li>
+                                                                 <li>
                                                                      <form class="d-inline"
                                                                          action="{{ route('task_board.finish_sales_order', $d->id) }}"
                                                                          method="POST"
@@ -147,7 +149,9 @@
                                                                              Finish
                                                                          </a>
                                                                      </form>
-                                                                 @elseif($d->projso_status == 'Hold')
+                                                                 </li>
+                                                             @elseif($d->projso_status == 'Hold')
+                                                                 <li>
                                                                      <form class="d-inline"
                                                                          action="{{ route('task_board.continue_sales_order', $d->id) }}"
                                                                          method="POST"
@@ -160,7 +164,9 @@
                                                                              Continue
                                                                          </a>
                                                                      </form>
-                                                                 @elseif($d->projso_status == 'Approval')
+                                                                 </li>
+                                                             @elseif($d->projso_status == 'Approval')
+                                                                 <li>
                                                                      <form class="d-inline"
                                                                          action="{{ route('task_board.finish_offer', $d->id) }}"
                                                                          method="POST"
@@ -176,8 +182,36 @@
                                                                              Finish
                                                                          </a>
                                                                      </form>
-                                                                 @endif
-                                                             </li>
+                                                                 </li>
+                                                             @endif
+                                                             @if (Auth::user()->hasRole('superadmin'))
+                                                                 <li>
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.cancel', ['assignee' => 'pre-sales', 'id' => $d->id, 'doc_type' => 'sales-order']) }}"
+                                                                         method="POST"
+                                                                         id="form-cancel{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('PUT')
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="cancel({{ $d->id }}); return false;">Cancel</a>
+                                                                         </a>
+                                                                     </form>
+                                                                 </li>
+                                                                 <li>
+                                                                     <form class="d-inline"
+                                                                         action="{{ route('task_board.delete', ['assignee' => 'sales-admin', 'id' => $d->id, 'doc_type' => 'sales-order']) }}"
+                                                                         method="POST"
+                                                                         id="form-delete{{ $d->id }}">
+                                                                         @csrf
+                                                                         @method('DELETE')
+                                                                         <a class="dropdown-item" href="#"
+                                                                             data-id="{{ $d->id }}"
+                                                                             onclick="delete_data({{ $d->id }}); return false;">Delete</a>
+                                                                         </a>
+                                                                     </form>
+                                                                 </li>
+                                                             @endif
                                                          </ul>
                                                      </div>
                                                  </div>
@@ -193,7 +227,7 @@
                                          @endif
                                      @endif
 
-                                     @if (Auth::user()->hasRole('superadmin'))
+                                     {{-- @if (Auth::user()->hasRole('superadmin'))
                                          <form class="d-inline"
                                              action="{{ route('task_board.cancel', ['assignee' => 'pre-sales', 'id' => $d->id, 'doc_type' => 'sales-order']) }}"
                                              method="POST" id="form-cancel{{ $d->id }}">
@@ -210,7 +244,7 @@
                                              <a class="btn btn-danger btn-sm" href="#" role="button"
                                                  onclick="delete_data({{ $d->id }}); return false;">Delete</a>
                                          </form>
-                                     @endif
+                                     @endif --}}
                                  </div>
                              </td>
                          </tr>

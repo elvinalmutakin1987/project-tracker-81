@@ -16,6 +16,7 @@ class Customer extends Model implements Auditable
         'cust_name',
         'cust_address',
         'cust_director_name',
+        'cust_contact_number',
         'cust_email',
         'cust_type',
         'cust_active'
@@ -25,6 +26,7 @@ class Customer extends Model implements Auditable
         'cust_name',
         'cust_address',
         'cust_director_name',
+        'cust_contact_number',
         'cust_email',
         'cust_type',
         'cust_active'

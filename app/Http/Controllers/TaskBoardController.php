@@ -110,6 +110,21 @@ class TaskBoardController extends Controller
             ->onEachSide(0)
             ->appends(request()->except('page'));
         /**
+         * Work Order
+         */
+        $project_work_order = Project_work_order::select('project_work_orders.*', 'projects.proj_number')
+            ->leftJoin('projects', 'projects.id', '=', 'project_work_orders.project_id')
+            ->where('proj_number', 'like', '%' . $request->search . '%');
+        if ($request->status && $request->status != 'All') {
+            $project_work_order = $project_work_order->where('projwo_status', $request->status);
+        }
+        if ($request->taker && $request->taker != 'All') {
+            $project_work_order = $project_work_order->where('user_id', Auth::user()->id);
+        }
+        $project_work_order = $project_work_order->paginate($show, ['*'], 'page', $request->page ?? 1)
+            ->onEachSide(0)
+            ->appends(request()->except('page'));
+        /**
          * ================================================================================================
          */
         if ($assignee == 'pre-sales') {
@@ -144,11 +159,7 @@ class TaskBoardController extends Controller
                 'sales-order'  => [
                     'view' => 'task_board.table_so',
                     'data' => 'project_sales_order'
-                ],
-                'work-order'   => [
-                    'view' => 'task_board.table_wo',
-                    'data' => 'project_work_order'
-                ],
+                ]
             ];
             if (isset($docMap[$doc_type])) {
                 $viewName  = $docMap[$doc_type]['view'];
@@ -205,6 +216,42 @@ class TaskBoardController extends Controller
                 ]);
             }
         }
+
+        if ($assignee == 'operation') {
+            $doc_type = "work-order";
+            if ($request->has('doc_type')) {
+                $doc_type = $request->doc_type;
+            }
+            $view = 'task_board.operation_work_order';
+            $docMap = [
+                'work-order'    => [
+                    'view' => 'task_board.table_wo',
+                    'data' => 'project_work_order'
+                ],
+                'invoice'  => [
+                    'view' => 'task_board.table_invoice',
+                    'data' => 'project_invoice'
+                ],
+            ];
+            if (isset($docMap[$doc_type])) {
+                $viewName  = $docMap[$doc_type]['view'];
+                $dataKey   = $docMap[$doc_type]['data'];
+                $dataValue = $$dataKey;
+                $table = view($viewName, [
+                    $dataKey => $dataValue,
+                    'assignee' => $assignee,
+                    'doc_type' => $doc_type
+                ]);
+            }
+            /**
+             * cek hak akses
+             */
+            if (!Auth::user()->hasPermissionTo('task_board.operation')) {
+                return view('error', [
+                    'message' => "You’re not authorized to view this page."
+                ]);
+            }
+        }
         /**
          * ================================================================================================
          */
@@ -213,6 +260,7 @@ class TaskBoardController extends Controller
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
+            'project_work_order',
             'assignee',
             'doc_type'
         ));
@@ -222,6 +270,7 @@ class TaskBoardController extends Controller
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
+            'project_work_order',
             'assignee',
             'doc_type',
             'tab',
@@ -312,7 +361,10 @@ class TaskBoardController extends Controller
                 'projsur_status' => "Done",
                 'projsur_finished_at' => Carbon::now(),
             ]);
-            $project_offer = Project_offer::where('project_id', $project_survey->project_id)->latest()->first();
+            $project_offer = Project_offer::where('project_id', $project_survey->project_id)
+                ->where('projoff_status', 'Done')
+                ->latest()
+                ->first();
             if ($project_offer) {
                 Project_sales_order::create([
                     'project_id' => $project_survey->project_id,
@@ -485,7 +537,10 @@ class TaskBoardController extends Controller
                 'projoff_status' => "Done",
                 'projoff_finished_at' => Carbon::now(),
             ]);
-            $project_survery = Project_survey::where('project_id', $project_offer->project_id)->latest()->first();
+            $project_survery = Project_survey::where('project_id', $project_offer->project_id)
+                ->where('projsur_status', 'Done')
+                ->latest()
+                ->first();
             if ($project_survery->projsur_status == 'Done') {
                 Project_sales_order::create([
                     'project_id' => $project_offer->project_id,
@@ -866,9 +921,17 @@ class TaskBoardController extends Controller
 
     public function permit_to_wo(Request $request, Project_invoice_dp $project_invoice_dp)
     {
-        dd($request->all());
         DB::beginTransaction();
         try {
+            $project_work_order = Project_work_order::where('project_id', $project_invoice_dp->project_id)
+                ->latest()
+                ->first();
+            if ($project_work_order) {
+                return redirect()->back()->with([
+                    'status' => 'error',
+                    'message' => 'Work Order data is available!'
+                ]);
+            }
             Project_work_order::create([
                 'project_id' => $project_invoice_dp->project_id,
                 'projwo_number' => HelperController::generate_code("Operation - Work Order"),
@@ -1038,6 +1101,31 @@ class TaskBoardController extends Controller
     /**
      * Operation
      */
+    public function take_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            if ($project_work_order->user_id != null) {
+                return view('error', [
+                    'message' => "Task has been picked up."
+                ]);
+            }
+            $project_work_order = Project_invoice::where('id', $project_work_order->id)->lockForUpdate()->first();
+            $project_work_order->update([
+                'user_id' => Auth::user()->id,
+                'projinv_started_at' => Carbon::now(),
+                'projinv_status' => "Started"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been taken! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
 
     /**
      * Download file

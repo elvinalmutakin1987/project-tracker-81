@@ -62,7 +62,7 @@
                     'search' => '_search',
                     'status' => '_status',
                     'show' => '_show',
-                    'assignee' => 'sales-admin',
+                    'assignee' => 'operation',
                     'doc_type' => '_doc_type',
                 ]) !!}`
             url = url.replace('_search', $("#search").val())
@@ -135,7 +135,7 @@
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!",
                 input: "text",
-                inputPlaceholder: "Type offer number here...",
+                inputPlaceholder: "Type work order here...",
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value == '') {

@@ -60,6 +60,16 @@
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
+                                    <label for="cust_contact_number" class="col-sm-3 col-form-label">Contact Number</label>
+                                    <div class="col-sm-9">
+                                        <input type="text"
+                                            class="form-control @error('cust_contact_number') is-invalid @enderror"
+                                            name="cust_contact_number"
+                                            value="{{ old('cust_contact_number') ?? $customer->cust_contact_number }}"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="mb-2 row">
                                     <label for="cust_email" class="col-sm-3 col-form-label">Email</label>
                                     <div class="col-sm-9">
                                         <input type="text" class="form-control @error('cust_email') is-invalid @enderror"

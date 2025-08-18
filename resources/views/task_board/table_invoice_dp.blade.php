@@ -118,21 +118,23 @@
                                                              </li>
                                                              <li>
                                                                  @if ($d->projinvdp_status == 'Started')
-                                                                     <form class="d-inline"
-                                                                         action="{{ route('task_board.permit_to_wo', $d->id) }}"
-                                                                         method="POST"
-                                                                         id="form-permit{{ $d->id }}">
-                                                                         @csrf
-                                                                         @method('PUT')
-                                                                         <input type="hidden"
-                                                                             id="permit-message{{ $d->id }}"
-                                                                             name="message">
-                                                                         <a class="dropdown-item" href="#"
-                                                                             data-id="{{ $d->id }}"
-                                                                             onclick="permit({{ $d->id }}); return false;">
-                                                                             Permit To WO
-                                                                         </a>
-                                                                     </form>
+                                                                     @if (!isset($d->project->project_work_order))
+                                                                         <form class="d-inline"
+                                                                             action="{{ route('task_board.permit_to_wo', $d->id) }}"
+                                                                             method="POST"
+                                                                             id="form-permit{{ $d->id }}">
+                                                                             @csrf
+                                                                             @method('PUT')
+                                                                             <input type="hidden"
+                                                                                 id="permit-message{{ $d->id }}"
+                                                                                 name="message">
+                                                                             <a class="dropdown-item" href="#"
+                                                                                 data-id="{{ $d->id }}"
+                                                                                 onclick="permit({{ $d->id }}); return false;">
+                                                                                 Permit To WO
+                                                                             </a>
+                                                                         </form>
+                                                                     @endif
                                                                      <form class="d-inline"
                                                                          action="{{ route('task_board.hold_invoice_dp', $d->id) }}"
                                                                          method="POST"

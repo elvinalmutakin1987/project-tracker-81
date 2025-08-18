@@ -34,9 +34,9 @@
         @if (session('message'))
             document.addEventListener("DOMContentLoaded", function() {
                 Swal.fire({
-                    title: "Success!",
+                    title: "{{ session('status') == 'success' ? 'Success' : 'Error' }}!",
                     text: "{{ session('message') }}",
-                    icon: "success"
+                    icon: "{{ session('status') }}"
                 });
             });
         @endif

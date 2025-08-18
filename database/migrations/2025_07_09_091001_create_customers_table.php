@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('cust_name')->nullable();
             $table->longText('cust_address')->nullable();
+            $table->string('cust_contact_number', 30)->nullable();
             $table->string('cust_director_name')->nullable();
             $table->string('cust_email', 100)->nullable();
             $table->enum('cust_type', [
