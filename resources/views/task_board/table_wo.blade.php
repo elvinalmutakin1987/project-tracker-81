@@ -5,6 +5,7 @@
                  <tr>
                      <th>Task ID</th>
                      <th>Project ID</th>
+                     <th>Work Order ID</th>
                      <th>Project Name</th>
                      <th>Customer</th>
                      <th>Taken By</th>
@@ -47,6 +48,7 @@
                              <td><a
                                      href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                              </td>
+                             <td>{{ $d->project->proj_name }}</td>
                              <td>{{ $d->project->proj_name }}</td>
                              <td>{{ $d->project->customer->cust_name }}</td>
                              <td>{{ $d->user->name ?? '-' }}</td>
@@ -97,118 +99,17 @@
                                                  Up</a>
                                          </form>
                                      @else
-                                         @if ($d->user_id == auth()->user()->id)
-                                             @if ($d->projwo_status != 'Done')
-                                                 <div class="btn-group" role="group"
-                                                     aria-label="Button group with nested dropdown">
-                                                     <div class="btn-group" role="group">
-                                                         <button type="button"
-                                                             class="btn btn-primary btn-sm dropdown-toggle"
-                                                             data-bs-toggle="dropdown" aria-expanded="false">
-                                                             Action
-                                                         </button>
-                                                         <ul class="dropdown-menu">
-                                                             <li>
-                                                                 <a class="dropdown-item"
-                                                                     href="{{ route('task_board.document_work_order', $d->id) }}">
-                                                                     Document Upload
-                                                                 </a>
-                                                             </li>
-                                                             <li>
-                                                                 @if ($d->projwo_status == 'Started')
-                                                                     <form class="d-inline"
-                                                                         action="{{ route('task_board.hold_work_order', $d->id) }}"
-                                                                         method="POST"
-                                                                         id="form-hold{{ $d->id }}">
-                                                                         @csrf
-                                                                         @method('PUT')
-                                                                         <input type="hidden"
-                                                                             id="hold-message{{ $d->id }}"
-                                                                             name="message">
-                                                                         <a class="dropdown-item" href="#"
-                                                                             data-id="{{ $d->id }}"
-                                                                             onclick="hold({{ $d->id }}); return false;">
-                                                                             Hold
-                                                                         </a>
-                                                                     </form>
-                                                                     <form class="d-inline"
-                                                                         action="{{ route('task_board.finish_work_order', $d->id) }}"
-                                                                         method="POST"
-                                                                         id="form-finish{{ $d->id }}">
-                                                                         @csrf
-                                                                         @method('PUT')
-                                                                         <input type="hidden"
-                                                                             id="finish-message{{ $d->id }}"
-                                                                             name="projso_so_number">
-                                                                         <a class="dropdown-item" href="#"
-                                                                             data-id="{{ $d->id }}"
-                                                                             onclick="finish({{ $d->id }}); return false;">
-                                                                             Finish
-                                                                         </a>
-                                                                     </form>
-                                                                 @elseif($d->projwo_status == 'Hold')
-                                                                     <form class="d-inline"
-                                                                         action="{{ route('task_board.continue_work_order', $d->id) }}"
-                                                                         method="POST"
-                                                                         id="form-continue{{ $d->id }}">
-                                                                         @csrf
-                                                                         @method('PUT')
-                                                                         <a class="dropdown-item" href="#"
-                                                                             data-id="{{ $d->id }}"
-                                                                             onclick="continue_({{ $d->id }}); return false;">
-                                                                             Continue
-                                                                         </a>
-                                                                     </form>
-                                                                 @elseif($d->projwo_status == 'Approval')
-                                                                     <form class="d-inline"
-                                                                         action="{{ route('task_board.finish_work_order', $d->id) }}"
-                                                                         method="POST"
-                                                                         id="form-finish{{ $d->id }}">
-                                                                         @csrf
-                                                                         @method('PUT')
-                                                                         <input type="hidden"
-                                                                             id="finish-message{{ $d->id }}"
-                                                                             name="projoff_offer_number">
-                                                                         <a class="dropdown-item" href="#"
-                                                                             data-id="{{ $d->id }}"
-                                                                             onclick="finish({{ $d->id }}); return false;">
-                                                                             Finish
-                                                                         </a>
-                                                                     </form>
-                                                                 @endif
-                                                             </li>
-                                                         </ul>
-                                                     </div>
-                                                 </div>
-                                             @endif
+                                         @if ($d->projwo_status != 'Done')
+                                             @include('task_board.button_wo')
                                          @else
-                                             @if ($d->projwo_status == 'Cancelled')
+                                             {{-- @if ($d->projso_status == 'Cancelled')
                                                  Cancelled
-                                             @elseif ($d->projwo_status == 'Done')
+                                             @elseif ($d->projso_status == 'Done')
                                                  Done
                                              @else
                                                  Already Taken
-                                             @endif
+                                             @endif --}}
                                          @endif
-                                     @endif
-
-                                     @if (Auth::user()->hasRole('superadmin'))
-                                         <form class="d-inline"
-                                             action="{{ route('task_board.cancel', ['assignee' => 'pre-sales', 'id' => $d->id, 'doc_type' => 'work-order']) }}"
-                                             method="POST" id="form-cancel{{ $d->id }}">
-                                             @csrf
-                                             @method('PUT')
-                                             <a class="btn btn-secondary btn-sm" href="#" role="button"
-                                                 onclick="cancel({{ $d->id }}); return false;">Cancel</a>
-                                         </form>
-                                         <form class="d-inline"
-                                             action="{{ route('task_board.delete', ['assignee' => 'sales-admin', 'id' => $d->id, 'doc_type' => 'work-order']) }}"
-                                             method="POST" id="form-delete{{ $d->id }}">
-                                             @csrf
-                                             @method('DELETE')
-                                             <a class="btn btn-danger btn-sm" href="#" role="button"
-                                                 onclick="delete_data({{ $d->id }}); return false;">Delete</a>
-                                         </form>
                                      @endif
                                  </div>
                              </td>

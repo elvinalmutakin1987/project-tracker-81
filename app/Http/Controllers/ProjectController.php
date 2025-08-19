@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Customer;
 use App\Models\Project;
+use App\Models\Project_invoice_dp;
 use App\Models\Project_offer;
 use App\Models\Project_sales_order;
 use App\Models\Project_survey;
+use App\Models\Project_work_order;
 use App\Models\Work_type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -159,9 +161,9 @@ class ProjectController extends Controller
                 'proj_schedule' => $request->proj_schedule ? 1 : null
             ]);
             $project->update($data);
-            if ($request->proj_status == 'Pra-tender') {
-                $this->create_task('Pra-tender', $project->id);
-            }
+            // if ($request->proj_status == 'Pre-sales') {
+            //     $this->create_task('Pre-sales', $project->id);
+            // }
             if ($request->has('brand_id')) {
                 $project->project_brand()->sync($request->brand_id);
             }
@@ -183,6 +185,16 @@ class ProjectController extends Controller
     {
         DB::beginTransaction();
         try {
+            $project_work_order = Project_work_order::where('project_id', $project->id)->latest()->first();
+            $project_invoice_dp = Project_invoice_dp::where('project_id', $project->id)->latest()->first();
+            $project_sales_order = Project_sales_order::where('project_id', $project->id)->latest()->first();
+            $project_offer = Project_offer::where('project_id', $project->id)->latest()->first();
+            $project_survey = Project_survey::where('project_id', $project->id)->latest()->first();
+            if ($project_work_order) $project_work_order->delete();
+            if ($project_invoice_dp) $project_invoice_dp->delete();
+            if ($project_sales_order) $project_sales_order->delete();
+            if ($project_offer) $project_offer->delete();
+            if ($project_survey) $project_survey->delete();
             $project->delete();
             DB::commit();
             return redirect()->route('project.index')->with([

@@ -17,7 +17,8 @@ class File_upload extends Model implements Auditable
         'file_name',
         'file_real_name',
         'file_ext',
-        'file_link'
+        'file_link',
+        'file_notes'
     ];
 
     protected $fillable = [
@@ -28,6 +29,7 @@ class File_upload extends Model implements Auditable
         'file_name',
         'file_real_name',
         'file_ext',
-        'file_link'
+        'file_link',
+        'file_notes'
     ];
 }

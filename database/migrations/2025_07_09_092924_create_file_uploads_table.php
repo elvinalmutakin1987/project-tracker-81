@@ -41,6 +41,7 @@ return new class extends Migration
             $table->longText('file_real_name')->nullable();
             $table->string('file_ext', 10)->nullable();
             $table->longText('file_link')->nullable();
+            $table->longText('file_notes')->nullable();
             $table->timestamps();
         });
     }

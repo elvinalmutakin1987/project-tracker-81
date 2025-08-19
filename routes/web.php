@@ -89,6 +89,16 @@ Route::middleware(['auth'])->group(function () {
         /**
          * Operation
          */
+        Route::group(['middleware' => ['role_or_permission:task_board.operation']], function () {
+            Route::put('task_board/take-work-order/{project_work_order}', [TaskBoardController::class, 'take_work_order'])->name('task_board.take_work_order');
+            Route::put('task_board/hold-work-order/{project_work_order}', [TaskBoardController::class, 'hold_work_order'])->name('task_board.hold_work_order');
+            Route::put('task_board/continue-work-order/{project_work_order}', [TaskBoardController::class, 'continue_work_order'])->name('task_board.continue_work_order');
+            Route::put('task_board/approval-work-order/{project_work_order}', [TaskBoardController::class, 'approval_work_order'])->name('task_board.approval_work_order');
+            Route::put('task_board/finish-work-order/{project_work_order}', [TaskBoardController::class, 'finish_work_order'])->name('task_board.finish_work_order');
+            Route::get('task_board/document-work-order/{project_work_order}', [TaskBoardController::class, 'document_work_order'])->name('task_board.document_work_order');
+            Route::get('task_board/create-work-order/{project_work_order}', [TaskBoardController::class, 'create_work_order'])->name('task_board.create_work_order');
+            Route::put('task_board/document-work-order/{project_work_order}', [TaskBoardController::class, 'document_work_order_update'])->name('task_board.document_work_order.update');
+        });
 
         /**
          * Finance Accounting

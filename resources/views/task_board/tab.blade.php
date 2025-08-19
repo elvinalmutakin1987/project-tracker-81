@@ -9,6 +9,7 @@
      $total_offer_pending = Project_offer::whereNotIn('projoff_status', ['Cancelled', 'Done'])->count();
      $total_so_pending = Project_sales_order::whereNotIn('projso_status', ['Cancelled', 'Done'])->count();
      $total_invdp_pending = Project_invoice_dp::whereNotIn('projinvdp_status', ['Cancelled', 'Done'])->count();
+     $total_inv_pending = 0;
      $total_wo_pending = Project_work_order::whereNotIn('projwo_status', ['Cancelled', 'Done'])->count();
  @endphp
 
@@ -20,11 +21,11 @@
                  {{ $assignee == 'pre-sales' ? 'aria-current="page"' : '' }}
                  href="{{ route('task_board.index', ['assignee' => 'pre-sales']) }}">Pre
                  Sales
-                 @if ($total_survey_pending > 0)
+                 {{-- @if ($total_survey_pending > 0)
                      <span class="badge text-bg-warning rounded-pill">
                          {{ $total_survey_pending }}
                      </span>
-                 @endif
+                 @endif --}}
              </a>
          </li>
      @endif
@@ -34,11 +35,11 @@
                  {{ $assignee == 'sales-admin' ? 'aria-current="page"' : '' }}
                  href="{{ route('task_board.index', ['assignee' => 'sales-admin']) }}">Sales
                  Admin
-                 @if ($total_offer_pending + $total_so_pending > 0)
+                 {{-- @if ($total_offer_pending + $total_so_pending > 0)
                      <span class="badge text-bg-warning rounded-pill">
                          {{ $total_offer_pending + $total_so_pending }}
                      </span>
-                 @endif
+                 @endif --}}
              </a>
          </li>
      @endif
@@ -47,11 +48,11 @@
              <a class="nav-link {{ $assignee == 'finance-accounting' ? 'active' : '' }}"
                  {{ $assignee == 'finance-accounting' ? 'aria-current="page"' : '' }}
                  href="{{ route('task_board.index', ['assignee' => 'finance-accounting']) }}">Finance Accounting
-                 @if ($total_invdp_pending > 0)
+                 {{-- @if ($total_invdp_pending > 0)
                      <span class="badge text-bg-warning rounded-pill">
                          {{ $total_invdp_pending }}
                      </span>
-                 @endif
+                 @endif --}}
              </a>
          </li>
      @endif
@@ -60,10 +61,10 @@
              <a class="nav-link {{ $assignee == 'operation' ? 'active' : '' }}"
                  {{ $assignee == 'operation' ? 'aria-current="page"' : '' }}
                  href="{{ route('task_board.index', ['assignee' => 'operation']) }}">Operation
-                 @if ($project_work_order->where('projwo_status', '!=', 'Done')->count() > 0)
+                 {{-- @if ($project_work_order->where('projwo_status', '!=', 'Done')->count() > 0)
                      <span
                          class="badge text-bg-warning rounded-pill">{{ $project_work_order->where('projwo_status', '!=', 'Done')->count() }}</span>
-                 @endif
+                 @endif --}}
              </a>
          </li>
      @endif
@@ -71,12 +72,11 @@
 
  <hr class="col-12 ">
 
- @if ($assignee == 'sales-admin')
+ {{-- @if ($assignee == 'sales-admin')
      <div class="mb-4 h5">
-         <a href="#"
+         <a href="#" class="d-inline-block text-decoration-none"
              onclick="$('#doc_type').val('quotation').trigger('change').on('change', function(){search()}); return false;">
-             <span
-                 class="badge text-bg-{{ $doc_type == 'quotation' ? 'success' : 'secondary' }} rounded-pill">Quotation
+             <span class="badge text-bg-{{ $doc_type == 'quotation' ? 'success' : 'secondary' }}">Quotation
                  :
                  @if ($total_offer_pending > 0)
                      <span class="badge text-bg-warning rounded-pill" style="font-size: 16px">
@@ -90,9 +90,9 @@
                  @endif
              </span>
          </a>
-         <a href="#"
+         <a href="#" class="d-inline-block text-decoration-none"
              onclick="$('#doc_type').val('sales-order').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-{{ $doc_type == 'sales-order' ? 'success' : 'secondary' }} rounded-pill">Sale
+             <span class="badge text-bg-{{ $doc_type == 'sales-order' ? 'success' : 'secondary' }}">Sale
                  Order
                  :
                  @if ($total_so_pending > 0)
@@ -110,30 +110,61 @@
          </a>
      </div>
  @elseif($assignee == 'finance-accounting')
-     <div class="mb-4 h4">
-         <a href=""
+     <div class="mb-4 h5">
+         <a href="" class="d-inline-block text-decoration-none"
              onclick="$('#doc_type').val('invoice-dp').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-{{ $doc_type == 'invoice-dp' ? 'success' : 'secondary' }} rounded-pill">Invoice
+             <span class="badge text-bg-{{ $doc_type == 'invoice-dp' ? 'success' : 'secondary' }} ">Invoice
                  DP
-                 : {{ $total_invdp_pending }}</span>
+                 :
+                 @if ($total_invdp_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill" style="font-size: 16px">
+                         {{ $total_invdp_pending }}
+                     </span>
+                 @else
+                     <span class="badge text-bg-{{ $doc_type == 'invoice-dp' ? 'success' : 'secondary' }} rounded-pill"
+                         style="font-size: 16px">
+                         {{ $total_invdp_pending }}
+                     </span>
+                 @endif
+             </span>
          </a>
 
-         <a href=""
+         <a href="" class="d-inline-block text-decoration-none"
              onclick="$('#doc_type').val('invoice').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-{{ $doc_type == 'invoice' ? 'success' : 'secondary' }} rounded-pill">Invoce :
-                 {{ $total_so_pending }}</span>
+             <span class="badge text-bg-{{ $doc_type == 'invoice' ? 'success' : 'secondary' }} ">Invoce :
+                 @if ($total_inv_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill" style="font-size: 16px">
+                         {{ $total_inv_pending }}
+                     </span>
+                 @else
+                     <span class="badge text-bg-{{ $doc_type == 'invoice' ? 'success' : 'secondary' }} rounded-pill"
+                         style="font-size: 16px">
+                         {{ $total_inv_pending }}
+                     </span>
+                 @endif
+             </span>
          </a>
      </div>
  @elseif($assignee == 'operation')
-     <div class="mb-4 h4">
-         <a href=""
+     <div class="mb-4 h5">
+         <a href="" class="d-inline-block text-decoration-none"
              onclick="$('#doc_type').val('work-order').trigger('change').on('change', function(){search()}); return false;">
-             <span class="badge text-bg-{{ $doc_type == 'work-order' ? 'success' : 'secondary' }} rounded-pill">Work
+             <span class="badge text-bg-{{ $doc_type == 'work-order' ? 'success' : 'secondary' }} ">Work
                  Order :
-                 5</span>
+                 @if ($total_wo_pending > 0)
+                     <span class="badge text-bg-warning rounded-pill" style="font-size: 16px">
+                         {{ $total_wo_pending }}
+                     </span>
+                 @else
+                     <span class="badge text-bg-{{ $doc_type == 'work-order' ? 'success' : 'secondary' }} rounded-pill"
+                         style="font-size: 16px">
+                         {{ $total_wo_pending }}
+                     </span>
+                 @endif
+             </span>
          </a>
      </div>
- @endif
+ @endif --}}
 
  <div class="row g-5">
      <div class="d-flex flex-row gap-2">

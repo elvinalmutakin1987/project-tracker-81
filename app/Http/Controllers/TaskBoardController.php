@@ -855,9 +855,9 @@ class TaskBoardController extends Controller
         DB::beginTransaction();
         try {
             $project_invoice_dp->update([
-                'projso_so_number' => $request->projso_so_number,
-                'projso_status' => "Done",
-                'projso_finished_at' => Carbon::now(),
+                'projinvdp_invoice_number' => $request->projso_so_number,
+                'projinvdp_status' => "Done",
+                'projinvdp_finished_at' => Carbon::now(),
             ]);
             Project_work_order::create([
                 'project_id' => $project_invoice_dp->project_id,
@@ -1110,11 +1110,11 @@ class TaskBoardController extends Controller
                     'message' => "Task has been picked up."
                 ]);
             }
-            $project_work_order = Project_invoice::where('id', $project_work_order->id)->lockForUpdate()->first();
+            $project_work_order = Project_work_order::where('id', $project_work_order->id)->lockForUpdate()->first();
             $project_work_order->update([
                 'user_id' => Auth::user()->id,
-                'projinv_started_at' => Carbon::now(),
-                'projinv_status' => "Started"
+                'projwo_started_at' => Carbon::now(),
+                'projwo_status' => "Started"
             ]);
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
@@ -1125,6 +1125,129 @@ class TaskBoardController extends Controller
             DB::rollBack();
             return view('error', compact('th'));
         }
+    }
+
+    public function hold_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            $project_work_order->update([
+                'projwo_status' => "Hold",
+                'projwo_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function continue_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            $project_work_order->update([
+                'projwo_status' => "Started",
+                'projwo_hold_message' => $request->message
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function approval_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            $project_work_order->update([
+                'projwo_status' => "Approval"
+            ]);
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function finish_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            $project_work_order->update([
+                'projwo_wo_number' => $request->projwo_wo_number,
+                'projwo_status' => "Done",
+                'projwo_finished_at' => Carbon::now(),
+            ]);
+            $project = Project::find($project_work_order->project_id);
+            $project->update([
+                'proj_status' => "Paid"
+            ]);
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been updated! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function document_work_order(Request $request, Project_work_order $project_work_order)
+    {
+        return view('task_board.document_work_order', compact('project_work_order'));
+    }
+
+    public function document_work_order_update(Request $request, Project_work_order $project_work_order)
+    {
+        DB::beginTransaction();
+        try {
+            $file_upload = new File_upload();
+            $file_upload->file_doc_type = $request->file_doc_type;
+            $file_upload->file_table = 'project_work_order';
+            $file_upload->file_table_id = $project_work_order->id;
+            if ($request->has('file_upload')) {
+                $file = $request->file('file_upload');
+                $file_real_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $file_directory = "operation";
+                $file_name = Str::random(24) . "." . $file_ext;
+                Storage::disk('local')->put($file_directory . '/' . $file_name, file_get_contents($request->file('file_upload')->getRealPath()));
+                $file_upload->file_directory = $file_directory;
+                $file_upload->file_name = $file_name;
+                $file_upload->file_real_name = $file_real_name;
+                $file_upload->file_ext = $file_ext;
+            }
+            $file_upload->file_link = $request->file_link;
+            $file_upload->save();
+            $project_work_order->projinvdp_invoice = 1;
+            $project_work_order->save();
+            DB::commit();
+            return redirect()->route('task_board.index', ['assignee' => 'operation', 'doc_type' => 'work-order'])->with([
+                'status' => 'success',
+                'message' => 'Data has been uploaded! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
+        }
+    }
+
+    public function create_work_order(Request $request, Project_work_order $project_work_order) {
+        
     }
 
     /**
@@ -1272,15 +1395,32 @@ class TaskBoardController extends Controller
     {
         DB::beginTransaction();
         try {
-            if ($request->assignee == 'pre-sales') {
-                Project_survey::find($request->id)->delete();
-            } elseif ($request->assignee == 'sales-admin') {
-                if ($request->doc_type == 'quotation') {
-                    Project_offer::find($request->id)->delete();
-                } elseif ($request->doc_type == 'sales-order') {
-                    Project_sales_order::find($request->id)->delete();
-                } elseif ($request->doc_type == 'work-order') {
+            $map = [
+                'pre-sales' => [
+                    'default' => Project_survey::class,
+                ],
+                'sales-admin' => [
+                    'quotation'    => Project_offer::class,
+                    'sales-order'  => Project_sales_order::class,
+                    'work-order'   => Project_work_order::class,
+                ],
+                'finance-accounting' => [
+                    'invoice-dp' => Project_invoice_dp::class,
+                    'invoice'    => Project_invoice::class,
+                ],
+            ];
+            $model = null;
+            if (isset($map[$request->assignee])) {
+                $models = $map[$request->assignee];
+
+                if (isset($models[$request->doc_type])) {
+                    $model = $models[$request->doc_type];
+                } elseif (isset($models['default'])) {
+                    $model = $models['default'];
                 }
+            }
+            if ($model) {
+                $model::find($request->id)?->delete();
             }
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => $request->assignee, 'doc_type' => $request->doc_type])->with([
@@ -1301,19 +1441,29 @@ class TaskBoardController extends Controller
     {
         DB::beginTransaction();
         try {
-            if ($request->assignee == 'pre-sales') {
-                Project_survey::find($request->id)->delete();
-            } elseif ($request->assignee == 'sales-admin') {
-                if ($request->doc_type == 'quotation')
-                    Project_offer::find($request->id)->update([
-                        'projoff_status' => "Cancelled"
-                    ]);
-                elseif ($request->doc_type == 'sales-order') {
-                    Project_sales_order::find($request->id)->update([
-                        'projso_status' => "Cancelled"
-                    ]);
-                } elseif ($request->doc_type == 'work-order') {
-                }
+            $map = [
+                'pre-sales' => [
+                    'default' => [Project_survey::class, 'projsur_status'],
+                ],
+                'sales-admin' => [
+                    'quotation'   => [Project_offer::class, 'projoff_status'],
+                    'sales-order' => [Project_sales_order::class, 'projso_status'],
+                    'work-order'  => [Project_work_order::class, 'projwo_status'],
+                ],
+                'finance-accounting' => [
+                    'invoice-dp' => [Project_invoice_dp::class, 'projinvdp_status'],
+                    'invoice'    => [Project_invoice::class, 'projinv_status'],
+                ],
+            ];
+            $action = $map[$request->assignee][$request->doc_type]
+                ?? $map[$request->assignee]['default']
+                ?? null;
+
+            if ($action) {
+                [$model, $field] = $action;
+                $model::find($request->id)?->update([
+                    $field => 'Cancelled'
+                ]);
             }
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => $request->assignee, 'doc_type' => $request->doc_type])->with([

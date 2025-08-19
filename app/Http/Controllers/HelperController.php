@@ -94,7 +94,7 @@ class HelperController extends Controller
             $initials = '3-1';
         } elseif ($document == 'Finance Accounting - Invoice') {
             $initials = '3-2';
-        } elseif ($document == 'Operation') {
+        } elseif ($document == 'Operation - Work Order') {
             $initials = '4';
         }
         $number = $initials . '-' . str_pad($prefix, 4, '0', STR_PAD_LEFT);
