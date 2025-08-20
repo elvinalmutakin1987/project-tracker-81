@@ -17,7 +17,7 @@ class HelperController extends Controller
         $year = date('Y', strtotime($date));
         $document_number = Document_number::where('document', $document)
             ->where('year', date('Y'))
-            ->orderBy('id')
+            ->latest()
             ->first();
         if (!$document_number) {
             $document_number = new Document_number();
@@ -74,7 +74,7 @@ class HelperController extends Controller
         $year = date('Y', strtotime($date));
         $document_number = Document_number::where('document', $document)
             ->where('year', date('Y'))
-            ->orderBy('id')
+            ->latest()
             ->first();
         if (!$document_number) {
             $document_number = new Document_number();
@@ -99,6 +99,34 @@ class HelperController extends Controller
         }
         $number = $initials . '-' . str_pad($prefix, 4, '0', STR_PAD_LEFT);
         $document_number->document = $document;
+        $document_number->number = $number;
+        $document_number->date = $date;
+        $document_number->prefix = $prefix;
+        $document_number->day = $day;
+        $document_number->month = $month;
+        $document_number->year = $year;
+        $document_number->save();
+        return $number;
+    }
+
+    public static function generate_wo_number()
+    {
+        $date = date('Y-m-d');
+        $day = date('d', strtotime($date));
+        $month = date('m', strtotime($date));
+        $year = date('Y', strtotime($date));
+        $document_number = Document_number::where('document', 'Work Order')
+            ->where('year', date('Y'))
+            ->latest()
+            ->first();
+        if (!$document_number) {
+            $document_number = new Document_number();
+            $prefix = 1;
+        } else {
+            $prefix = (int) $document_number->prefix + 1;
+        }
+        $number = 'WO/' . $year . '/' . $month . '/' . str_pad($prefix, 3, '0', STR_PAD_LEFT);
+        $document_number->document = 'Work Order';
         $document_number->number = $number;
         $document_number->date = $date;
         $document_number->prefix = $prefix;

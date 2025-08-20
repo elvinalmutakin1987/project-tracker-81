@@ -27,7 +27,8 @@ class Project_sales_order extends Model implements Auditable
         'projso_sent_by',
         'projso_hold_message',
         'projso_revisi_message',
-        'projso_cancel_message'
+        'projso_cancel_message',
+        'projso_permit_wo'
     ];
 
     protected $fillable = [
@@ -44,7 +45,8 @@ class Project_sales_order extends Model implements Auditable
         'projso_sent_by',
         'projso_hold_message',
         'projso_revisi_message',
-        'projso_cancel_message'
+        'projso_cancel_message',
+        'projso_permit_wo'
     ];
 
     public function project(): BelongsTo

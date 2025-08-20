@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('projso_sales_order', 1)->nullable();
             $table->string('projso_so_number', 20)->nullable();
             $table->string('projso_po_number', 20)->nullable();
+            $table->string('projso_permit_wo', 1)->nullable();
             $table->enum('projso_status', [
                 'Open',
                 'Not Started',

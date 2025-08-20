@@ -77,4 +77,14 @@ class User extends Authenticatable implements Auditable
     {
         return $this->hasMany(Project_invoice_dp::class);
     }
+
+    public function permitwo(): HasMany
+    {
+        return $this->hasMany(Project_invoice_dp::class, 'permit_by', 'id');
+    }
+
+    public function createwoby(): HasMany
+    {
+        return $this->hasMany(Project_invoice_dp::class, 'create_wo_by', 'id');
+    }
 }

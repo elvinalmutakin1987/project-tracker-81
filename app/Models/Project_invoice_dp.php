@@ -28,7 +28,12 @@ class Project_invoice_dp extends Model implements Auditable
         'projinvdp_send_at',
         'projinvdp_hold_message',
         'projinvdp_revisi_message',
-        'projinvdp_cancel_message'
+        'projinvdp_cancel_message',
+        'projinvdp_permit_wo',
+        'projinvdp_create_wo',
+        'projinvdp_permit_at',
+        'permit_by',
+        'created_wo_by'
     ];
 
     protected $fillable = [
@@ -47,7 +52,12 @@ class Project_invoice_dp extends Model implements Auditable
         'projinvdp_send_at',
         'projinvdp_hold_message',
         'projinvdp_revisi_message',
-        'projinvdp_cancel_message'
+        'projinvdp_cancel_message',
+        'projinvdp_permit_wo',
+        'projinvdp_create_wo',
+        'projinvdp_permit_at',
+        'permit_by',
+        'created_wo_by'
     ];
 
     public function project(): BelongsTo
@@ -58,5 +68,17 @@ class Project_invoice_dp extends Model implements Auditable
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class)->withDefault(['username' => null]);
+    }
+
+    public function permitby(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'permit_by', 'id')
+            ->withDefault(['username' => null]);
+    }
+
+    public function createwoby(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'create_wo_by', 'id')
+            ->withDefault(['username' => null]);
     }
 }

@@ -13,8 +13,8 @@
 
              @if ($d->projwo_status == 'Started')
                  <li>
-                     <a class="dropdown-item" href="{{ route('task_board.create_work_order', $d->id) }}">Create Work
-                         Order
+                     <a class="dropdown-item" href="{{ route('task_board.create_assignment', $d->id) }}">Create
+                         Assigment
                      </a>
                  </li>
                  <li>

@@ -12,6 +12,21 @@
              </li>
 
              @if ($d->projinvdp_status == 'Started')
+                 @if ($d->projinvdp_permit_wo == 0)
+                     <li>
+                         <form class="d-inline" action="{{ route('task_board.permit_to_wo', $d->id) }}" method="POST"
+                             id="form-permit{{ $d->id }}">
+                             @csrf
+                             @method('PUT')
+                             <input type="hidden" id="permit-message{{ $d->id }}"
+                                 name="projinvdp_invoice_number">
+                             <a class="dropdown-item" href="#" data-id="{{ $d->id }}"
+                                 onclick="permit({{ $d->id }}); return false;">
+                                 Permit To Work Order
+                             </a>
+                         </form>
+                     </li>
+                 @endif
                  <li>
                      <form class="d-inline" action="{{ route('task_board.hold_invoice_dp', $d->id) }}" method="POST"
                          id="form-hold{{ $d->id }}">

@@ -96,7 +96,8 @@ Route::middleware(['auth'])->group(function () {
             Route::put('task_board/approval-work-order/{project_work_order}', [TaskBoardController::class, 'approval_work_order'])->name('task_board.approval_work_order');
             Route::put('task_board/finish-work-order/{project_work_order}', [TaskBoardController::class, 'finish_work_order'])->name('task_board.finish_work_order');
             Route::get('task_board/document-work-order/{project_work_order}', [TaskBoardController::class, 'document_work_order'])->name('task_board.document_work_order');
-            Route::get('task_board/create-work-order/{project_work_order}', [TaskBoardController::class, 'create_work_order'])->name('task_board.create_work_order');
+            Route::get('task_board/create-assignment/{project_work_order}', [TaskBoardController::class, 'create_assignment'])->name('task_board.create_assignment');
+            Route::get('task_board/create-work-order/{project_invoice_dp}', [TaskBoardController::class, 'create_work_order'])->name('task_board.create_work_order');
             Route::put('task_board/document-work-order/{project_work_order}', [TaskBoardController::class, 'document_work_order_update'])->name('task_board.document_work_order.update');
         });
 

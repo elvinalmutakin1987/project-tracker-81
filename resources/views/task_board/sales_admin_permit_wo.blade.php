@@ -51,27 +51,35 @@
             //     search();
             // });
 
-            $("#status").on('change', function() {
+            // $('#doc_type').select2({
+            //     theme: "bootstrap-5",
+            //     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' :
+            //         'style',
+            //     placeholder: $(this).data('placeholder'),
+            // }).on('change', function() {
+            //     search();
+            // });
+
+            $("#doc_type").on('change', function() {
                 search()
             })
 
-            $("#show").on('change', function() {
-                search()
-            })
+            // $("#show").on('change', function() {
+            //     search()
+            // })
+
+            // $("#taker").on('change', function() {
+            //     search()
+            // })
         });
 
         function search() {
             var url =
                 `{!! route('task_board.index', [
-                    'search' => '_search',
-                    'status' => '_status',
-                    'show' => '_show',
-                    'assignee' => 'operation',
+                    'assignee' => 'sales-admin',
                     'doc_type' => '_doc_type',
                 ]) !!}`
-            url = url.replace('_search', $("#search").val())
-            url = url.replace('_status', $("#status").val())
-            url = url.replace('_show', $("#show").val())
+
             url = url.replace('_doc_type', $("#doc_type").val())
             window.open(url, '_self')
         }
@@ -139,7 +147,7 @@
                 cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, do it!",
                 input: "text",
-                inputPlaceholder: "Type work order here...",
+                inputPlaceholder: "Type sales number here...",
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (result.value == '') {
@@ -170,5 +178,39 @@
                 }
             });
         }
+
+        @if (Auth::user()->hasRole('superadmin'))
+            function cancel(id) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "The process will be cancelled",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, cancel it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-cancel' + id).submit();
+                    }
+                });
+            }
+
+            function delete_data(id) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Once deleted, you won't be able to recover this record!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-delete' + id).submit();
+                    }
+                });
+            }
+        @endif
     </script>
 @endpush

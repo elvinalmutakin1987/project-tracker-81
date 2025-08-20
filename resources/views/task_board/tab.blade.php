@@ -176,6 +176,8 @@
                          Quotation</option>
                      <option value="sales-order" {{ $doc_type == 'sales-order' ? 'selected' : '' }}>
                          Sales Order</option>
+                     <option value="work-order" {{ $doc_type == 'work-order' ? 'selected' : '' }}>
+                         Create Work Order</option>
                  </select>
              </div>
          @elseif($assignee == 'finance-accounting')
@@ -198,62 +200,65 @@
              </div>
          @endif
 
-         <div class="flex-fill w-100">
-             <label for="status" class="form-label">Status</label>
-             <select class="form-select flex-fill" id="status" name="status">
-                 <option value="All" {{ request()->get('status') == 'All' ? 'selected' : '' }}>
-                     All</option>
-                 <option value="Open" {{ request()->get('status') == 'Open' ? 'selected' : '' }}>
-                     Open</option>
-                 <option value="Started" {{ request()->get('status') == 'Started' ? 'selected' : '' }}>
-                     Started</option>
-                 <option value="Hold" {{ request()->get('status') == 'Hold' ? 'selected' : '' }}>
-                     Hold</option>
-                 <option value="Done" {{ request()->get('status') == 'Done' ? 'selected' : '' }}>
-                     Done</option>
-             </select>
-         </div>
-         <div class="flex-fill w-100">
-             <label for="search" class="form-label">Project ID</label>
-             <input type="text" id="search" name="search" class="form-control" placeholder=""
-                 value="{{ request()->get('search') }}">
-         </div>
+         @if ($assignee != 'sales-admin' || $doc_type != 'work-order')
+             <div class="flex-fill w-100">
+                 <label for="status" class="form-label">Status</label>
+                 <select class="form-select flex-fill" id="status" name="status">
+                     <option value="All" {{ request()->get('status') == 'All' ? 'selected' : '' }}>
+                         All</option>
+                     <option value="Open" {{ request()->get('status') == 'Open' ? 'selected' : '' }}>
+                         Open</option>
+                     <option value="Started" {{ request()->get('status') == 'Started' ? 'selected' : '' }}>
+                         Started</option>
+                     <option value="Hold" {{ request()->get('status') == 'Hold' ? 'selected' : '' }}>
+                         Hold</option>
+                     <option value="Done" {{ request()->get('status') == 'Done' ? 'selected' : '' }}>
+                         Done</option>
+                 </select>
+             </div>
 
-         @if (Auth::user()->hasAnyPermission([
-                 'task_board.pre_sales',
-                 'task_board.sales_admin',
-                 'task_board.operation',
-                 'task_board.finance_accounting',
-             ]))
+             <div class="flex-fill w-100">
+                 <label for="search" class="form-label">Project ID</label>
+                 <input type="text" id="search" name="search" class="form-control" placeholder=""
+                     value="{{ request()->get('search') }}">
+             </div>
+
+             @if (Auth::user()->hasAnyPermission([
+                     'task_board.pre_sales',
+                     'task_board.sales_admin',
+                     'task_board.operation',
+                     'task_board.finance_accounting',
+                 ]))
+                 <div class="flex-fill" style="width: 25%">
+                     <label for="taker" class="form-label">Taker</label>
+                     <select class="form-select" id="taker" name="taker">
+                         <option value="All" {{ request()->get('taker') == 'All' ? 'selected' : '' }}>
+                             All
+                         </option>
+                         <option value="Me" {{ request()->get('taker') == 'Me' ? 'selected' : '' }}>
+                             Me
+                         </option>
+                     </select>
+                 </div>
+             @endif
+
              <div class="flex-fill" style="width: 25%">
-                 <label for="taker" class="form-label">Taker</label>
-                 <select class="form-select" id="taker" name="taker">
-                     <option value="All" {{ request()->get('taker') == 'All' ? 'selected' : '' }}>
-                         All
+                 <label for="show" class="form-label">Show</label>
+                 <select class="form-select" id="show" name="show">
+                     <option value="10" {{ request()->get('show') == '10' ? 'selected' : '' }}>
+                         10
                      </option>
-                     <option value="Me" {{ request()->get('taker') == 'Me' ? 'selected' : '' }}>
-                         Me
+                     <option value="25" {{ request()->get('show') == '25' ? 'selected' : '' }}>
+                         25
+                     </option>
+                     <option value="50" {{ request()->get('show') == '50' ? 'selected' : '' }}>
+                         50
+                     </option>
+                     <option value="100" {{ request()->get('show') == '100' ? 'selected' : '' }}>
+                         100
                      </option>
                  </select>
              </div>
          @endif
-
-         <div class="flex-fill" style="width: 25%">
-             <label for="show" class="form-label">Show</label>
-             <select class="form-select" id="show" name="show">
-                 <option value="10" {{ request()->get('show') == '10' ? 'selected' : '' }}>
-                     10
-                 </option>
-                 <option value="25" {{ request()->get('show') == '25' ? 'selected' : '' }}>
-                     25
-                 </option>
-                 <option value="50" {{ request()->get('show') == '50' ? 'selected' : '' }}>
-                     50
-                 </option>
-                 <option value="100" {{ request()->get('show') == '100' ? 'selected' : '' }}>
-                     100
-                 </option>
-             </select>
-         </div>
      </div>
  </div>
