@@ -42,6 +42,8 @@ class Project extends Model implements Auditable
         'proj_schedule',
         'proj_phone',
         'proj_email',
+        'proj_permit_wo',
+        'proj_create_wo'
     ];
 
     protected $fillable = [
@@ -71,6 +73,8 @@ class Project extends Model implements Auditable
         'proj_schedule',
         'proj_phone',
         'proj_email',
+        'proj_permit_wo',
+        'proj_create_wo'
     ];
 
     public function project_survey(): HasOne
@@ -111,5 +115,10 @@ class Project extends Model implements Auditable
     public function project_brand(): BelongsToMany
     {
         return $this->belongsToMany(Brand::class, 'project_brands');
+    }
+
+    public function work_order(): HasOne
+    {
+        return $this->hasOne(Work_order::class);
     }
 }

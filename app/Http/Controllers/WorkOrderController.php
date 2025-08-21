@@ -10,9 +10,17 @@ class WorkOrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $work_order = Work_order::where('wo_number', 'like', '%' . $request->search . '%');
+        $show = 10;
+        if ($request->show && $request->show != '5') {
+            $show = $request->show;
+        }
+        $work_order = $work_order->paginate($show, ['*'], 'page', $request->page ?? 1)
+            ->onEachSide(0)
+            ->appends(request()->except('page'));
+        return view('work_order.index', compact('work_order'));
     }
 
     /**

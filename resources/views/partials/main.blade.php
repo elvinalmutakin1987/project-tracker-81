@@ -129,7 +129,7 @@
                 </a>
             @endif
             @if (Auth::user()->hasPermissionTo('work_order'))
-                <a href="#">Work Order</a>
+                <a href="{{ route('work_order.index') }}">Work Order</a>
             @endif
             @if (Auth::user()->hasPermissionTo('assignment'))
                 <a href="#">Assignment</a>

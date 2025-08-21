@@ -38,6 +38,9 @@ return new class extends Migration
                 'Pre Sales',
                 'Quotation',
                 'Sales Order',
+                'Work Order',
+                'Operation',
+                'Payment',
                 'Under Review',
                 'Shortlisted',
                 'Negotiation',
@@ -63,6 +66,7 @@ return new class extends Migration
             $table->string('proj_personil', 1)->nullable();
             $table->string('proj_schedule', 1)->nullable();
             $table->string('proj_permit_wo', 1)->nullable();
+            $table->string('proj_create_wo', 1)->nullable();
             $table->timestamps();
             $table->foreign('work_type_id')->references('id')->on('work_types')->onDelete('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');

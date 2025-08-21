@@ -20,6 +20,13 @@
                           </form>
                       </li>
                   @endif
+                  @if ($d->proj_permit_wo == 1 && is_null($d->proj_create_wo))
+                      <li>
+                          <a class="dropdown-item" href="{{ route('project.create_work_order', $d->id) }}">Create
+                              Work
+                              Order</a>
+                      </li>
+                  @endif
                   <li>
                       <a class="dropdown-item" href="{{ route('project.edit', $d->id) }}">
                           Edit

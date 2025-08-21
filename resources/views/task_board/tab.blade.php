@@ -3,14 +3,16 @@
      use App\Models\Project_sales_order;
      use App\Models\Project_survey;
      use App\Models\Project_invoice_dp;
-     use App\Models\project_work_order;
+     use App\Models\Project_work_order;
+     use App\Models\Work_order;
 
      $total_survey_pending = Project_survey::whereNotIn('projsur_status', ['Cancelled', 'Done'])->count();
      $total_offer_pending = Project_offer::whereNotIn('projoff_status', ['Cancelled', 'Done'])->count();
      $total_so_pending = Project_sales_order::whereNotIn('projso_status', ['Cancelled', 'Done'])->count();
      $total_invdp_pending = Project_invoice_dp::whereNotIn('projinvdp_status', ['Cancelled', 'Done'])->count();
      $total_inv_pending = 0;
-     $total_wo_pending = Project_work_order::whereNotIn('projwo_status', ['Cancelled', 'Done'])->count();
+     //  $total_wo_pending = Project_work_order::whereNotIn('projwo_status', ['Cancelled', 'Done'])->count();
+     $total_wo_pending = Work_order::whereNotIn('wo_status', ['Cancelled', 'Done'])->count();
  @endphp
 
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TaskBoardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\WorkTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['middleware' => ['role_or_permission:superadmin|project']], function () {
         Route::resource('project', ProjectController::class)->names('project');
+        Route::get('project/create-work-order/{project}', [ProjectController::class, 'create_work_order'])->name('project.create_work_order');
         Route::put('project-get-work_type', [ProjectController::class, 'get_work_type'])->name('project.get.work_type');
         Route::put('project-get-customer', [ProjectController::class, 'get_customer'])->name('project.get.customer');
         Route::put('project-update-status/{project}', [ProjectController::class, 'update_status'])->name('project.update.status');
@@ -139,6 +141,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('customer/file-download/{file_upload}', [CustomerController::class, 'file_download'])->name('customer.file_download');
         Route::delete('customer/file-remove/{file_upload}', [CustomerController::class, 'file_remove'])->name('customer.file_remove');
+    });
+
+    Route::group(['middleware' => ['role_or_permission:superadmin|work_order']], function () {
+        Route::resource('work_order', WorkOrderController::class)->names('work_order');
     });
 
     Route::get('get_file_pdf', [HelperController::class, 'get_file_pdf'])->name('get_file_pdf');

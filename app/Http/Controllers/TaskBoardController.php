@@ -130,16 +130,16 @@ class TaskBoardController extends Controller
         /**
          * Work Order
          */
-        $project_work_order = Project_work_order::select('project_work_orders.*', 'projects.proj_number')
-            ->leftJoin('projects', 'projects.id', '=', 'project_work_orders.project_id')
+        $work_order = Work_order::select('work_orders.*', 'projects.proj_number')
+            ->leftJoin('projects', 'projects.id', '=', 'work_orders.project_id')
             ->where('proj_number', 'like', '%' . $request->search . '%');
         if ($request->status && $request->status != 'All') {
-            $project_work_order = $project_work_order->where('projwo_status', $request->status);
+            $work_order = $work_order->where('projwo_status', $request->status);
         }
         if ($request->taker && $request->taker != 'All') {
-            $project_work_order = $project_work_order->where('user_id', Auth::user()->id);
+            $work_order = $work_order->where('user_id', Auth::user()->id);
         }
-        $project_work_order = $project_work_order->paginate($show, ['*'], 'page', $request->page ?? 1)
+        $work_order = $work_order->paginate($show, ['*'], 'page', $request->page ?? 1)
             ->onEachSide(0)
             ->appends(request()->except('page'));
         /**
@@ -251,7 +251,7 @@ class TaskBoardController extends Controller
             $docMap = [
                 'work-order'    => [
                     'view' => 'task_board.table_wo',
-                    'data' => 'project_work_order'
+                    'data' => 'work_order'
                 ],
                 'invoice'  => [
                     'view' => 'task_board.table_invoice',
@@ -285,7 +285,7 @@ class TaskBoardController extends Controller
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
-            'project_work_order',
+            'work_order',
             'assignee',
             'doc_type'
         ));
@@ -295,7 +295,7 @@ class TaskBoardController extends Controller
             'project_offer',
             'project_sales_order',
             'project_invoice_dp',
-            'project_work_order',
+            'work_order',
             'assignee',
             'doc_type',
             'tab',
@@ -801,6 +801,10 @@ class TaskBoardController extends Controller
                 'wo_date' => Carbon::now(),
                 'created_by' => Auth::user()->id
             ]);
+            Project::find($project_invoice_dp->project_id)->update([
+                'proj_permit_wo' => 1,
+                'proj_status' => 'Work Order'
+            ]);
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'sales-admin', 'doc_type' => 'work-order'])->with([
                 'status' => 'success',
@@ -913,15 +917,11 @@ class TaskBoardController extends Controller
                 $project_invoice_dp->permit_by = Auth::user()->id;
             }
             $project_invoice_dp->save();
-            // Project_work_order::create([
-            //     'project_id' => $project_invoice_dp->project_id,
-            //     'projwo_number' => HelperController::generate_code("Operation - Work Order"),
-            //     'projwo_status' => 'Open'
-            // ]);
-            // $project = Project::find($project_invoice_dp->project_id);
-            // if ($project->proj_permit_wo == 0) {
-            //     $project->proj_permit_wo = 1;
-            // }
+            $project = Project::find($project_invoice_dp->project_id);
+            if ($project->proj_permit_wo == 0) {
+                $project->proj_permit_wo = 1;
+            }
+            $project->save();
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
                 'status' => 'success',
@@ -987,15 +987,11 @@ class TaskBoardController extends Controller
             $project_invoice_dp->projinvdp_permit_at = Carbon::now();
             $project_invoice_dp->permit_by = Auth::user()->id;
             $project_invoice_dp->save();
-            // Project_work_order::create([
-            //     'project_id' => $project_invoice_dp->project_id,
-            //     'projwo_number' => HelperController::generate_code("Operation - Work Order"),
-            //     'projwo_status' => 'Open'
-            // ]);
-            // $project = Project::find($project_invoice_dp->project_id);
-            // if ($project->proj_permit_wo == 0) {
-            //     $project->proj_permit_wo = 1;
-            // }
+            $project = Project::find($project_invoice_dp->project_id);
+            if ($project->proj_permit_wo == 0) {
+                $project->proj_permit_wo = 1;
+            }
+            $project->save();
             DB::commit();
             return redirect()->route('task_board.index', ['assignee' => 'finance-accounting', 'doc_type' => 'invoice-dp'])->with([
                 'status' => 'success',

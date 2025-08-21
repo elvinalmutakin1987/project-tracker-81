@@ -17,12 +17,12 @@
                  </tr>
              </thead>
              <tbody class="table-group-divider">
-                 @if ($project_work_order->count() == 0)
+                 @if ($work_order->count() == 0)
                      <tr>
                          <td colspan="100%" class="text-center">No data displayed</td>
                      </tr>
                  @else
-                     @foreach ($project_work_order as $d)
+                     @foreach ($work_order as $d)
                          @php
                              $isMoreThan36Hours = false;
                              $isMoreThan48Hours = false;
@@ -38,28 +38,32 @@
                          @endphp
                          <tr
                              class="
-                        @if ($d->projwo_status == 'Done') table-success
-                        @elseif(in_array($d->projwo_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
+                        @if ($d->wo_status == 'Done') table-success
+                        @elseif(in_array($d->wo_status, ['Started', 'On Going', 'Hold', 'Revisi Mesin']))
                             @if ($isMoreThan36Hours == true) table-warning @endif
                             @if ($isMoreThan48Hours == true) table-danger @endif
                         @endif
                         ">
-                             <td>{{ $d->projwo_number }}</td>
-                             <td><a
+                             <td>{{ $d->wo_number }}</td>
+                             <td>
+                                 <a
                                      href="{{ route('task_board.show', ['project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->project->proj_number }}</a>
                              </td>
-                             <td>{{ $d->project->proj_name }}</td>
+                             <td>
+                                 <a
+                                     href="{{ route('work_order.show', ['work_order' => $d->id, 'project' => $d->project_id, 'assignee' => $assignee, 'doc_type' => $doc_type]) }}">{{ $d->wo_number }}</a>
+                             </td>
                              <td>{{ $d->project->proj_name }}</td>
                              <td>{{ $d->project->customer->cust_name }}</td>
-                             <td>{{ $d->user->name ?? '-' }}</td>
-                             <td>{{ $d->projwo_started_at ?? '-' }}</td>
-                             <td>{{ $d->projwo_finished_at ?? '-' }}</td>
-                             <td>{{ $d->projwo_status }}</td>
+                             <td>{{ $d->createdby->name ?? '-' }}</td>
+                             <td>{{ $d->wo_started_at ?? '-' }}</td>
+                             <td>{{ $d->wo_finished_at ?? '-' }}</td>
+                             <td>{{ $d->wo_status }}</td>
                              <td>
-                                 @if (in_array($d->projwo_status, ['Started', 'Hold']))
+                                 @if (in_array($d->wo_status, ['Started', 'Hold']))
                                      @php
                                          $now = \Carbon\Carbon::now();
-                                         $started_at = \Carbon\Carbon::parse($d->projwo_started_at);
+                                         $started_at = \Carbon\Carbon::parse($d->wo_started_at);
                                          $aging = '-';
                                          if ($d->projso_started_at) {
                                              $diffInSeconds = $started_at->diffInSeconds($now);
@@ -69,12 +73,12 @@
                                          }
                                      @endphp
                                      {{ $aging }}
-                                 @elseif($d->projso_status == 'Done')
+                                 @elseif($d->wo_status == 'Done')
                                      @php
-                                         $started_at = \Carbon\Carbon::parse($d->projwo_started_at);
-                                         $finished_at = \Carbon\Carbon::parse($d->projwo_finished_at);
+                                         $started_at = \Carbon\Carbon::parse($d->wo_started_at);
+                                         $finished_at = \Carbon\Carbon::parse($d->wo_finished_at);
                                          $aging = '-';
-                                         if ($d->projwo_started_at) {
+                                         if ($d->wo_started_at) {
                                              $diffInSeconds = $started_at->diffInSeconds($finished_at);
                                              $hours = floor($diffInSeconds / 3600);
                                              $minutes = floor(($diffInSeconds % 3600) / 60);
@@ -88,7 +92,7 @@
                              </td>
                              <td class="text-end">
                                  <div class="d-inline-flex gap-1">
-                                     @if ($d->projwo_status == 'Open')
+                                     @if ($d->wo_status == 'Open')
                                          <form class="d-inline"
                                              action="{{ route('task_board.take_work_order', $d->id) }}" method="POST"
                                              id="form-take{{ $d->id }}">
@@ -99,7 +103,7 @@
                                                  Up</a>
                                          </form>
                                      @else
-                                         @if ($d->projwo_status != 'Done')
+                                         @if ($d->wo_status != 'Done')
                                              @include('task_board.button_wo')
                                          @else
                                              {{-- @if ($d->projso_status == 'Cancelled')
@@ -119,7 +123,7 @@
              </tbody>
          </table>
          <nav>
-             {{ $project_work_order->links('pagination::bootstrap-5') }}
+             {{ $work_order->links('pagination::bootstrap-5') }}
          </nav>
      </div>
  </div>

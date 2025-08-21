@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Work_order extends Model implements Auditable
@@ -25,6 +26,8 @@ class Work_order extends Model implements Auditable
         'checked2_by',
         'checked3_by',
         'approved_by',
+        'wo_permit_invoice',
+        'wo_create_invoice'
     ];
 
     protected $fillable = [
@@ -41,5 +44,12 @@ class Work_order extends Model implements Auditable
         'checked2_by',
         'checked3_by',
         'approved_by',
+        'wo_permit_invoice',
+        'wo_create_invoice'
     ];
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class)->withDefault(['proj_number' => null]);
+    }
 }

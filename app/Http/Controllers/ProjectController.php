@@ -10,7 +10,9 @@ use App\Models\Project_offer;
 use App\Models\Project_sales_order;
 use App\Models\Project_survey;
 use App\Models\Project_work_order;
+use App\Models\Work_order;
 use App\Models\Work_type;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -363,6 +365,35 @@ class ProjectController extends Controller
                 "total_count" => $total_count
             ];
             return response()->json($result);
+        }
+    }
+
+    public function create_work_order(Request $request, Project $project)
+    {
+        DB::beginTransaction();
+        try {
+            Project_invoice_dp::where('project_id', $project->id)->update([
+                'create_wo_by' => Auth::user()->id,
+                'projinvdp_create_wo' => 1
+            ]);
+            Work_order::create([
+                'project_id' => $project->id,
+                'wo_number' => HelperController::generate_wo_number(),
+                'wo_date' => Carbon::now(),
+                'created_by' => Auth::user()->id
+            ]);
+            $project->update([
+                'proj_create_wo' => 1,
+                'proj_status' => 'Work Order'
+            ]);
+            DB::commit();
+            return redirect()->route('project.index')->with([
+                'status' => 'success',
+                'message' => 'Data has been taken! '
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return view('error', compact('th'));
         }
     }
 }

@@ -30,8 +30,8 @@
                              <td class="text-end">
                                  <div class="d-inline-flex gap-1">
                                      <a class="btn btn-warning btn-sm"
-                                         href="{{ route('task_board.create_work_order', $d->id) }}" return
-                                         false;">Create Work Order</a>
+                                         href="{{ route('task_board.create_work_order', $d->id) }}">Create Work
+                                         Order</a>
                                  </div>
                              </td>
                          </tr>

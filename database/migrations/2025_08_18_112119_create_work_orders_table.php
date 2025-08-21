@@ -26,6 +26,8 @@ return new class extends Migration
             $table->unsignedBigInteger('checked2_by')->nullable();
             $table->unsignedBigInteger('checked3_by')->nullable();
             $table->unsignedBigInteger('approved_by')->nullable();
+            $table->string('wo_permit_invoice', 1)->nullable();
+            $table->string('wo_create_invoice', 1)->nullable();
             $table->timestamps();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreign('project_work_order_id')->references('id')->on('project_work_orders')->onDelete('cascade');
